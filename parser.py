@@ -4,21 +4,24 @@ class Lexer:
     KEYWORDS = [
             'action please', # main method
             'uzbl', 'nuzbl', # True / False
-            'quasi',    # output
+            'quasi',    # output value
             'passt so', # rounding nums: <value> passt so 
-            'und',      # logical and
+            'und',      # logical and; concatenate strings (?)
             'oder',     # logical or
             'so',       # speed up program
             'also',     # right hand assignment <val> = <ident>
+            'stark',    # declare a constant
             'ist',      # left hand assignment <ident> = <val>
             'das ist',  # comparison
             'im quadrat', # square something
-            'und zwar',  # function declaration
+            'und zwar',  # function declaration: und zwar <ident> mit <ident1>
+            'und fertig',  # return from a function: <value> und fertig
             'das holen wir nach', # repeat last statement
             'jens',     # exit program
-            'kris',     # if
-            'patrick',  # break
-            'softwareproblem',
+            'kris?',    # if
+            'kris??',   # else if
+            'patrick!', # break
+            'softwareproblem', 'fähler', # raise error
             'oettinger' # keine ahnung
         ]
     LEX_KEYWORD = 0
