@@ -8,4 +8,9 @@ class Interpreter:
         self._loaded.append(program)
 
     def run(self):
-        pass
+        for loaded in self._loaded:
+            if loaded.entry_point():
+                print('starting...')
+                break
+        else:
+            print('no starting point.')

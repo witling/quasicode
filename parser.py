@@ -1,5 +1,5 @@
 from ast import *
-from program import Program
+from more_itertools import peekable
 from syntax import *
 
 import re
@@ -44,7 +44,6 @@ class Lexer:
 class Parser:
     def __init__(self):
         self._lexer = Lexer()
-        self._program = Program()
         self._chain = []
 
     def _take_while_keyword(self, it):
@@ -72,15 +71,15 @@ class Parser:
             while True:
                 token = line.peek()
                 if isinstance(token, Keyword):
-                    item = self._parse_keyword(line)
-                    self._chain.append(item)
+                    cls = self._parse_keyword(line)
+                    self._chain.append(cls())
 
                 elif isinstance(token, Value):
                     value = next(line)
                     self._chain.append(value)
                     try:
-                        item = self._parse_keyword(line)
-                        self._chain.append(item)
+                        cls = self._parse_keyword(line)
+                        self._chain.append(cls())
                     except Error:
                         pass
                 else:
@@ -89,18 +88,44 @@ class Parser:
         except StopIteration:
             pass
 
-    def _reduce(self):
-        pass
-
-    def parse(self, content: str) -> Program:
-        from more_itertools import peekable
-
+    def parse(self, content: str) -> list:
         lexed = (self._lexer.lex(line) for line in content.split('\n'))
 
         for line in lexed:
             self._parse_line(peekable(line))
             self._chain.append(Newline())
 
-        self._reduce()
+        reducer = Reducer(self._chain)
+        reducer.start()
 
-        return self._program
+        return reducer._done
+
+class Reducer:
+    def __init__(self, chain):
+        self._it = peekable(chain)
+        self._done = []
+
+    def _collect_block(self):
+        while True:
+            pass
+
+    def start(self):
+        stack = []
+
+        for token in self._it:
+            if isinstance(token, Declaration):
+                stack.append(token)
+            elif isinstance(token, Value):
+                if stack:
+                    top = stack[-1]
+                    if isinstance(top, Declaration):
+                        assert isinstance(token, Ident)
+                        top.set_name(token)
+                else:
+                    stack.append(token)
+            elif isinstance(token, MainMarker):
+                assert stack
+                stack[-1].add_marker(token)
+            elif isinstance(token, Newline):
+                if stack:
+                    self._done.append(stack.pop())

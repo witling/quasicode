@@ -1,5 +1,6 @@
 import sys
 
+from compiler import Compiler
 from interpreter import Interpreter
 from parser import Parser
 
@@ -14,9 +15,13 @@ def main():
 
     interpreter = Interpreter()
     parser = Parser()
+    compiler = Compiler()
 
     src = load_source(sys.argv[1])
-    program = parser.parse(src)
+    parsed = parser.parse(src)
+    program = compiler.compile(parsed)
+
+    print(program)
 
     interpreter.load(program)
 
