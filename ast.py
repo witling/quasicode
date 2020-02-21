@@ -1,14 +1,26 @@
 AST = {
+    'Block': { },
     'Keyword': {
         # operations that return a value
-        'Operator': { },
+        'Operator': { 
+            'Compare': None,
+            'LogicalAnd': None,
+            'LogicalNot': None,
+            'LogicalOr': None
+        },
         # operations that don't return a value
         'Statement': {
             'Break': None,
             'Declaration': None,
             'Exit': None,
+            'LHAssign': None,
+            'RHAssign': None,
             # attributes to statements
-            'Marker': None,
+            'Marker': {
+                'ConstantMarker': None,
+                'MainMarker': None,
+                'SoMarker': None
+            },
             'Nop': None,
             'If': None,
             'Elif': None,
@@ -16,24 +28,14 @@ AST = {
             'Return': None,
             'Repeat': None
         }
+    },
+    'Value': {
+        'Constant': None,
+        'Number': None,
+        'String': None,
+        'Ident': None,
     }
 }
-
-def create_classes(ast, parents=(object, )):
-    if not ast or isinstance(ast, list):
-        return
-
-    def default_constructor(self, *args):
-        print(args)
-
-    for k, v in ast.items():
-        if k not in globals():
-            new_cls = type(k, parents, {})
-            globals()[k] = new_cls
-
-        create_classes(v, parents=(new_cls, ))
-
-create_classes(AST)
 
 class Keyword:
     def __init__(self, name: str):
@@ -71,6 +73,28 @@ class String(Value):
 class Ident(Value):
     def __init__(self, name: str):
         self._name = name
+    
+    def __str__(self):
+        return 'Ident({})'.format(self._name)
 
     def is_assignable(self):
         return True
+
+def create_classes(ast, parents=(object, )):
+    if not ast or isinstance(ast, list):
+        return
+
+    def construct(self, *args):
+        super().__init__(args)
+        print(args)
+
+    for k, v in ast.items():
+        if k not in globals():
+            cls = type(k, parents, {'__init__': construct})
+            globals()[k] = cls
+        else:
+            cls = globals()[k]
+
+        create_classes(v, parents=(cls, ))
+
+create_classes(AST)

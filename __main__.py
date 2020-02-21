@@ -17,7 +17,6 @@ def main():
 
     src = load_source(sys.argv[1])
     program = parser.parse(src)
-    print(program._idents)
 
     interpreter.load(program)
 

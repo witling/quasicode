@@ -2,10 +2,20 @@ from ast import *
 from program import Program
 from syntax import *
 
+import re
+
+class Indent:
+    pass
+
+class Newline:
+    pass
+
 class Error(Exception):
     pass
 
 class Lexer:
+    INDENT_RE = re.compile('^(\\t|\s{4})*')
+
     def lex(self, line: str):
         lexed = []
         it = (part.lower() for part in line.split(' ') if part != '')
@@ -25,10 +35,8 @@ class Parser:
     def __init__(self):
         self._lexer = Lexer()
         self._program = Program()
-
-    def _peek_is(self, it, other):
-        peek = it.peek()
-        return type(peek) == type(other) and peek.eq(other)
+        self._chain = []
+        self._declare = None
 
     def _take_while_keyword(self, it):
         stc = []
@@ -56,12 +64,23 @@ class Parser:
                 token = line.peek()
                 if isinstance(token, Keyword):
                     item = self._parse_keyword(line)
-                    print(item)
+                    if isinstance(item, Declaration):
+                        assert not self._declare
+                    self._chain.append(item)
 
                 elif isinstance(token, Value):
-                    next(line)
+                    value = next(line)
+                    self._chain.append(value)
+                    try:
+                        item = self._parse_keyword(line)
+                        self._chain.append(item)
+                    except Error:
+                        pass
         except StopIteration:
             pass
+
+    def _reduce(self):
+        pass
 
     def parse(self, content: str) -> Program:
         from more_itertools import peekable
@@ -70,5 +89,8 @@ class Parser:
 
         for line in lexed:
             self._parse_line(peekable(line))
+            self._chain.append(Newline())
+
+        self._reduce()
 
         return self._program

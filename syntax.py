@@ -1,9 +1,9 @@
 from ast import *
 
 SYN_PHRASES = [
-    ('action please', Marker), # main method
+    ('action please', MainMarker), # main method
     ('passt so', Operator), # rounding nums: <value> passt so 
-    ('das ist', Operator),  # comparison
+    ('das ist', Compare),  # comparison
     ('im quadrat', Operator), # square something
     ('und zwar', Declaration),  # function declaration: und zwar <ident> mit <ident1>
     ('und fertig', Return),  # return from a function: <value> und fertig
@@ -14,13 +14,13 @@ SYN_KEYWORDS = [
     ('uzbl', Constant),         # True
     ('nuzbl', Constant),        # False
     ('quasi', Statement),       # output value
-    ('und', Operator),          # logical and; concatenate strings (?)
-    ('oder', Operator),         # logical or
-    ('not', Operator),          # logical not
-    ('so', Statement),          # speed up program
-    ('stark', Marker),          # declare a constant
-    ('also', Statement),        # right hand assignment <val> = <ident>
-    ('ist', Statement),         # left hand assignment <ident> = <val>
+    ('und', LogicalAnd),        # logical and; concatenate strings (?)
+    ('oder', LogicalOr),        # logical or
+    ('not', LogicalNot),        # logical not
+    ('so', SoMarker),           # speed up program
+    ('stark', ConstantMarker),  # declare a constant
+    ('also', RHAssign),         # right hand assignment <val> = <ident>
+    ('ist', LHAssign),          # left hand assignment <ident> = <val>
     ('jens', Exit),             # exit program
     ('kris?', If),              # if
     ('kris??', Elif),           # else if
