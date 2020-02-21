@@ -4,15 +4,36 @@ AST = {
         'Operator': { },
         # operations that don't return a value
         'Statement': {
+            'Break': None,
             'Declaration': None,
+            'Exit': None,
             # attributes to statements
-            'Marker': None
+            'Marker': None,
+            'Nop': None,
+            'If': None,
+            'Elif': None,
+            'Raise': None,
+            'Return': None,
+            'Repeat': None
         }
     }
 }
 
-def create_classes():
-    pass
+def create_classes(ast, parents=(object, )):
+    if not ast or isinstance(ast, list):
+        return
+
+    def default_constructor(self, *args):
+        print(args)
+
+    for k, v in ast.items():
+        if k not in globals():
+            new_cls = type(k, parents, {})
+            globals()[k] = new_cls
+
+        create_classes(v, parents=(new_cls, ))
+
+create_classes(AST)
 
 class Keyword:
     def __init__(self, name: str):
@@ -27,42 +48,6 @@ class Keyword:
         if isinstance(other, Keyword):
             return self._name == other._name
         return False
-
-class Operator(Keyword):
-    pass
-
-class Statement(Keyword):
-    pass
-
-class Marker(Keyword):
-    pass
-
-class Declaration(Statement):
-    pass
-
-class Return(Statement):
-    pass
-
-class Repeat(Statement):
-    pass
-
-class If(Statement):
-    pass
-
-class Elif(Statement):
-    pass
-
-class Break(Statement):
-    pass
-
-class Raise(Statement):
-    pass
-
-class Nop(Statement):
-    pass
-
-class Exit(Statement):
-    pass
 
 class Value:
     def is_assignable(self):
