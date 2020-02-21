@@ -11,11 +11,12 @@ $ python3 qc examples/hello-world.qc
 
 Usage | `qc` Keyword | Description | Example
 ---|---|---|---
-print | `quasi <value>` | put a value to stdout |
+print | `quasi <value>` | put a value to stdout | `quasi "gut"`
 truth values | `uzbl`, `not uzbl` |  | `vim ist not uzbl`
 operators | `+`, `-`, `*`, `/`, `modulo` | | `quasi (1 + 1)`
+logical operators | `<value> das ist <value>` | compare two values | `0 das ist 0`
 if | `kris?` | ask kris. he has all the answers | `kris?`
-else if | `kris??` | if he didn't know first, he'll know now |
+else if | `kris??` | if he didn't know first, he'll know now | `kris?? i modulo 10 das ist 0`
 loop | `das holen wir nach` | for real |
 break | `patrick!` | |
 assignment | `<ident> ist <value>`, `<value> also <ident>` | |
