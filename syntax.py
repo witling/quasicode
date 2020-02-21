@@ -10,15 +10,24 @@ SYN_PHRASES = [
     ('das holen wir nach', Repeat), # repeat last statement
 ]
 
+SYN_OPERATORS = [
+    ('+', Add),
+    ('-', Sub),
+    ('*', Mul),
+    ('/', Div),
+    ('modulo', Mod),
+]
+
 SYN_KEYWORDS = [
     ('uzbl', Constant),         # True
+    # TODO: remove this, same as `not uzbl`
     ('nuzbl', Constant),        # False
     ('quasi', Print),           # output value
     ('und', LogicalAnd),        # logical and; concatenate strings (?)
     ('oder', LogicalOr),        # logical or
     ('not', LogicalNot),        # logical not
     ('so', SoMarker),           # speed up program
-    ('stark', ConstantMarker),  # declare a constant
+    ('stark', ConstMarker),     # declare a constant
     ('also', RHAssign),         # right hand assignment <val> = <ident>
     ('ist', LHAssign),          # left hand assignment <ident> = <val>
     ('jens', Exit),             # exit program
@@ -37,7 +46,11 @@ def setup():
     global KEYWORDS
     global SYN_TREE
 
+    # add keywords
     KEYWORDS = list(map(lambda x: x[0], SYN_KEYWORDS))
+
+    # add operators
+    KEYWORDS.extend(list(map(lambda x: x[0], SYN_OPERATORS)))
 
     for parts, tag in map(lambda x: (x[0].split(' '), x[1]), SYN_PHRASES):
         node = SYN_TREE
@@ -54,6 +67,12 @@ def setup():
         node['_op'] = tag
 
     for k, tag in SYN_KEYWORDS:
+        if k not in SYN_TREE:
+            SYN_TREE[k] = { '_op': tag }
+        else:
+            SYN_TREE[k]['_op'] = tag
+
+    for k, tag in SYN_OPERATORS:
         if k not in SYN_TREE:
             SYN_TREE[k] = { '_op': tag }
         else:

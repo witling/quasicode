@@ -27,6 +27,7 @@ class Lexer:
 
     def lex(self, line: str):
         lexed = []
+
         match = self.INDENT_RE.match(line)
         if match:
             depth = match.span()[1]
@@ -40,9 +41,10 @@ class Lexer:
             elif lexem in KEYWORDS:
                 lexed.append(Keyword(lexem))
             elif lexem.isnumeric():
-                lexed.append(Number(lexem))
+                lexed.append(Number(float(lexem)))
             else:
                 lexed.append(Ident(lexem))
+
         return lexed
 
 class Parser:
@@ -78,17 +80,16 @@ class Parser:
         try:
             while True:
                 token = line.peek()
+                #print(token)
                 if isof(token, Keyword):
                     cls = self._parse_keyword(line)
                     self._chain.append(cls())
 
                 elif isof(token, Value):
-                    value = next(line)
-                    self._chain.append(value)
+                    self._chain.append(next(line))
 
                 else:
-                    token = next(line)
-                    self._chain.append(token)
+                    self._chain.append(next(line))
         except StopIteration:
             pass
 
@@ -119,21 +120,24 @@ class Reducer:
     def _collect_block(self, it=None, min_depth=1):
         it = it if it else self._it
         block = Block()
-        while True:
-            peek = it.peek()
-            if isof(peek, Block):
-                block = next(it)
-                break
+        try:
+            while True:
+                peek = it.peek()
+                if isof(peek, Block):
+                    block = next(it)
+                    break
 
-            if not isof(peek, Indent) or not min_depth <= peek.depth():
-                break
+                if not isof(peek, Indent) or not min_depth <= peek.depth():
+                    break
 
-            if min_depth < peek.depth():
-                sub = self._collect_block(it = it, min_depth = min_depth + 1)
-                block.append(sub)
-            else:
-                next(it)
-                block.extend(self._collect_till_newline(it))
+                if min_depth < peek.depth():
+                    sub = self._collect_block(it = it, min_depth = min_depth + 1)
+                    block.append(sub)
+                else:
+                    next(it)
+                    block.extend(self._collect_till_newline(it))
+        except StopIteration:
+            pass
         return block
 
     def _strip_block(self, block):
@@ -164,14 +168,6 @@ class Reducer:
                         assert isof(token, Ident)
                         top.set_name(token)
 
-                    elif isof(top, Assign):
-                        top = stack.pop()
-                        if isof(token, LHAssign):
-                            top.set_value(last)
-                        else:
-                            top.set_ident(last)
-                        done.append(top)
-
                     elif isof(top, Branch):
                         condition = self._collect_till_newline(it)
                         block = self._collect_block(it)
@@ -182,10 +178,10 @@ class Reducer:
                 else:
                     stack.append(token)
 
-            elif isof(token, Block):
-                block = self._sub_reduce(peekable(token))
-                block = self._strip_block(block)
-                #top = stack[-1]
+            #elif isof(token, Block):
+            #    block = self._sub_reduce(peekable(token))
+            #    block = self._strip_block(block)
+            #    #top = stack[-1]
 
             elif isof(token, MainMarker):
                 assert stack
@@ -208,26 +204,55 @@ class Reducer:
 
             elif isof(token, Assign):
                 last = stack.pop()
+
+                rest = self._collect_till_newline(it)
+                rest = self._sub_reduce(peekable(rest))
+                rest = self._strip_block(rest)
+
                 if isof(token, LHAssign):
                     token.set_ident(last)
+                    token.set_value(rest)
                 else:
+                    token.set_ident(rest)
                     token.set_value(last)
-                stack.append(token)
+
+                done.append(token)
 
             elif isof(token, Operator):
                 if stack:
                     top = stack.pop()
-                    assert isof(top, Value)
+                    if not (isof(top, Value) or isof(top, Operator)):
+                        print(type(top))
+                        assert False
                     token.add_arg(top)
                     stack.append(token)
                 else:
                     raise Error('prefix operators not supported')
 
-            elif isof(token, Branch) or isof(token, Print) or isof(token, Repeat):
+            elif isof(token, Branch):
+                if stack:
+                    top = stack[-1]
+                    if isof(top, Branch):
+                        done.append(stack.pop())
+
+                condition = self._collect_till_newline(it)
+                condition = self._sub_reduce(peekable(condition))
+                condition = self._strip_block(condition)
+                block = self._collect_block(it)
+                block = self._sub_reduce(peekable(block))
+                block = self._strip_block(block)
+                print(condition, block)
+                token.add_branch(condition, block)
+
+                stack.append(token)
+
+            elif isof(token, Print) or isof(token, Repeat):
                 stack.append(token)
 
             else:
                 done.append(token)
+
+        done.extend(stack)
 
         return done
 
