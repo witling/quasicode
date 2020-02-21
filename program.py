@@ -1,8 +1,13 @@
-class Block:
-    pass
-
 class Branch:
-    pass
+    def __init__(self):
+        self._branches = []
+        self._default_branch = None
+
+    def add_branch(self, condition, block):
+        self._branches.append((condition, block))
+
+    def set_default_branch(self, block):
+        self._default_branch = block
 
 class Loop:
     pass

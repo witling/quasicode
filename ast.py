@@ -11,7 +11,6 @@ AST = {
         # operations that don't return a value
         'Statement': {
             'Break': None,
-            'Declaration': None,
             'Exit': None,
             'LHAssign': None,
             'RHAssign': None,
@@ -22,11 +21,15 @@ AST = {
                 'SoMarker': None
             },
             'Nop': None,
-            'If': None,
-            'Elif': None,
+            'NestedStatement': {
+                'Declaration': None,
+                'If': None,
+                'Elif': None,
+                'Repeat': None
+            },
+            'Print': None,
             'Raise': None,
             'Return': None,
-            'Repeat': None
         }
     },
     'Value': {
@@ -71,7 +74,7 @@ class Keyword:
             return self._name == other._name
         return False
 
-class Declaration(Statement):
+class Declaration(NestedStatement):
     def __init__(self):
         self._is_main = False
         self._block = None
@@ -94,6 +97,9 @@ class Declaration(Statement):
     def add_marker(self, marker: Marker):
         if isinstance(marker, MainMarker):
             self._is_main = True
+
+class Block(list):
+    pass
 
 class Value:
     def is_assignable(self):

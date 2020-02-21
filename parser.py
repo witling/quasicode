@@ -6,7 +6,7 @@ import re
 
 class Indent:
     def __init__(self, depth=0):
-        self._depth = depth
+        self._depth = int(depth)
 
     def depth(self):
         return self._depth
@@ -81,7 +81,7 @@ class Parser:
                         cls = self._parse_keyword(line)
                         self._chain.append(cls())
                     except Error:
-                        pass
+                        print('we have error, sir')
                 else:
                     token = next(line)
                     self._chain.append(token)
@@ -105,9 +105,28 @@ class Reducer:
         self._it = peekable(chain)
         self._done = []
 
-    def _collect_block(self):
+    def _collect_block(self, min_depth=1):
+        block = Block()
         while True:
-            pass
+            peek = self._it.peek()
+            if not isinstance(peek, Indent) or not min_depth <= peek.depth():
+                break
+
+            if min_depth < peek.depth():
+                sub = self._collect_block(min_depth + 1)
+                print(sub)
+                block.append(sub)
+            else:
+                next(self._it)
+                while True:
+                    take = next(self._it)
+                    block.append(take)
+                    if isinstance(take, Newline):
+                        break
+        return block
+
+    def _sub_reduce(self):
+        pass
 
     def start(self):
         stack = []
@@ -128,4 +147,8 @@ class Reducer:
                 stack[-1].add_marker(token)
             elif isinstance(token, Newline):
                 if stack:
+                    top = stack[-1]
+                    if isinstance(top, NestedStatement):
+                        block = self._collect_block()
+                        self._done.append(block)
                     self._done.append(stack.pop())

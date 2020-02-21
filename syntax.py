@@ -13,7 +13,7 @@ SYN_PHRASES = [
 SYN_KEYWORDS = [
     ('uzbl', Constant),         # True
     ('nuzbl', Constant),        # False
-    ('quasi', Statement),       # output value
+    ('quasi', Print),           # output value
     ('und', LogicalAnd),        # logical and; concatenate strings (?)
     ('oder', LogicalOr),        # logical or
     ('not', LogicalNot),        # logical not
