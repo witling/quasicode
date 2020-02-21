@@ -1,48 +1,21 @@
+from ast import *
 from program import Program
+from syntax import *
 
 class Lexer:
-    KEYWORDS = [
-            'action please', # main method
-            'uzbl', 'nuzbl', # True / False
-            'quasi',    # output value
-            'passt so', # rounding nums: <value> passt so 
-            'und',      # logical and; concatenate strings (?)
-            'oder',     # logical or
-            'so',       # speed up program
-            'also',     # right hand assignment <val> = <ident>
-            'stark',    # declare a constant
-            'ist',      # left hand assignment <ident> = <val>
-            'das ist',  # comparison
-            'im quadrat', # square something
-            'und zwar',  # function declaration: und zwar <ident> mit <ident1>
-            'und fertig',  # return from a function: <value> und fertig
-            'das holen wir nach', # repeat last statement
-            'jens',     # exit program
-            'kris?',    # if
-            'kris??',   # else if
-            'patrick!', # break
-            'softwareproblem', 'fähler', # raise error
-            'oettinger' # keine ahnung
-        ]
-    LEX_KEYWORD = 0
-    LEX_NUMBER = 1
-    LEX_STRING = 2
-    LEX_IDENT = 3
-
     def lex(self, line: str):
         lexed = []
-        for lexem in line.split(' '):
-            lexem = lexem.lower()
-
-            if lexem == '':
-                continue
-
-            if lexem in self.KEYWORDS:
-                lexed.append((self.LEX_KEYWORD, lexem))
+        it = (part.lower() for part in line.split(' ') if part != '')
+        for lexem in it:
+            # parse strings here
+            if lexem[0] == '"':
+                lexed.append(String(lexem))
+            elif lexem in KEYWORDS:
+                lexed.append(Keyword(lexem))
             elif lexem.isnumeric():
-                lexed.append((self.LEX_NUMBER, lexem))
+                lexed.append(Number(lexem))
             else:
-                lexed.append((self.LEX_IDENT, lexem))
+                lexed.append(Ident(lexem))
         return lexed
 
 class Parser:
@@ -50,18 +23,32 @@ class Parser:
         self._lexer = Lexer()
         self._program = Program()
 
-    def parse_line(self, line):
+    def peek_is(self, it, other):
+        peek = it.peek()
+        return type(peek) == type(other) and peek.eq(other)
+
+    def _parse_deep(self):
+        pass
+
+    def _parse_line(self, line):
         for token in line:
-            if token[0] == Lexer.LEX_IDENT:
-                after = next(line)
-                if after[0] == Lexer.LEX_KEYWORD and after[1] == 'ist':
-                    self._program.ident(token[1], list(line))
-                    return
+            if isinstance(token, Keyword):
+                pass
+            elif isinstance(token, Value):
+                if token.is_assignable():
+                    if self.peek_is(line, Keyword('ist')):
+                        if self.peek_is(line, Keyword('also')):
+                            pass
+                    if self.peek_is(line, Keyword('also')):
+                        if self.peek_is(line, Keyword('also')):
+                            pass
 
     def parse(self, content: str) -> Program:
+        from more_itertools import peekable
+
         lexed = (self._lexer.lex(line) for line in content.split('\n'))
 
         for line in lexed:
-            self.parse_line(iter(line))
+            self._parse_line(peekable(line))
 
         return self._program

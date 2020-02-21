@@ -1,3 +1,12 @@
+class Block:
+    pass
+
+class Branch:
+    pass
+
+class Loop:
+    pass
+
 class Program:
     def __init__(self):
         self._idents = {}
