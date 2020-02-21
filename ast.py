@@ -1,6 +1,25 @@
+AST = {
+    'Keyword': {
+        # operations that return a value
+        'Operator': { },
+        # operations that don't return a value
+        'Statement': {
+            'Declaration': None,
+            # attributes to statements
+            'Marker': None
+        }
+    }
+}
+
+def create_classes():
+    pass
+
 class Keyword:
     def __init__(self, name: str):
         self._name = name
+
+    def name(self):
+        return self._name
 
     def eq(self, other):
         if isinstance(other, str):
@@ -9,16 +28,40 @@ class Keyword:
             return self._name == other._name
         return False
 
-# operations that return a value
 class Operator(Keyword):
     pass
 
-# operations that don't return a value
 class Statement(Keyword):
     pass
 
-# attributes to statements
 class Marker(Keyword):
+    pass
+
+class Declaration(Statement):
+    pass
+
+class Return(Statement):
+    pass
+
+class Repeat(Statement):
+    pass
+
+class If(Statement):
+    pass
+
+class Elif(Statement):
+    pass
+
+class Break(Statement):
+    pass
+
+class Raise(Statement):
+    pass
+
+class Nop(Statement):
+    pass
+
+class Exit(Statement):
     pass
 
 class Value:

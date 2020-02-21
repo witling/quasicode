@@ -2,6 +2,9 @@ from ast import *
 from program import Program
 from syntax import *
 
+class Error(Exception):
+    pass
+
 class Lexer:
     def lex(self, line: str):
         lexed = []
@@ -23,25 +26,42 @@ class Parser:
         self._lexer = Lexer()
         self._program = Program()
 
-    def peek_is(self, it, other):
+    def _peek_is(self, it, other):
         peek = it.peek()
         return type(peek) == type(other) and peek.eq(other)
 
-    def _parse_deep(self):
-        pass
+    def _take_while_keyword(self, it):
+        stc = []
+        try:
+            while isinstance(it.peek(), Keyword):
+                stc.append(next(it))
+        except StopIteration:
+            pass
+        return stc
+
+    def _keywords_to_ast(self, stc):
+        it = iter(stc)
+        node = SYN_TREE[next(it).name()]
+        for k in it:
+            node = node[k.name()]
+        return node['_op']
+    
+    def _parse_keyword(self, it):
+        stc = self._take_while_keyword(it)
+        return self._keywords_to_ast(stc)
 
     def _parse_line(self, line):
-        for token in line:
-            if isinstance(token, Keyword):
-                pass
-            elif isinstance(token, Value):
-                if token.is_assignable():
-                    if self.peek_is(line, Keyword('ist')):
-                        if self.peek_is(line, Keyword('also')):
-                            pass
-                    if self.peek_is(line, Keyword('also')):
-                        if self.peek_is(line, Keyword('also')):
-                            pass
+        try:
+            while True:
+                token = line.peek()
+                if isinstance(token, Keyword):
+                    item = self._parse_keyword(line)
+                    print(item)
+
+                elif isinstance(token, Value):
+                    next(line)
+        except StopIteration:
+            pass
 
     def parse(self, content: str) -> Program:
         from more_itertools import peekable
