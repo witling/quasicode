@@ -11,8 +11,12 @@ class Indent:
     def depth(self):
         return self._depth
 
+    def __str__(self):
+        return '\\t'
+
 class Newline:
-    pass
+    def __str__(self):
+        return '\\n'
 
 class Error(Exception):
     pass
@@ -49,7 +53,7 @@ class Parser:
     def _take_while_keyword(self, it):
         stc = []
         try:
-            while isinstance(it.peek(), Keyword):
+            while isof(it.peek(), Keyword):
                 stc.append(next(it))
         except StopIteration:
             pass
@@ -59,7 +63,11 @@ class Parser:
         it = iter(stc)
         node = SYN_TREE[next(it).name()]
         for k in it:
-            node = node[k.name()]
+            try:
+                node = node[k.name()]
+            except KeyError:
+                possible = ','.join(map(lambda x: '`{}`'.format(x), node.keys()))
+                raise Error('expected one of {}. got `{}`'.format(possible, k.name()))
         return node['_op']
     
     def _parse_keyword(self, it):
@@ -70,18 +78,14 @@ class Parser:
         try:
             while True:
                 token = line.peek()
-                if isinstance(token, Keyword):
+                if isof(token, Keyword):
                     cls = self._parse_keyword(line)
                     self._chain.append(cls())
 
-                elif isinstance(token, Value):
+                elif isof(token, Value):
                     value = next(line)
                     self._chain.append(value)
-                    try:
-                        cls = self._parse_keyword(line)
-                        self._chain.append(cls())
-                    except Error:
-                        print('we have error, sir')
+
                 else:
                     token = next(line)
                     self._chain.append(token)
@@ -102,31 +106,42 @@ class Reducer:
     def __init__(self, chain):
         self._it = peekable(chain)
 
-    def _collect_block(self, min_depth=1):
+    def _collect_till_newline(self, it=None):
+        it = it if it else self._it
+        block = []
+        while True:
+            take = next(it)
+            block.append(take)
+            if isof(take, Newline):
+                break
+        return block
+
+    def _collect_block(self, it=None, min_depth=1):
+        it = it if it else self._it
         block = Block()
         while True:
-            peek = self._it.peek()
-            if not isinstance(peek, Indent) or not min_depth <= peek.depth():
+            peek = it.peek()
+            if isof(peek, Block):
+                block = next(it)
+                break
+
+            if not isof(peek, Indent) or not min_depth <= peek.depth():
                 break
 
             if min_depth < peek.depth():
-                sub = self._collect_block(min_depth + 1)
+                sub = self._collect_block(it = it, min_depth = min_depth + 1)
                 block.append(sub)
             else:
-                next(self._it)
-                while True:
-                    take = next(self._it)
-                    block.append(take)
-                    if isinstance(take, Newline):
-                        break
+                next(it)
+                block.extend(self._collect_till_newline(it))
         return block
 
     def _strip_block(self, block):
-        stripped = []
+        stripped = Block()
         for s in block:
-            if isinstance(s, Newline) or isinstance(s, Indent):
+            if isof(s, Newline) or isof(s, Indent):
                 continue
-            if isinstance(s, Block):
+            if isof(s, Block):
                 stripped.append(self._strip_block(s))
             else:
                 stripped.append(s)
@@ -135,32 +150,92 @@ class Reducer:
     def _sub_reduce(self, it):
         stack, done = [], []
 
+        print('reduce substatement')
+
         for token in it:
-            if isinstance(token, Declaration):
+            print(list(map(str, stack)), list(map(str, done)))
+            print(token)
+
+            if isof(token, Declaration):
                 stack.append(token)
-            elif isinstance(token, Value):
+
+            elif isof(token, Value):
                 if stack:
                     top = stack[-1]
-                    if isinstance(top, Declaration):
-                        assert isinstance(token, Ident)
+                    if isof(top, Declaration):
+                        assert isof(token, Ident)
                         top.set_name(token)
+
+                    elif isof(top, Assign):
+                        top = stack.pop()
+                        if isof(token, LHAssign):
+                            top.set_value(last)
+                        else:
+                            top.set_ident(last)
+                        done.append(top)
+
+                    elif isof(top, Branch):
+                        condition = self._collect_till_newline(it)
+                        block = self._collect_block(it)
+                        #print(block)
+                        top.add_branch(condition, block)
+
+                    elif isof(top, Print) or isof(top, Operator):
+                        top.add_arg(token)
                 else:
                     stack.append(token)
-            elif isinstance(token, MainMarker):
+
+            elif isof(token, Block):
+                block = self._sub_reduce(peekable(token))
+                block = self._strip_block(block)
+                print('haaaaa', block)
+                #top = stack[-1]
+
+            elif isof(token, MainMarker):
                 assert stack
                 stack[-1].add_marker(token)
-            elif isinstance(token, Newline):
+
+            elif isof(token, Newline):
                 if stack:
                     top = stack[-1]
-                    if isinstance(top, NestedStatement):
-                        block = self._collect_block()
-                        block = self._sub_reduce(iter(block))
+                    if isof(top, NestedStatement):
+                        print('heeeee', top)
+                        block = self._collect_block(it)
+                        print('>>>', len(block), block)
+                        block = self._sub_reduce(peekable(block))
                         block = self._strip_block(block)
                         top.set_block(block)
+                    elif isof(top, Print):
+                        pass
+                    else:
+                        continue
+
                     done.append(stack.pop())
+
+            elif isof(token, Assign):
+                last = stack.pop()
+                if isof(token, LHAssign):
+                    token.set_ident(last)
+                else:
+                    token.set_value(last)
+                stack.append(token)
+
+            elif isof(token, Operator):
+                if stack:
+                    top = stack.pop()
+                    assert isof(top, Value)
+                    token.add_arg(top)
+                    stack.append(token)
+                else:
+                    raise Error('prefix operators not supported')
+
+            elif isof(token, Branch) or isof(token, Print) or isof(token, Repeat):
+                stack.append(token)
+
             else:
                 done.append(token)
 
+        print('end reduce substatement')
         return done
 
     def start(self):

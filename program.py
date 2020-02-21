@@ -1,20 +1,15 @@
-class Branch:
-    def __init__(self):
-        self._branches = []
-        self._default_branch = None
-
-    def add_branch(self, condition, block):
-        self._branches.append((condition, block))
-
-    def set_default_branch(self, block):
-        self._default_branch = block
+from ast import *
 
 class Loop:
     pass
 
 class Function:
     def __init__(self, block):
+        assert isof(block, Block)
         self._block = block
+
+    def block(self):
+        return self._block
 
     def __str__(self):
         return '\n'.join(map(str, self._block))
@@ -24,6 +19,9 @@ class Program:
         self._idents = {}
         self._flow = []
         self._entry_point = None
+
+    def __iter__(self):
+        return iter(self._flow)
 
     def entry_point(self):
         return self._entry_point

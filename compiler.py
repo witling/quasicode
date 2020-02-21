@@ -8,7 +8,7 @@ class Compiler:
     def compile(self, parsed) -> Program:
         program = Program()
         for item in parsed:
-            if isinstance(item, Declaration):
+            if isof(item, Declaration):
                 if item.is_main():
                     program.set_entry_point(item.name())
                 program.ident(item.name(), Function(item.block()))
