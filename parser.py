@@ -96,14 +96,11 @@ class Parser:
             self._chain.append(Newline())
 
         reducer = Reducer(self._chain)
-        reducer.start()
-
-        return reducer._done
+        return reducer.start()
 
 class Reducer:
     def __init__(self, chain):
         self._it = peekable(chain)
-        self._done = []
 
     def _collect_block(self, min_depth=1):
         block = Block()
@@ -114,7 +111,6 @@ class Reducer:
 
             if min_depth < peek.depth():
                 sub = self._collect_block(min_depth + 1)
-                print(sub)
                 block.append(sub)
             else:
                 next(self._it)
@@ -125,13 +121,21 @@ class Reducer:
                         break
         return block
 
-    def _sub_reduce(self):
-        pass
+    def _strip_block(self, block):
+        stripped = []
+        for s in block:
+            if isinstance(s, Newline) or isinstance(s, Indent):
+                continue
+            if isinstance(s, Block):
+                stripped.append(self._strip_block(s))
+            else:
+                stripped.append(s)
+        return stripped
 
-    def start(self):
-        stack = []
+    def _sub_reduce(self, it):
+        stack, done = [], []
 
-        for token in self._it:
+        for token in it:
             if isinstance(token, Declaration):
                 stack.append(token)
             elif isinstance(token, Value):
@@ -150,5 +154,14 @@ class Reducer:
                     top = stack[-1]
                     if isinstance(top, NestedStatement):
                         block = self._collect_block()
-                        self._done.append(block)
-                    self._done.append(stack.pop())
+                        block = self._sub_reduce(iter(block))
+                        block = self._strip_block(block)
+                        top.set_block(block)
+                    done.append(stack.pop())
+            else:
+                done.append(token)
+
+        return done
+
+    def start(self):
+        return self._sub_reduce(self._it)

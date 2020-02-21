@@ -47,9 +47,15 @@ def create_classes(ast, parents=(object, )):
     def construct(self, **kargs):
         super(self.__class__, self).__init__(**kargs)
 
+    # get around sharing `k`
+    def to_string(k):
+        def inner(_):
+            return str(k)
+        return inner
+
     for k, v in ast.items():
         if k not in globals():
-            attrs = {}
+            attrs = {'__str__': to_string(k)}
             #attrs = {'__init__': construct}
             cls = type(k, parents, attrs)
             globals()[k] = cls
@@ -99,7 +105,8 @@ class Declaration(NestedStatement):
             self._is_main = True
 
 class Block(list):
-    pass
+    def __str__(self):
+        return '\n'.join(map(str, self))
 
 class Value:
     def is_assignable(self):

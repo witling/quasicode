@@ -16,6 +16,9 @@ class Function:
     def __init__(self, block):
         self._block = block
 
+    def __str__(self):
+        return '\n'.join(map(str, self._block))
+
 class Program:
     def __init__(self):
         self._idents = {}
@@ -36,5 +39,5 @@ class Program:
         return self._idents
 
     def __str__(self) -> str:
-        fixed = map(lambda x: '{}: {}'.format(x[0], x[1]), self._idents.items())
+        fixed = map(lambda x: '{}:\n{}'.format(x[0], x[1]), self._idents.items())
         return '\n'.join(fixed)
