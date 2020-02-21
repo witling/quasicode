@@ -10,7 +10,7 @@ $ python3 qc examples/hello-world.qc
 ## How To Use
 
 Usage | `qc` Keyword | Description | Example
----|---|--- |
+---|---|---|---
 print | `quasi <value>` | put a value to stdout |
 truth values | `uzbl`, `not uzbl` |  | `vim ist not uzbl`
 operators | `+`, `-`, `*`, `/`, `modulo` | | `quasi (1 + 1)`
