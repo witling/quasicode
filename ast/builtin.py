@@ -43,16 +43,27 @@ class Repeat(NestedStatement):
         super().__init__()
         self._broken = False
 
+    def end(self):
+        self._broken = True
+
     def run(self, ctx: Context):
+        ctx.push_loop(self)
         while not self._broken:
-            super().run(ctx)
+            for step in self.block():
+                step.run(ctx)
+                if self._broken:
+                    break
+        ctx.pop_loop()
 
     def __str__(self):
-        return 'repeat'
+        return super().__str__()
 
 class Break(NestedStatement):
     def __init__(self):
         super().__init__()
+
+    def run(self, ctx: Context):
+        ctx.last_loop().end()
 
     def __str__(self):
         return 'break'

@@ -232,8 +232,13 @@ class Reducer:
             elif isof(token, Branch):
                 if stack:
                     top = stack[-1]
-                    if isof(top, Branch):
+                    if isof(top, If) and isof(token, If):
                         done.append(stack.pop())
+                else:
+                    assert isof(token, If)
+
+                if isof(token, Elif):
+                    token = stack.pop()
 
                 condition = self._collect_till_newline(it)
                 condition = self._sub_reduce(peekable(condition))
@@ -241,7 +246,7 @@ class Reducer:
                 block = self._collect_block(it)
                 block = self._sub_reduce(peekable(block))
                 block = self._strip_block(block)
-                print(condition, block)
+
                 token.add_branch(condition, block)
 
                 stack.append(token)

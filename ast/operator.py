@@ -8,6 +8,9 @@ class Operator(Keyword, Parameterized):
         super().__init__()
         Parameterized.__init__(self)
 
+    def __str__(self, name=''):
+        return '({} {} {})'.format(name, self._args[0], self._args[1])
+
 class Compare(Operator):
     def __init__(self):
         super().__init__()
@@ -16,7 +19,7 @@ class Compare(Operator):
         return self._args[0].run(ctx) == self._args[1].run(ctx)
 
     def __str__(self):
-        return '=='
+        return super().__str__('==')
 
 class LogicalAnd(Operator):
     def __init__(self):
@@ -38,7 +41,7 @@ class Add(Operator):
         return foldtwo(lambda a, b: a + b, self._args, ctx)
 
     def __str__(self):
-        return '+'
+        return super().__str__('+')
 
 class Sub(Operator):
     def __init__(self):
@@ -48,7 +51,7 @@ class Sub(Operator):
         return foldtwo(lambda a, b: a - b, self._args, ctx)
 
     def __str__(self):
-        return '-'
+        return super().__str__('-')
 
 class Mul(Operator):
     def __init__(self):
@@ -58,7 +61,7 @@ class Mul(Operator):
         return foldtwo(lambda a, b: a * b, self._args, ctx)
 
     def __str__(self):
-        return '*'
+        return super().__str__('*')
 
 class Div(Operator):
     def __init__(self):
@@ -68,7 +71,7 @@ class Div(Operator):
         return foldtwo(lambda a, b: a / b, self._args, ctx)
 
     def __str__(self):
-        return '/'
+        return super().__str__('/')
 
 class Mod(Operator):
     def __init__(self):
@@ -78,4 +81,4 @@ class Mod(Operator):
         return foldtwo(lambda a, b: a % b, self._args, ctx)
 
     def __str__(self):
-        return 'modulo'
+        return super().__str__('modulo')

@@ -21,7 +21,7 @@ class Branch(NestedStatement, Runnable):
                 self._default_branch.run(ctx)
 
     def __str__(self):
-        fixed = map(lambda x: '{} -> {}', self._branches)
+        fixed = map(lambda x: '{} -> {}'.format(x[0], x[1]), self._branches)
         if self._default_branch:
             fixed.append('-> {}'.format(self._default_branch))
         return '\n'.join(fixed)
@@ -31,7 +31,7 @@ class If(Branch):
         super().__init__()
 
     def __str__(self):
-        return 'if'
+        return 'if:\n' + super().__str__()
 
 class Elif(Branch):
     def __init__(self):

@@ -28,6 +28,9 @@ class NestedStatement(Statement, Runnable):
         for step in self._block:
             step.run(ctx)
 
+    def __str__(self):
+        return '\n'.join(map(str, self._block))
+
 class Keyword:
     def __init__(self, name=None):
         self._name = name
