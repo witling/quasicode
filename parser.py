@@ -150,11 +150,9 @@ class Reducer:
     def _sub_reduce(self, it):
         stack, done = [], []
 
-        print('reduce substatement')
-
         for token in it:
-            print(list(map(str, stack)), list(map(str, done)))
-            print(token)
+            #print(list(map(str, stack)), list(map(str, done)))
+            #print(token)
 
             if isof(token, Declaration):
                 stack.append(token)
@@ -177,7 +175,6 @@ class Reducer:
                     elif isof(top, Branch):
                         condition = self._collect_till_newline(it)
                         block = self._collect_block(it)
-                        #print(block)
                         top.add_branch(condition, block)
 
                     elif isof(top, Print) or isof(top, Operator):
@@ -188,7 +185,6 @@ class Reducer:
             elif isof(token, Block):
                 block = self._sub_reduce(peekable(token))
                 block = self._strip_block(block)
-                print('haaaaa', block)
                 #top = stack[-1]
 
             elif isof(token, MainMarker):
@@ -199,9 +195,7 @@ class Reducer:
                 if stack:
                     top = stack[-1]
                     if isof(top, NestedStatement):
-                        print('heeeee', top)
                         block = self._collect_block(it)
-                        print('>>>', len(block), block)
                         block = self._sub_reduce(peekable(block))
                         block = self._strip_block(block)
                         top.set_block(block)
@@ -235,7 +229,6 @@ class Reducer:
             else:
                 done.append(token)
 
-        print('end reduce substatement')
         return done
 
     def start(self):

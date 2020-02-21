@@ -1,3 +1,5 @@
+from context import Context
+
 AST = {
     'Block': { },
     'Keyword': {
@@ -51,10 +53,6 @@ def create_classes(ast, parents=(object, )):
     if not ast or isinstance(ast, list):
         return
 
-    def construct(self, **kargs):
-        super(self.__class__, self).__init__(**kargs)
-
-    # get around sharing `k`
     def to_string(k):
         def inner(_):
             return str(k)
@@ -63,7 +61,7 @@ def create_classes(ast, parents=(object, )):
     for k, v in ast.items():
         if k not in globals():
             attrs = {'__str__': to_string(k)}
-            #attrs = {'__init__': construct}
+            #attrs = {}
             cls = type(k, parents, attrs)
             globals()[k] = cls
         else:
@@ -72,6 +70,31 @@ def create_classes(ast, parents=(object, )):
         create_classes(v, parents=(cls, ))
 
 create_classes(AST)
+
+class Runnable:
+    def run(self, ctx: Context):
+        pass
+
+class Parameterized:
+    def __init__(self):
+        self._args = []
+
+    def add_arg(self, arg):
+        self._args.append(arg)
+
+class NestedStatement(Statement, Runnable):
+    def __init__(self):
+        self._block = Block()
+
+    def block(self):
+        return self._block
+
+    def set_block(self, block):
+        self._block = block
+
+    def run(self, ctx: Context):
+        for step in self._block:
+            step.run(ctx)
 
 class Keyword:
     def __init__(self, name: str):
@@ -92,20 +115,14 @@ class Keyword:
 
 class Declaration(NestedStatement):
     def __init__(self):
+        super().__init__()
         self._is_main = False
-        self._block = None
 
     def name(self):
         return self._name
 
     def set_name(self, name: Ident):
         self._name = name
-
-    def block(self):
-        return self._block
-
-    def set_block(self, block):
-        self._block = block
 
     def is_main(self):
         return self._is_main
@@ -162,17 +179,14 @@ class Ident(Value):
     def is_assignable(self):
         return True
 
-class Print(Statement):
+class Print(Statement, Parameterized):
     def __init__(self):
-        self._args = []
-
-    def add_arg(self, arg):
-        self._args.append(arg)
+        super().__init__()
 
     def __str__(self):
         return 'print {}'.format(' '.join(map(str, self._args)))
 
-class Assign(Statement):
+class Assign(Statement, Runnable):
     def __init__(self):
         self._ident = None
         self._value = None
@@ -189,10 +203,21 @@ class Assign(Statement):
     def set_value(self, value):
         self._value = value
 
+    def run(self, ctx):
+        ctx[self._ident] = self._value
+
     def __str__(self):
         return '{} = {}'.format(self._ident, self._value)
 
-class Branch(NestedStatement):
+class LHAssign(Assign):
+    def __init__(self):
+        super().__init__()
+
+class RHAssign(Assign):
+    def __init__(self):
+        super().__init__()
+
+class Branch(NestedStatement, Runnable):
     def __init__(self):
         self._branches = []
         self._default_branch = None
@@ -203,6 +228,9 @@ class Branch(NestedStatement):
     def set_default_branch(self, block):
         self._default_branch = block
 
+    def run(self, ctx: Context):
+        pass
+
     def __str__(self):
         fixed = map(lambda x: '{} -> {}', self._branches)
         if self._default_branch:
@@ -211,20 +239,11 @@ class Branch(NestedStatement):
 
 class Repeat(NestedStatement):
     def __init__(self):
-        self._block = []
-
-    def block(self):
-        return self._block
-
-    def set_block(self, block):
-        self._block = block
+        super().__init__()
 
     def __str__(self):
         return 'Repeat'
 
-class Operator(Keyword):
+class Operator(Keyword, Parameterized):
     def __init__(self):
-        self._args = []
-
-    def add_arg(self, arg):
-        self._args.append(arg)
+        super().__init__()
