@@ -5,7 +5,11 @@ from syntax import *
 import re
 
 class Indent:
-    pass
+    def __init__(self, depth=0):
+        self._depth = depth
+
+    def depth(self):
+        return self._depth
 
 class Newline:
     pass
@@ -14,11 +18,17 @@ class Error(Exception):
     pass
 
 class Lexer:
-    INDENT_RE = re.compile('^(\\t|\s{4})*')
+    INDENT_RE = re.compile('^(\\t|\s{4})+')
+    INDENT_WIDTH = 4
 
     def lex(self, line: str):
         lexed = []
-        it = (part.lower() for part in line.split(' ') if part != '')
+        match = self.INDENT_RE.match(line)
+        if match:
+            depth = match.span()[1]
+            lexed.append(Indent(depth / self.INDENT_WIDTH))
+
+        it = (part.lower() for part in line.strip().split(' ') if part != '')
         for lexem in it:
             # parse strings here
             if lexem[0] == '"':
@@ -36,7 +46,6 @@ class Parser:
         self._lexer = Lexer()
         self._program = Program()
         self._chain = []
-        self._declare = None
 
     def _take_while_keyword(self, it):
         stc = []
@@ -64,8 +73,6 @@ class Parser:
                 token = line.peek()
                 if isinstance(token, Keyword):
                     item = self._parse_keyword(line)
-                    if isinstance(item, Declaration):
-                        assert not self._declare
                     self._chain.append(item)
 
                 elif isinstance(token, Value):
@@ -76,6 +83,9 @@ class Parser:
                         self._chain.append(item)
                     except Error:
                         pass
+                else:
+                    token = next(line)
+                    self._chain.append(token)
         except StopIteration:
             pass
 
