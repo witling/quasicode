@@ -33,6 +33,6 @@ speed up | `so` |  | `so`
 ## What Doesn't 'Work'?
 
 - `qc` does not prioritize mathematical operators. This is not a bug but rather a feature.
-- strings are not parsed correctly. just don't use spaces inside them, okey?
 - empty lines lead to parsing errors. actually, this is a feature as well as it saves disk space.
-- parantheses are not supported (yet?)
+- strings are not parsed correctly. just don't use spaces inside them, okey?
+- parentheses are not supported (yet?)
