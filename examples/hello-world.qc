@@ -1,1 +1,2 @@
-quasi 'hello world'
+und zwar main action please
+    quasi "helloworld"
