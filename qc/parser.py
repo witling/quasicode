@@ -90,18 +90,6 @@ class Parser:
             return None
         return self._keywords_to_ast(stc)
 
-    def _parse_markers(self, line):
-        markers = []
-        while line and isof(line.peek(), Keyword):
-            cls = self._parse_keyword(line)
-            if cls == None:
-                break
-            kw = cls()
-            if not isof(kw, Marker):
-                break
-            markers.append(kw)
-        return markers
-
     def _take_block(self, lines, min_depth = 1):
         block = []
         while lines:
@@ -160,17 +148,6 @@ class Parser:
                     stack.append(token)
         assert len(stack) == 1
         return stack.pop()
-
-    def _parse_args(self, line):
-        if not line:
-            return []
-        line.peek()
-        if not (line and self._parse_keyword(line)):
-            return []
-        args = []
-        while line and isof(line.peek(), Ident):
-            args.append(next(line))
-        return args
 
     def _parse_declaration(self, line):
         name = next(line)
