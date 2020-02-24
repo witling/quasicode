@@ -21,6 +21,9 @@ class Nop(NestedStatement):
     def __init__(self):
         super().__init__()
 
+    def run(self, ctx: Context):
+        ctx.fun()
+
     def __str__(self):
         return 'nop'
 

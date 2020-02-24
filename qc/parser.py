@@ -53,7 +53,7 @@ class Parser:
         self._chain = []
 
     def _take_while_keyword(self, it):
-        stc = []
+        stc = Block()
         try:
             while isof(it.peek(), Keyword):
                 stc.append(next(it))
@@ -64,12 +64,19 @@ class Parser:
     def _keywords_to_ast(self, stc):
         it = iter(stc)
         node = SYN_TREE[next(it).name()]
+        name = None
+
         for k in it:
             try:
-                node = node[k.name()]
+                name = k.name()
+                node = node[name]
             except KeyError:
                 possible = ','.join(map(lambda x: '`{}`'.format(x), node.keys()))
-                raise Error('expected one of {}. got `{}`'.format(possible, k.name()))
+                raise Error('expected one of {}. got `{}`'.format(possible, name))
+
+        if '_op' not in node:
+            raise Error('unexpected symbol `{}` in `{}`'.format(name, stc))
+
         return node['_op']
     
     def _parse_keyword(self, it):
@@ -80,7 +87,6 @@ class Parser:
         try:
             while True:
                 token = line.peek()
-                #print(token)
                 if isof(token, Keyword):
                     cls = self._parse_keyword(line)
                     self._chain.append(cls())

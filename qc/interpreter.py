@@ -1,4 +1,4 @@
-from context import Context
+from context import *
 from program import *
 
 class Interpreter:
@@ -14,11 +14,14 @@ class Interpreter:
             step.run(ctx)
 
     def run(self):
-        for loaded in self._loaded:
-            ep = loaded.entry_point()
-            if ep:
-                self._run_func(loaded.idents()[ep], self._ctx)
-                break
-        else:
-            print('no starting point.')
-            return
+        try:
+            for loaded in self._loaded:
+                ep = loaded.entry_point()
+                if ep:
+                    self._run_func(loaded.idents()[ep], self._ctx)
+                    break
+            else:
+                print('no starting point.')
+                return
+        except OutOfOettingerException:
+            print('out of oettinger exception')
