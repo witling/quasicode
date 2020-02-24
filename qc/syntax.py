@@ -29,6 +29,7 @@ SYN_KEYWORDS = [
     ('not', LogicalNot),        # logical not
     ('so', SoMarker),           # speed up program
     ('stark', ConstMarker),     # declare a constant
+    ('mit', DeclarationArgs),   # introduce arguments
     ('also', RHAssign),         # right hand assignment <val> = <ident>
     ('ist', LHAssign),          # left hand assignment <ident> = <val>
     ('jens', Exit),             # exit program

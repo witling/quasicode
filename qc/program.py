@@ -4,9 +4,14 @@ class Loop:
     pass
 
 class Function:
-    def __init__(self, block):
+    def __init__(self, args, block):
+        assert isof(args, list)
         assert isof(block, Block)
+        self._args = args
         self._block = block
+
+    def args(self):
+        return self._args
 
     def block(self):
         return self._block

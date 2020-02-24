@@ -24,7 +24,6 @@ def main():
     print(program)
 
     interpreter.load(program)
-
     interpreter.run()
 
 if __name__ == '__main__':

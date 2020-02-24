@@ -161,6 +161,31 @@ class Parser:
         assert len(stack) == 1
         return stack.pop()
 
+    def _parse_args(self, line):
+        if not line:
+            return []
+        line.peek()
+        if not (line and self._parse_keyword(line)):
+            return []
+        args = []
+        while line and isof(line.peek(), Ident):
+            args.append(next(line))
+        return args
+
+    def _parse_declaration(self, line):
+        name = next(line)
+        args, markers = [], []
+        while line:
+            assert isof(line.peek(), Keyword)
+            cls = self._parse_keyword(line)
+            kw = cls()
+            if isof(kw, DeclarationArgs):
+                while line and isof(line.peek(), Ident):
+                    args.append(next(line))
+            elif isof(kw, Marker):
+                markers.append(kw)
+        return (name, args, markers)
+
     def _parse_line(self, line, lines):
         line = peekable(line)
         token = line.peek()
@@ -169,17 +194,17 @@ class Parser:
             kw = cls()
 
             if isof(kw, Declaration):
-                name = next(line)
-                # TODO: parse args here
-                # args = next(line)
-                for marker in self._parse_markers(line):
-                    kw.add_marker(marker)
+                name, args, markers = self._parse_declaration(line)
 
                 block = self._take_block(lines)
                 block = self._parse_lines(block)
 
                 kw.set_name(name)
+                kw.set_args(args)
                 kw.set_block(block)
+
+                for marker in markers:
+                    kw.add_marker(marker)
 
             elif isof(kw, Repeat):
                 block = self._take_block(lines)

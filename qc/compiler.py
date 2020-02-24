@@ -11,5 +11,5 @@ class Compiler:
             if isof(item, Declaration):
                 if item.is_main():
                     program.set_entry_point(item.name())
-                program.ident(item.name(), Function(item.block()))
+                program.ident(item.name(), Function(item.args(), item.block()))
         return program
