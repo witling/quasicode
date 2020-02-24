@@ -22,7 +22,6 @@ def main():
     program = compiler.compile(parsed)
 
     print(program)
-    input('start?')
 
     interpreter.load(program)
 
