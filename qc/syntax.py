@@ -8,6 +8,7 @@ SYN_PHRASES = [
     ('und zwar', Declaration),  # function declaration: und zwar <ident> mit <ident1>
     ('und fertig', Return),  # return from a function: <value> und fertig
     ('das holen wir nach', Repeat), # repeat last statement
+    ('ach kris.', Else),        # add an else branch to an if
 ]
 
 SYN_OPERATORS = [

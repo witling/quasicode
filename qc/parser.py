@@ -12,7 +12,7 @@ class Indent:
         return self._depth
 
     def __str__(self):
-        return '\\t'
+        return '\\t{}'.format(self._depth)
 
 class Newline:
     def __str__(self):
@@ -44,7 +44,8 @@ class Lexer:
                 lexed.append(Number(float(lexem)))
             else:
                 lexed.append(Ident(lexem))
-
+        
+        print(list(map(str, lexed)))
         return lexed
 
 class Parser:
@@ -243,19 +244,30 @@ class Reducer:
                 else:
                     assert isof(token, If)
 
-                if isof(token, Elif):
+                if isof(token, Elif) or isof(token, Else):
                     token = stack.pop()
 
-                condition = self._collect_till_newline(it)
-                condition = self._sub_reduce(peekable(condition))
-                condition = self._strip_block(condition)
+                if isof(token, Else):
+                    condition = self._collect_till_newline(it)
+                else:
+                    condition = self._collect_till_newline(it)
+                    condition = self._sub_reduce(peekable(condition))
+                    condition = self._strip_block(condition)
+
                 block = self._collect_block(it)
+
+                if len(block) != 0:
+                    raise Error('block cannot be empty')
+
                 block = self._sub_reduce(peekable(block))
                 block = self._strip_block(block)
 
-                token.add_branch(condition, block)
-
-                stack.append(token)
+                if isof(token, Else):
+                    token.set_default_branch(block)
+                    done.append(token)
+                else:
+                    token.add_branch(condition, block)
+                    stack.append(token)
 
             elif isof(token, Print) or isof(token, Repeat):
                 stack.append(token)
