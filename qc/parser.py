@@ -11,6 +11,9 @@ class Indent:
     def depth(self):
         return self._depth
 
+    def decrease_depth(self):
+        self._depth -= 1
+    
     def __str__(self):
         return '\\t{}'.format(self._depth)
 
@@ -81,34 +84,171 @@ class Parser:
         return node['_op']
     
     def _parse_keyword(self, it):
+        if isinstance(it, list):
+            it = peekable(it)
         stc = self._take_while_keyword(it)
+        if not stc:
+            return None
         return self._keywords_to_ast(stc)
 
-    def _parse_line(self, line):
-        try:
-            while True:
-                token = line.peek()
-                if isof(token, Keyword):
-                    cls = self._parse_keyword(line)
-                    self._chain.append(cls())
+    def _parse_markers(self, line_it):
+        return []
 
-                elif isof(token, Value):
-                    self._chain.append(next(line))
+    def _take_block(self, lines, min_depth = 1):
+        block = []
+        while lines:
+            next_line = lines.peek()
+            #if isof(peek, Block):
+            #    block = next(it)
+            #    break
 
+            # skip line if empty
+            if not next_line:
+                next(lines)
+                continue
+
+            if isof(next_line, Block):
+                return next_line
+
+            start = next_line[0]
+
+            if not isof(start, Indent) or not min_depth <= start.depth():
+                break
+
+            next_line = next(lines)
+
+            # drop indent
+            next_line[0].decrease_depth()
+            if next_line[0].depth() == 0:
+                block.append(next_line[1:])
+            else:
+                block.append(list(next_line))
+                #block.extend(self._collect_till_newline(it))
+        return block
+
+    def _parse_expression(self, line):
+        stack = []
+        if not isinstance(line, peekable):
+            line = peekable(line)
+
+        while line:
+            token = line.peek()
+            if isof(token, Keyword):
+                # TODO: parse variable length keyword here
+                cls = self._parse_keyword(line)
+                token = cls()
+            else:
+                token = next(line)
+
+            if isof(token, Operator):
+                if stack:
+                    top = stack.pop()
+                    if not (isof(top, Value) or isof(top, Operator)):
+                        assert False
+                    token.add_arg(top)
+                    stack.append(token)
                 else:
-                    self._chain.append(next(line))
-        except StopIteration:
-            pass
+                    raise Error('prefix operators not supported')
+            elif isof(token, Value):
+                if stack:
+                    assert len(stack[-1].args()) < 2
+                    stack[-1].add_arg(token)
+                else:
+                    stack.append(token)
+        assert len(stack) == 1
+        return stack.pop()
+
+    def _parse_line(self, line, lines):
+        line = peekable(line)
+        token = line.peek()
+        if isof(token, Keyword):
+            cls = self._parse_keyword(line)
+            kw = cls()
+
+            if isof(kw, Declaration):
+                name = next(line)
+                # TODO: parse args here
+                # args = next(line)
+                for marker in self._parse_markers(line):
+                    kw.add_marker(marker)
+
+                block = self._take_block(lines)
+                block = self._parse_lines(block)
+
+                kw.set_name(name)
+                kw.set_block(block)
+
+            elif isof(kw, Repeat):
+                block = self._take_block(lines)
+                block = self._parse_lines(block)
+                kw.set_block(block)
+
+            elif isof(kw, Branch):
+                assert isof(kw, If)
+
+                condition = self._parse_expression(line)
+                block = self._take_block(lines)
+                block = self._parse_lines(block)
+
+                kw.add_branch(condition, block)
+
+                if lines:
+                    cls = self._parse_keyword(lines.peek())
+                    while cls == Elif:
+                        line = next(lines)
+                        condition = self._parse_expression(line)
+                        block = self._take_block(lines)
+                        block = self._parse_lines(block)
+                        kw.add_branch(condition, block)
+                        cls = self._parse_keyword(lines.peek())
+
+                    #cls = self._parse_keyword(lines.peek())
+                    if cls == Else:
+                        line = next(lines)
+                        block = self._take_block(lines)
+                        block = self._parse_lines(block)
+                    kw.set_default_branch(block)
+                
+            return kw
+
+        elif isof(token, Value):
+            token = next(line)
+            cls = self._parse_keyword(line)
+
+            if cls != None:
+                rhs = self._parse_expression(line)
+                kw = cls()
+
+                if isof(kw, LHAssign):
+                    kw.set_ident(token)
+                    kw.set_value(rhs)
+                elif isof(kw, RHAssign):
+                    kw.set_ident(rhs)
+                    kw.set_value(token)
+                return kw
+
+            else:
+                return token
+
+        else:
+            assert False
+        return None
+
+    def _parse_lines(self, lines):
+        block = Block()
+        lines = peekable(lines)
+
+        for line in lines:
+            if not isinstance(line, peekable):
+                line = peekable(line)
+            parsed = self._parse_line(line, lines)
+            block.append(parsed)
+
+        return block
 
     def parse(self, content: str) -> list:
-        lexed = (self._lexer.lex(line) for line in content.split('\n'))
-
-        for line in lexed:
-            self._parse_line(peekable(line))
-            self._chain.append(Newline())
-
-        reducer = Reducer(self._chain)
-        return reducer.start()
+        lexed = [peekable(self._lexer.lex(line)) for line in content.split('\n')]
+        return self._parse_lines(lexed)
 
 class Reducer:
     def __init__(self, chain):
@@ -162,9 +302,6 @@ class Reducer:
         stack, done = [], []
 
         for token in it:
-            #print(list(map(str, stack)), list(map(str, done)))
-            #print(token)
-
             if isof(token, Declaration):
                 stack.append(token)
 
@@ -229,7 +366,6 @@ class Reducer:
                 if stack:
                     top = stack.pop()
                     if not (isof(top, Value) or isof(top, Operator)):
-                        print(type(top))
                         assert False
                     token.add_arg(top)
                     stack.append(token)

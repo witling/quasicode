@@ -8,6 +8,5 @@ und zwar hier_einsteigen action please
             quasi i "buzz"
         ach kris.
             oettinger
-
         kris? i das ist 10
             patrick!

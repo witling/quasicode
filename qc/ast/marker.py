@@ -7,6 +7,9 @@ class Runnable:
 class Parameterized:
     def __init__(self):
         self._args = []
+    
+    def args(self):
+        return self._args
 
     def add_arg(self, arg):
         self._args.append(arg)
