@@ -1,4 +1,4 @@
-from .marker import *
+from .generic import *
 
 def foldtwo(fn, args, ctx):
     return fn(args[0].run(ctx), args[1].run(ctx))

@@ -1,4 +1,4 @@
-from .marker import *
+from .generic import *
 
 class Assign(Statement, Runnable):
     def __init__(self):

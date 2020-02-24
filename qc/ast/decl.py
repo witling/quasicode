@@ -1,4 +1,4 @@
-from .__init__ import *
+from .generic import *
 from .marker import *
 from .value import *
 

@@ -1,4 +1,4 @@
-from .marker import *
+from .generic import *
 
 class Print(Statement, Parameterized):
     def __init__(self):

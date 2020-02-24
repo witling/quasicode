@@ -1,4 +1,4 @@
-from .marker import *
+from .__init__ import *
 
 class Branch(NestedStatement, Runnable):
     def __init__(self):

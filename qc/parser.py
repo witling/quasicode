@@ -55,14 +55,11 @@ class Parser:
         self._lexer = Lexer()
         self._chain = []
 
-    def _take_while_keyword(self, it):
-        stc = Block()
-        try:
-            while isof(it.peek(), Keyword):
-                stc.append(next(it))
-        except StopIteration:
-            pass
-        return stc
+    def _take_while(self, it, cls):
+        collect = []
+        while it and isof(it.peek(), cls):
+            collect.append(next(it))
+        return collect
 
     def _keywords_to_ast(self, stc):
         it = iter(stc)
@@ -85,7 +82,7 @@ class Parser:
     def _parse_keyword(self, it):
         if isinstance(it, list):
             it = peekable(it)
-        stc = self._take_while_keyword(it)
+        stc = self._take_while(it, Keyword)
         if not stc:
             return None
         return self._keywords_to_ast(stc)
@@ -157,8 +154,7 @@ class Parser:
             cls = self._parse_keyword(line)
             kw = cls()
             if isof(kw, DeclarationArgs):
-                while line and isof(line.peek(), Ident):
-                    args.append(next(line))
+                args = self._take_while(line, Ident)
             elif isof(kw, Marker):
                 markers.append(kw)
         return (name, args, markers)
@@ -221,22 +217,27 @@ class Parser:
 
         elif isof(token, Value):
             token = next(line)
-            cls = self._parse_keyword(line)
+            assert line
 
-            if cls != None:
-                rhs = self._parse_expression(line)
-                kw = cls()
-
-                if isof(kw, LHAssign):
-                    kw.set_ident(token)
-                    kw.set_value(rhs)
-                elif isof(kw, RHAssign):
-                    kw.set_ident(rhs)
-                    kw.set_value(token)
-                return kw
-
+            if isof(line.peek(), Value):
+                args = self._take_while(line, Value)
+                return FunctionCall(token, args)
             else:
-                return token
+                cls = self._parse_keyword(line)
+                if cls != None:
+                    rhs = self._parse_expression(line)
+                    kw = cls()
+
+                    if isof(kw, LHAssign):
+                        kw.set_ident(token)
+                        kw.set_value(rhs)
+                    elif isof(kw, RHAssign):
+                        kw.set_ident(rhs)
+                        kw.set_value(token)
+                    return kw
+
+                else:
+                    return token
 
         else:
             assert False

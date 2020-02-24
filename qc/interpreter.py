@@ -11,6 +11,7 @@ class Interpreter:
 
     def _run_func(self, func: Function, ctx: Context):
         for step in func.block():
+            print(step)
             step.run(ctx)
 
     def run(self):
