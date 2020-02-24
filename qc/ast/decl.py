@@ -10,7 +10,7 @@ class Declaration(NestedStatement):
         self._name = None
 
     def name(self):
-        return self._name
+        return self._name.name()
 
     def set_name(self, name: Ident):
         self._name = name

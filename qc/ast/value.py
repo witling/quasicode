@@ -23,6 +23,13 @@ class Constant(Value):
     def __init__(self, val):
         super().__init__(val)
 
+class UzblConstant(Constant):
+    def __init__(self):
+        super().__init__(True)
+
+    def __str__(self):
+        return 'uzbl'
+
 class Number(Value):
     def __init__(self, val):
         super().__init__(val)

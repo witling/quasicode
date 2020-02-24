@@ -70,15 +70,18 @@ class FunctionCall(Runnable):
         self._args = args
 
     def __str__(self):
-        return '{} {}'.format(self._name.name(), ' '.join(map(str, self._args)))
+        return '{} {}'.format(self.name(), ' '.join(map(str, self._args)))
 
     def name(self):
-        return self._name
+        return self._name.name()
 
     def args(self):
         return self._args
 
     def run(self, ctx: Context):
-        ctx.push_locals()
+        rvars = (arg.run(ctx) for arg in self.args())
+        decl = ctx.lookup(self.name())
+
+        ctx.push_locals({})
+
         ctx.pop_locals()
-        return

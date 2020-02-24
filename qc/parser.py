@@ -225,8 +225,9 @@ class Parser:
             else:
                 cls = self._parse_keyword(line)
                 if cls != None:
-                    rhs = self._parse_expression(line)
                     kw = cls()
+                    if isof(kw, Statement):
+                        rhs = self._parse_expression(line)
 
                     if isof(kw, LHAssign):
                         kw.set_ident(token)
@@ -234,6 +235,7 @@ class Parser:
                     elif isof(kw, RHAssign):
                         kw.set_ident(rhs)
                         kw.set_value(token)
+
                     return kw
 
                 else:
@@ -241,6 +243,7 @@ class Parser:
 
         else:
             assert False
+
         return None
 
     def _parse_lines(self, lines):

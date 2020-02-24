@@ -1,3 +1,5 @@
+from program import Program
+
 DEFUN = 10
 FUN = DEFUN * 10
 
@@ -7,6 +9,8 @@ class OutOfOettingerException(Exception):
 class Context:
     def __init__(self):
         self._inner = {}
+        self._loaded = []
+        self._locals = []
         self._loops = []
 
         self._fun = 100
@@ -18,6 +22,18 @@ class Context:
     def __setitem__(self, key, value):
         self.defun()
         self._inner[str(key)] = value
+
+    def load(self, program: Program):
+        self._loaded.append(program)
+
+    def loaded(self):
+        return self._loaded
+
+    def lookup(self, name):
+        for loaded in self.loaded():
+            if name in loaded.idents():
+                return loaded.idents()[name]
+        return None
 
     def fun(self):
         if self._fun <= 0:
@@ -38,3 +54,9 @@ class Context:
 
     def last_loop(self):
         return self._loops[-1]
+
+    def push_locals(self, frame):
+        self._locals.append(frame)
+
+    def pop_locals(self):
+        self._locals.pop()

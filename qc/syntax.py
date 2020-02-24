@@ -20,7 +20,7 @@ SYN_OPERATORS = [
 ]
 
 SYN_KEYWORDS = [
-    ('uzbl', Constant),         # True
+    ('uzbl', UzblConstant),     # True
     # TODO: remove this, same as `not uzbl`
     ('nuzbl', Constant),        # False
     ('quasi', Print),           # output value

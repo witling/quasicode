@@ -6,5 +6,5 @@ und zwar teste mit wert
 
 und zwar hier action please
     myval ist 2 das ist 0 
-    teste (myval das ist uzbl)
+    teste uzbl
     teste myval

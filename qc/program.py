@@ -1,12 +1,12 @@
-from ast import *
+import ast
 
 class Loop:
     pass
 
 class Function:
     def __init__(self, args, block):
-        assert isof(args, list)
-        assert isof(block, Block)
+        assert ast.isof(args, list)
+        assert ast.isof(block, ast.Block)
         self._args = args
         self._block = block
 
