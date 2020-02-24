@@ -91,16 +91,22 @@ class Parser:
             return None
         return self._keywords_to_ast(stc)
 
-    def _parse_markers(self, line_it):
-        return []
+    def _parse_markers(self, line):
+        markers = []
+        while line and isof(line.peek(), Keyword):
+            cls = self._parse_keyword(line)
+            if cls == None:
+                break
+            kw = cls()
+            if not isof(kw, Marker):
+                break
+            markers.append(kw)
+        return markers
 
     def _take_block(self, lines, min_depth = 1):
         block = []
         while lines:
             next_line = lines.peek()
-            #if isof(peek, Block):
-            #    block = next(it)
-            #    break
 
             # skip line if empty
             if not next_line:
@@ -123,7 +129,6 @@ class Parser:
                 block.append(next_line[1:])
             else:
                 block.append(list(next_line))
-                #block.extend(self._collect_till_newline(it))
         return block
 
     def _parse_expression(self, line):
@@ -134,7 +139,6 @@ class Parser:
         while line:
             token = line.peek()
             if isof(token, Keyword):
-                # TODO: parse variable length keyword here
                 cls = self._parse_keyword(line)
                 token = cls()
             else:
@@ -202,12 +206,15 @@ class Parser:
                         kw.add_branch(condition, block)
                         cls = self._parse_keyword(lines.peek())
 
-                    #cls = self._parse_keyword(lines.peek())
                     if cls == Else:
                         line = next(lines)
                         block = self._take_block(lines)
                         block = self._parse_lines(block)
-                    kw.set_default_branch(block)
+                        kw.set_default_branch(block)
+
+            elif isof(kw, Print):
+                for arg in line:
+                    kw.add_arg(arg)
                 
             return kw
 
