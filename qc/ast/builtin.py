@@ -2,7 +2,8 @@ from .generic import *
 
 class Print(Statement, Parameterized):
     def __init__(self):
-        super().__init__()
+        Statement.__init__(self)
+        Parameterized.__init__(self)
 
     def run(self, ctx: Context):
         print(' '.join(map(lambda x: str(x.run(ctx)), self._args)))

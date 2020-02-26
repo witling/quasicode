@@ -9,7 +9,7 @@ class Operator(Keyword, Parameterized):
         Parameterized.__init__(self)
 
     def __str__(self, name=''):
-        return '({} {} {})'.format(name, self._args[0], self._args[1])
+        return '({} {})'.format(name, ' '.join(self._args))
 
 class Compare(Operator):
     def __init__(self):

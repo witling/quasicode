@@ -17,8 +17,26 @@ class Parameterized:
     def add_arg(self, arg):
         self._args.append(arg)
 
-class Statement:
-    pass
+class Keyword:
+    def __init__(self, name=None):
+        self._name = name
+
+    def name(self):
+        return self._name
+
+    def eq(self, other):
+        if isinstance(other, str):
+            return self._name == other
+        if isof(other, Keyword):
+            return self._name == other._name
+        return False
+
+    def __str__(self):
+        return self.name()
+
+class Statement(Keyword):
+    def __init__(self):
+        super().__init__()
 
 class NestedStatement(Statement, Runnable):
     def __init__(self):
@@ -36,23 +54,6 @@ class NestedStatement(Statement, Runnable):
 
     def __str__(self):
         return '\n'.join(map(str, self._block))
-
-class Keyword:
-    def __init__(self, name=None):
-        self._name = name
-
-    def name(self):
-        return self._name
-
-    def eq(self, other):
-        if isinstance(other, str):
-            return self._name == other
-        if isof(other, Keyword):
-            return self._name == other._name
-        return False
-
-    def __str__(self):
-        return self.name()
 
 class Block(list, Runnable):
     def __str__(self):
