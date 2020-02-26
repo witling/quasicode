@@ -1,8 +1,5 @@
 import ast
 
-class Loop:
-    pass
-
 class Function:
     def __init__(self, args, block):
         assert ast.isof(args, list)
