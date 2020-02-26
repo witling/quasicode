@@ -64,14 +64,13 @@ class Lexer:
         it = peekable((part.lower() for part in line.strip().split(' ') if part != ''))
 
         while it:
-        #for lexem in it:
             lexem = it.peek()
             # parse strings here
             if lexem in KEYWORDS:
                 stc = self._take_while(it, Keyword)
                 kw = self._keywords_to_ast(stc)
                 lexed.append(kw())
-                #lexed.append(Keyword(lexem))
+
             else:
                 lexem = next(it)
                 if lexem[0] == '"':
@@ -81,7 +80,6 @@ class Lexer:
                 else:
                     lexed.append(Ident(lexem))
         
-        print(list(map(str, lexed)))
         return lexed
 
 class Parser:
@@ -277,8 +275,13 @@ class Parser:
         lines = peekable(lines)
 
         for line in lines:
+            # skip empty lines
+            if not line:
+                continue
+
             if not isinstance(line, peekable):
                 line = peekable(line)
+
             parsed = self._parse_line(line, lines)
             block.append(parsed)
 

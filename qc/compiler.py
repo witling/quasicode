@@ -4,7 +4,7 @@ from program import *
 class Compiler:
     def __init__(self):
         pass
-
+    
     def compile(self, parsed) -> Program:
         program = Program()
         for item in parsed:
