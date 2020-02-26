@@ -72,3 +72,15 @@ ach kris.
         program = parse(src)
         self.assertIsInstance(program[0], If)
         self.assertEqual(len(program[0].branches()), 3)
+
+    def test_repeat(self):
+        src = """
+0 also i
+das holen wir nach
+    i ist i + 1
+    kris? i das ist 10
+        patrick!
+        """
+        program = parse(src)
+        self.assertIsInstance(program[0], Assign)
+        self.assertIsInstance(program[1], Repeat)
