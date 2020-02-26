@@ -158,13 +158,6 @@ class Parser:
 
         while line:
             token = next(line)
-            #token = line.peek()
-            #if isof(token, Keyword):
-            #    set_trace()
-            #    cls = self._parse_keyword(line)
-            #    token = cls()
-            #else:
-            #    token = next(line)
 
             if isof(token, Operator):
                 if stack:
@@ -187,11 +180,12 @@ class Parser:
     def _parse_declaration(self, line):
         name = next(line)
         args, markers = [], []
-        #set_trace()
 
         while line:
             for kw in self._take_while(line, Keyword):
-                if isof(kw, Marker):
+                if isof(kw, DeclarationArgs):
+                    args = self._take_while(line, Ident)
+                elif isof(kw, Marker):
                     markers.append(kw)
             #kw = cls()
             #if isof(kw, DeclarationArgs):
@@ -202,10 +196,10 @@ class Parser:
 
     def _parse_line(self, line, lines):
         line = peekable(line)
-        item = line.peek()
+        #item = line.peek()
+        item = next(line)
 
         if isof(item, Declaration):
-            item = next(line)
             name, args, markers = self._parse_declaration(line)
 
             block = self._take_block(lines)
@@ -224,7 +218,6 @@ class Parser:
             item.set_block(block)
 
         elif isof(item, Branch):
-            set_trace()
             assert isof(item, If)
 
             condition = self._parse_expression(line)
@@ -235,7 +228,7 @@ class Parser:
 
             if lines:
                 cls = self._parse_keyword(lines.peek())
-                while cls == Elif:
+                while isof(cls, Elif):
                     line = next(lines)
                     condition = self._parse_expression(line)
                     block = self._take_block(lines)
@@ -243,54 +236,45 @@ class Parser:
                     item.add_branch(condition, block)
                     cls = self._parse_keyword(lines.peek())
 
-                if cls == Else:
+                if isof(cls, Else):
                     line = next(lines)
                     block = self._take_block(lines)
                     block = self._parse_lines(block)
                     item.set_default_branch(block)
 
         elif isof(item, Print):
-            #set_trace()
             for arg in line:
                 item.add_arg(arg)
 
         elif isof(item, Value):
-            item = next(line)
             assert line
 
             if isof(line.peek(), Value):
                 args = self._take_while(line, Value)
                 return FunctionCall(item, args)
             else:
-                #set_trace()
-                cls = self._parse_keyword(line)
-                if cls != None:
-                    item = cls
-                    if isof(item, Statement):
+                kw = self._parse_keyword(line)
+                if kw != None:
+                    if isof(kw, Statement):
                         rhs = self._parse_expression(line)
 
-                    if isof(item, LHAssign):
-                        item.set_ident(item)
-                        item.set_value(rhs)
-                    elif isof(item, RHAssign):
-                        item.set_ident(rhs)
-                        item.set_value(item)
+                    if isof(kw, LHAssign):
+                        kw.set_ident(item)
+                        kw.set_value(rhs)
+                    elif isof(kw, RHAssign):
+                        kw.set_ident(rhs)
+                        kw.set_value(item)
 
-                    return item
+                    return kw
 
                 else:
                     return item
-
-        else:
-            assert False
 
         return item
 
     def _parse_lines(self, lines):
         block = Block()
         lines = peekable(lines)
-
-        # set_trace()
 
         for line in lines:
             if not isinstance(line, peekable):
