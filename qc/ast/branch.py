@@ -5,6 +5,9 @@ class Branch(NestedStatement, Runnable):
         self._branches = []
         self._default_branch = None
 
+    def branches(self):
+        return [*self._branches, (None, self._default_branch)] if self._default_branch else self._branches
+
     def add_branch(self, condition, block):
         self._branches.append((condition, block))
 

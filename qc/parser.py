@@ -226,19 +226,24 @@ class Parser:
 
             if lines:
                 cls = self._parse_keyword(lines.peek())
-                while isof(cls, Elif):
-                    line = next(lines)
-                    condition = self._parse_expression(line)
-                    block = self._take_block(lines)
-                    block = self._parse_lines(block)
-                    item.add_branch(condition, block)
-                    cls = self._parse_keyword(lines.peek())
+                try:
+                    while isof(cls, Elif):
+                        line = next(lines)
+                        condition = self._parse_expression(line)
+                        block = self._take_block(lines)
+                        block = self._parse_lines(block)
+                        item.add_branch(condition, block)
 
-                if isof(cls, Else):
-                    line = next(lines)
-                    block = self._take_block(lines)
-                    block = self._parse_lines(block)
-                    item.set_default_branch(block)
+                        cls = self._parse_keyword(lines.peek())
+                    
+                    if isof(cls, Else):
+                        line = next(lines)
+                        block = self._take_block(lines)
+                        block = self._parse_lines(block)
+                        item.set_default_branch(block)
+
+                except StopIteration:
+                    pass
 
         elif isof(item, Print):
             for arg in line:
