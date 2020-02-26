@@ -6,6 +6,14 @@ from pudb import set_trace
 
 import re
 
+peek_is = lambda cls: lambda it: isof(it.peek(), cls)
+
+def take_while(it, pred: callable):
+    collect = []
+    while it and pred(it):
+        collect.append(next(it))
+    return collect
+
 class Indent:
     def __init__(self, depth=0):
         self._depth = int(depth)
@@ -29,12 +37,6 @@ class Error(Exception):
 class Lexer:
     INDENT_RE = re.compile('^(\\t|\s{4})+')
     INDENT_WIDTH = 4
-
-    def _take_while(self, it, cls):
-        collect = []
-        while it and it.peek() in KEYWORDS:
-            collect.append(next(it))
-        return collect
 
     def _keywords_to_ast(self, stc):
         it = iter(stc)
@@ -67,7 +69,7 @@ class Lexer:
             lexem = it.peek()
             # parse strings here
             if lexem in KEYWORDS:
-                stc = self._take_while(it, Keyword)
+                stc = take_while(it, lambda it: it.peek() in KEYWORDS)
                 kw = self._keywords_to_ast(stc)
                 lexed.append(kw())
 
@@ -85,41 +87,15 @@ class Lexer:
 class Parser:
     def __init__(self):
         self._lexer = Lexer()
-        self._chain = []
-
-    def _take_while(self, it, cls):
-        collect = []
-        while it and isof(it.peek(), cls):
-            collect.append(next(it))
-        return collect
-
-    def _keywords_to_ast(self, stc):
-        it = iter(stc)
-        node = SYN_TREE[next(it).name()]
-        name = None
-
-        for k in it:
-            try:
-                name = k.name()
-                node = node[name]
-            except KeyError:
-                possible = ','.join(map(lambda x: '`{}`'.format(x), node.keys()))
-                raise Error('expected one of {}. got `{}`'.format(possible, name))
-
-        if '_op' not in node:
-            raise Error('unexpected symbol `{}` in `{}`'.format(name, stc))
-
-        return node['_op']
     
     def _parse_keyword(self, it):
         if isinstance(it, list):
             it = peekable(it)
-        stc = self._take_while(it, Keyword)
+        stc = take_while(it, peek_is(Keyword))
         if not stc:
             return None
         assert len(stc) == 1
         return stc.pop()
-        #return self._keywords_to_ast(stc)
 
     def _take_block(self, lines, min_depth = 1):
         block = []
@@ -180,21 +156,16 @@ class Parser:
         args, markers = [], []
 
         while line:
-            for kw in self._take_while(line, Keyword):
+            for kw in take_while(line, peek_is(Keyword)):
                 if isof(kw, DeclarationArgs):
-                    args = self._take_while(line, Ident)
+                    args = take_while(line, peek_is(Ident))
                 elif isof(kw, Marker):
                     markers.append(kw)
-            #kw = cls()
-            #if isof(kw, DeclarationArgs):
-            #    args = self._take_while(line, Ident)
-            #elif isof(kw, Marker):
-            #    markers.append(kw)
+
         return (name, args, markers)
 
     def _parse_line(self, line, lines):
         line = peekable(line)
-        #item = line.peek()
         item = next(line)
 
         if isof(item, Declaration):
@@ -253,7 +224,7 @@ class Parser:
             assert line
 
             if isof(line.peek(), Value):
-                args = self._take_while(line, Value)
+                args = take_while(line, peek_is(Value))
                 return FunctionCall(item, args)
             else:
                 kw = self._parse_keyword(line)
