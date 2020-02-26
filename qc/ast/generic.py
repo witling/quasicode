@@ -81,7 +81,8 @@ class FunctionCall(Runnable):
     def run(self, ctx: Context):
         rvars = (arg.run(ctx) for arg in self.args())
         decl = ctx.lookup(self.name())
+        frame = {k.name(): v for k, v in zip(decl.args(), rvars)}
 
-        ctx.push_locals({})
-
+        ctx.push_locals(frame)
+        decl.block().run(ctx)
         ctx.pop_locals()

@@ -21,9 +21,9 @@ class Branch(NestedStatement, Runnable):
                 self._default_branch.run(ctx)
 
     def __str__(self):
-        fixed = list(map(lambda x: '{} -> {}'.format(x[0], x[1]), self._branches))
+        fixed = list(map(lambda x: '| {} -> {}'.format(x[0], x[1]), self._branches))
         if self._default_branch:
-            fixed.append('-> {}'.format(self._default_branch))
+            fixed.append('| -> {}'.format(self._default_branch))
         return '\n'.join(fixed)
 
 class If(Branch):

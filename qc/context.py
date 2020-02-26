@@ -17,11 +17,15 @@ class Context:
 
     def __getitem__(self, key):
         self.defun()
-        return self._inner[str(key)]
+        key = str(key)
+        if self._locals and key in self._locals[-1]:
+            return self._locals[-1][key]
+        return self._inner[key]
 
     def __setitem__(self, key, value):
         self.defun()
-        self._inner[str(key)] = value
+        scope = self._locals[-1] if self._locals else self._inner
+        scope[str(key)] = value
 
     def load(self, program: Program):
         self._loaded.append(program)
