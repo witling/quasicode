@@ -1,7 +1,7 @@
 import unittest
 
 from ast import *
-from parser import Parser
+from generate import Parser
 
 def parse(src):
     parser = Parser()

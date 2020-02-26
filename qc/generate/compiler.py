@@ -1,11 +1,16 @@
 from ast import *
+from .parser import Parser
 from program import *
 
 class Compiler:
     def __init__(self):
-        pass
+        self._parser = Parser()
+
+    def compile(self, src):
+        parsed = self._parser.parse(src)
+        return self._finalize(parsed)
     
-    def compile(self, parsed) -> Program:
+    def _finalize(self, parsed) -> Program:
         program = Program()
         for item in parsed:
             if isof(item, Declaration):

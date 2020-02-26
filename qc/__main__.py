@@ -1,8 +1,7 @@
 import sys
 
-from compiler import Compiler
+from generate import Compiler
 from interpreter import Interpreter
-from parser import Parser
 
 def load_source(fname):
     with open(fname, 'r') as src:
@@ -13,16 +12,13 @@ def main():
         print('no file given')
         return
 
-    interpreter = Interpreter()
-    parser = Parser()
-    compiler = Compiler()
-
     src = load_source(sys.argv[1])
-    parsed = parser.parse(src)
-    program = compiler.compile(parsed)
+    compiler = Compiler()
+    program = compiler.compile(src)
 
     print(program)
 
+    interpreter = Interpreter()
     interpreter.load(program)
     interpreter.run()
 

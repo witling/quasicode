@@ -1,6 +1,6 @@
 from ast import *
 from more_itertools import peekable
-from syntax import *
+from .syntax import *
 
 from pudb import set_trace
 
