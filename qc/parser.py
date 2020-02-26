@@ -2,6 +2,8 @@ from ast import *
 from more_itertools import peekable
 from syntax import *
 
+from pudb import set_trace
+
 import re
 
 class Indent:
@@ -28,6 +30,29 @@ class Lexer:
     INDENT_RE = re.compile('^(\\t|\s{4})+')
     INDENT_WIDTH = 4
 
+    def _take_while(self, it, cls):
+        collect = []
+        while it and it.peek() in KEYWORDS:
+            collect.append(next(it))
+        return collect
+
+    def _keywords_to_ast(self, stc):
+        it = iter(stc)
+        node = SYN_TREE[next(it)]
+        name = None
+
+        for k in it:
+            try:
+                node = node[k]
+            except KeyError:
+                possible = ','.join(map(lambda x: '`{}`'.format(x), node.keys()))
+                raise Error('expected one of {}. got `{}`'.format(possible, name))
+
+        if '_op' not in node:
+            raise Error('unexpected symbol `{}` in `{}`'.format(name, stc))
+
+        return node['_op']
+
     def lex(self, line: str):
         lexed = []
 
@@ -36,17 +61,27 @@ class Lexer:
             depth = match.span()[1]
             lexed.append(Indent(depth / self.INDENT_WIDTH))
 
-        it = (part.lower() for part in line.strip().split(' ') if part != '')
-        for lexem in it:
+        it = peekable((part.lower() for part in line.strip().split(' ') if part != ''))
+
+        while it:
+        #for lexem in it:
+            lexem = it.peek()
             # parse strings here
-            if lexem[0] == '"':
-                lexed.append(String(lexem))
-            elif lexem in KEYWORDS:
-                lexed.append(Keyword(lexem))
-            elif lexem.isnumeric():
-                lexed.append(Number(float(lexem)))
+            if lexem in KEYWORDS:
+                stc = self._take_while(it, Keyword)
+                print(stc)
+                kw = self._keywords_to_ast(stc)
+                print(stc, 'becomes', kw)
+                lexed.append(kw)
+                #lexed.append(Keyword(lexem))
             else:
-                lexed.append(Ident(lexem))
+                lexem = next(it)
+                if lexem[0] == '"':
+                    lexed.append(String(lexem))
+                elif lexem.isnumeric():
+                    lexed.append(Number(float(lexem)))
+                else:
+                    lexed.append(Ident(lexem))
         
         return lexed
 
@@ -162,6 +197,7 @@ class Parser:
     def _parse_line(self, line, lines):
         line = peekable(line)
         token = line.peek()
+
         if isof(token, Keyword):
             cls = self._parse_keyword(line)
             kw = cls()
@@ -249,6 +285,8 @@ class Parser:
     def _parse_lines(self, lines):
         block = Block()
         lines = peekable(lines)
+
+        # set_trace()
 
         for line in lines:
             if not isinstance(line, peekable):
