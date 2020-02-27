@@ -189,7 +189,10 @@ class Parser:
                 else:
                     stack.append(token)
 
-        assert len(stack) == 1
+        if len(stack) != 1:
+            print(stack)
+            assert False
+
         return stack.pop()
 
     def _parse_declaration(self, line):
@@ -270,15 +273,18 @@ class Parser:
             else:
                 kw = self._parse_keyword(line)
                 if kw != None:
-                    if isof(kw, Statement):
+                    if isof(kw, Return):
+                        kw.add_arg(item)
+
+                    elif isof(kw, Statement):
                         rhs = self._parse_expression(line)
 
-                    if isof(kw, LHAssign):
-                        kw.set_ident(item)
-                        kw.set_value(rhs)
-                    elif isof(kw, RHAssign):
-                        kw.set_ident(rhs)
-                        kw.set_value(item)
+                        if isof(kw, LHAssign):
+                            kw.set_ident(item)
+                            kw.set_value(rhs)
+                        elif isof(kw, RHAssign):
+                            kw.set_ident(rhs)
+                            kw.set_value(item)
 
                     return kw
 

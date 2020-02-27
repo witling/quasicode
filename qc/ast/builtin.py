@@ -37,7 +37,8 @@ class Raise(NestedStatement):
 
 class Return(Statement, Parameterized):
     def __init__(self):
-        super().__init__()
+        Statement.__init__(self)
+        Parameterized.__init__(self)
 
     def __str__(self):
         return 'return {}'.format(' '.join(map(str, self._args)))
