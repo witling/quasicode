@@ -4,7 +4,7 @@ Programming as it should be.
 
 ``` bash
 $ python3 qc examples/hello-world.qc
-"helloworld"
+hello world
 ```
 
 ## How To Use
@@ -28,11 +28,16 @@ speed up | `so` |  | `so`
 
 - endless loops, breaking
 - variable assignment, computing with the standard math operators `+`, `-`, `*`, `/`, `modulo`™
-- function declaration (without parameters)
+- function declaration
 
 ## What Doesn't 'Work'?
 
 - `qc` does not prioritize mathematical operators. This is not a bug but rather a feature.
-- empty lines lead to parsing errors. actually, this is a feature as well as it saves disk space.
-- strings are not parsed correctly. just don't use spaces inside them, okey?
-- parentheses are not supported (yet?)
+
+### Development
+
+use this to format code before committing:
+
+```
+yapf --recursive .
+```
