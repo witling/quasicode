@@ -1,4 +1,5 @@
 import ast
+import pickle
 
 class Function:
     def __init__(self, args, block):
@@ -21,6 +22,15 @@ class Program:
         self._idents = {}
         self._flow = []
         self._entry_point = None
+
+    # load a program from filepointer
+    def load(fp):
+        return pickle.load(fp)
+
+    # write a program into filepointer
+    def save(self, fp):
+        pickle.dump(self, fp)
+        return True
 
     def __iter__(self):
         return iter(self._flow)
