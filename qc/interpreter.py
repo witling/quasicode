@@ -1,3 +1,4 @@
+from ast import *
 from context import *
 from program import *
 
@@ -14,8 +15,10 @@ class Interpreter:
             last = step.run(ctx)
         return last
 
-    def call(self, name: str, args: list):
-        pass
+    def call(self, name: str, args: list=[]):
+        args = [Value.create(arg) for arg in args]
+        call = FunctionCall(Ident(name), args)
+        return call.run(self._ctx)
 
     def run(self):
         try:
