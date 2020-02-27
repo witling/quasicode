@@ -25,6 +25,14 @@ class Program:
     def __iter__(self):
         return iter(self._flow)
 
+    def __contains__(self, key):
+        return key in self._idents
+
+    def __getitem__(self, key):
+        if key not in self._idents:
+            return None
+        return self._idents[key]
+
     def entry_point(self):
         return self._entry_point
 

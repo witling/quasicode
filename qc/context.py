@@ -35,8 +35,8 @@ class Context:
 
     def lookup(self, name):
         for loaded in self.loaded():
-            if name in loaded.idents():
-                return loaded.idents()[name]
+            if name in loaded:
+                return loaded[name]
         return None
 
     def fun(self):
