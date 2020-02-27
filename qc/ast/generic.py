@@ -66,6 +66,7 @@ class Block(list, Runnable):
         self._broken = True
 
     def run(self, ctx: Context):
+        self._broken = False
         last = None
         for step in self:
             if self._broken:
