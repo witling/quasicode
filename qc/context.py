@@ -18,13 +18,13 @@ class Context:
     def __getitem__(self, key):
         self.defun()
         key = str(key)
-        if self._locals and key in self._locals[-1]:
-            return self._locals[-1][key]
+        if self._locals and key in self._locals[-1][0]:
+            return self._locals[-1][0][key]
         return self._inner[key]
 
     def __setitem__(self, key, value):
         self.defun()
-        scope = self._locals[-1] if self._locals else self._inner
+        scope = self._locals[-1][0] if self._locals else self._inner
         scope[str(key)] = value
 
     def load(self, program: Program):
@@ -59,8 +59,11 @@ class Context:
     def last_loop(self):
         return self._loops[-1]
 
-    def push_locals(self, frame):
-        self._locals.append(frame)
+    def set_return(self, value):
+        self._locals[-1][1](value)
+
+    def push_locals(self, frame, rec_return):
+        self._locals.append((frame, rec_return))
 
     def pop_locals(self):
         self._locals.pop()

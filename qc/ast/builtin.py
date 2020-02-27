@@ -41,7 +41,7 @@ class Return(Statement, Parameterized):
         Parameterized.__init__(self)
 
     def run(self, ctx: Context):
-        pass
+        ctx.set_return(self.args()[0])
 
     def __str__(self):
         return 'return {}'.format(' '.join(map(str, self._args)))

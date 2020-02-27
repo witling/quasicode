@@ -56,12 +56,20 @@ class NestedStatement(Statement, Runnable):
         return '\n'.join(map(str, self._block))
 
 class Block(list, Runnable):
+    def __init__(self):
+        self._broken = False
+
     def __str__(self):
         return ' '.join(map(str, self))
+
+    def end(self):
+        self._broken = True
 
     def run(self, ctx: Context):
         last = None
         for step in self:
+            if self._broken:
+                break
             last = step.run(ctx)
         return last
 
@@ -84,7 +92,16 @@ class FunctionCall(Runnable, Parameterized):
 
         assert len(decl.args()) == len(rvars)
         frame = {k.name(): v for k, v in zip(decl.args(), rvars)}
+        self._ret = None
 
-        ctx.push_locals(frame)
-        decl.block().run(ctx)
+        def receive_return(v):
+            self._ret = v
+            decl.block().end()
+
+        ctx.push_locals(frame, receive_return)
+        last = decl.block().run(ctx)
         ctx.pop_locals()
+
+        if self._ret:
+            return self._ret
+        return last
