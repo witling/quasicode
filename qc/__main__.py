@@ -16,7 +16,7 @@ def main():
     compiler = Compiler()
     program = compiler.compile(src)
 
-    if '--listing' in sys.arg:
+    if '--listing' in sys.argv:
         print(program)
 
     if '--debug' in sys.argv:
