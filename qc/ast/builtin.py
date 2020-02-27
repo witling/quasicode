@@ -40,6 +40,9 @@ class Return(Statement, Parameterized):
         Statement.__init__(self)
         Parameterized.__init__(self)
 
+    def run(self, ctx: Context):
+        pass
+
     def __str__(self):
         return 'return {}'.format(' '.join(map(str, self._args)))
 

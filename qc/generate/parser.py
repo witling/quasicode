@@ -31,6 +31,13 @@ class Newline:
     def __str__(self):
         return '\\n'
 
+class Parens:
+    def __init__(self, expr):
+        self._expr = expr
+
+    def expr(self):
+        return self._expr
+
 class Error(Exception):
     pass
 
@@ -86,12 +93,20 @@ class Lexer:
             if c == ' ':
                 pass
 
+            elif c == '(':
+                sub = take_while(it, lambda it: it.peek() != ')')
+                sub = self._lex_source(sub)
+                lexed.append(Parens(sub))
+                # drop trailing )
+                next(it)
+                continue
+
             # parse strings here
             elif c == '"' or c == "'":
                 buf = take_while(it, lambda it: it.peek() != c)
                 buf = ''.join(buf)
                 lexed.append(String(buf))
-                # skip trailing ' or "
+                # drop trailing ' or "
                 next(it)
                 buf = ''
                 continue
@@ -182,12 +197,22 @@ class Parser:
                     stack.append(token)
                 else:
                     raise Error('prefix operators not supported')
+
             elif isof(token, Value):
                 if stack:
-                    assert len(stack[-1].args()) < 2
-                    stack[-1].add_arg(token)
+                    if isof(stack[-1], Ident):
+                        ident = stack.pop()
+                        call = FunctionCall(ident)
+                        call.add_arg(token)
+                        stack.append(call)
+                    else:
+                        assert len(stack[-1].args()) < 2
+                        stack[-1].add_arg(token)
                 else:
                     stack.append(token)
+
+            elif isof(token, Parens):
+                stack.append(self._parse_expression(token.expr()))
 
         if len(stack) != 1:
             print(stack)
@@ -262,7 +287,7 @@ class Parser:
 
         elif isof(item, Print):
             for arg in line:
-                item.add_arg(arg)
+                item.add_arg(self._parse_expression([arg]))
 
         elif isof(item, Value):
             assert line
@@ -270,6 +295,7 @@ class Parser:
             if isof(line.peek(), Value):
                 args = take_while(line, peek_is(Value))
                 return FunctionCall(item, args)
+
             else:
                 kw = self._parse_keyword(line)
                 if kw != None:

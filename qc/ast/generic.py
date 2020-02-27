@@ -65,10 +65,12 @@ class Block(list, Runnable):
             last = step.run(ctx)
         return last
 
-class FunctionCall(Runnable):
+class FunctionCall(Runnable, Parameterized):
     def __init__(self, name, args=[]):
+        Parameterized.__init__(self)
         self._name = name
-        self._args = args
+        for arg in args:
+            self.add_arg(arg)
 
     def __str__(self):
         return '{} {}'.format(self.name(), ' '.join(map(str, self._args)))
@@ -76,12 +78,11 @@ class FunctionCall(Runnable):
     def name(self):
         return self._name.name()
 
-    def args(self):
-        return self._args
-
     def run(self, ctx: Context):
-        rvars = (arg.run(ctx) for arg in self.args())
+        rvars = [arg.run(ctx) for arg in self.args()]
         decl = ctx.lookup(self.name())
+
+        assert len(decl.args()) == len(rvars)
         frame = {k.name(): v for k, v in zip(decl.args(), rvars)}
 
         ctx.push_locals(frame)

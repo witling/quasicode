@@ -6,7 +6,5 @@ und zwar rechne mit parameter
 und zwar tun_wir_mathe action please
     a ist 8
     b ist 15
-    hilfa ist rechne a
-    hilfb ist rechne b
-    quasi "a ist" hilfa
-    quasi "b ist" hilfb
+    quasi "a ist" (rechne a)
+    quasi "b ist" (rechne b)

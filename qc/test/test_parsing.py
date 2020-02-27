@@ -93,3 +93,10 @@ str2 ist 'hallo welt'
         program = parse(src)
         self.assertIsInstance(program[0], RHAssign)
         self.assertIsInstance(program[1], LHAssign)
+
+    def test_parens(self):
+        src = """
+i ist (0 + 1)
+        """
+        program = parse(src)
+        self.assertIsInstance(program[0], LHAssign)
