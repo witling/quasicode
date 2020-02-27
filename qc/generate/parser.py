@@ -289,28 +289,33 @@ class Parser:
             for arg in line:
                 item.add_arg(self._parse_expression([arg]))
 
-        elif isof(item, Value):
+        elif isof(item, Value) or isof(item, Parens):
             assert line
 
-            if isof(line.peek(), Value):
+            if isof(item, Value) and isof(line.peek(), Value):
                 args = take_while(line, peek_is(Value))
                 return FunctionCall(item, args)
 
             else:
+                if isof(item, Parens):
+                    item = self._parse_expression(item.expr())
+
                 kw = self._parse_keyword(line)
                 if kw != None:
                     if isof(kw, Return):
                         kw.add_arg(item)
 
                     elif isof(kw, Statement):
-                        rhs = self._parse_expression(line)
+                        val = self._parse_expression(line)
 
-                        if isof(kw, LHAssign):
+                        if isof(kw, LHAssign) and isof(item, Ident):
                             kw.set_ident(item)
-                            kw.set_value(rhs)
-                        elif isof(kw, RHAssign):
-                            kw.set_ident(rhs)
+                            kw.set_value(val)
+                        elif isof(kw, RHAssign) and isof(val, Ident):
+                            kw.set_ident(val)
                             kw.set_value(item)
+                        else:
+                            assert False
 
                     return kw
 
