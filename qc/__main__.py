@@ -7,14 +7,27 @@ def load_source(fname):
     with open(fname, 'r') as src:
         return src.read()
 
+def retrieve_program(fname):
+    from os.path import splitext
+
+    _, fext = splitext(fname)
+
+    if fext == '.qc':
+        src = load_source(sys.argv[1])
+        compiler = Compiler()
+        return compiler.compile(src)
+
+    elif fext == '.qcc':
+        return Program.load(fname)
+
+    raise Exception('unsupported file extension')
+
 def main():
     if len(sys.argv) < 2:
         print('no file given')
         return
 
-    src = load_source(sys.argv[1])
-    compiler = Compiler()
-    program = compiler.compile(src)
+    program = retrieve_program(sys.argv[1])
 
     if '--listing' in sys.argv:
         print(program)
