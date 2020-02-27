@@ -5,9 +5,21 @@ class Value:
         self._val = val
 
     def create(val):
+        if isinstance(val, int) or isinstance(val, float):
+            return Number(float(val))
+        if isinstance(val, bool) and val:
+            return UzblConstant()
+        if isinstance(val, str):
+            return String(val)
         raise Exception()
 
     def __str__(self):
+        return self._val
+
+    def __int__(self):
+        return self._val
+
+    def __float__(self):
         return self._val
 
     def is_assignable(self):
