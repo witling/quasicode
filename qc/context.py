@@ -9,7 +9,7 @@ class OutOfOettingerException(Exception):
 class Context:
     def __init__(self):
         self._globals = {}
-        self._paths = []
+        self._includes = []
 
         self._fun = 100
         self._loaded, self._locals, self._loops = [], [], []
@@ -31,7 +31,7 @@ class Context:
 
         name = str(name)
 
-        for path in self._paths:
+        for path in self._includes:
             if os.path.exists(path) and os.path.isdir(path):
                 for fname in os.listdir(path):
                     front, fext = os.path.splitext(fname)
@@ -42,13 +42,19 @@ class Context:
 
         return None
 
-    def add_load_path(self, path):
-        self._paths.append(path)
+    def add_include_path(self, path):
+        self._includes.append(path)
 
     def load(self, program: Program):
         for use in program.uses():
             path = self._search_file(use)
-            print('search for file and import here', use, path)
+            if not path:
+                raise Exception('cannot use `{}`. not found'.format(str(use)))
+            # TODO: allow loading non-compiled programs
+            # TODO: avoid reimporting programs
+            with open(path, 'rb') as f:
+                self.load(Program.load(f))
+
         self._loaded.append(program)
 
     def loaded(self):

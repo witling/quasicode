@@ -9,8 +9,8 @@ class Interpreter:
         import os
 
         self._ctx = Context()
-        self._ctx.add_load_path(Interpreter.LIB_PATH)
-        self._ctx.add_load_path(os.getcwd())
+        self._ctx.add_include_path(Interpreter.LIB_PATH)
+        self._ctx.add_include_path(os.getcwd())
 
     def load(self, program: Program):
         self._ctx.load(program)
