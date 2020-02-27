@@ -18,6 +18,10 @@ def main():
 
     print(program)
 
+    if '--debug' in sys.argv:
+        from pudb import set_trace
+        set_trace()
+
     interpreter = Interpreter()
     interpreter.load(program)
     interpreter.run()
