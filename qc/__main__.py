@@ -16,7 +16,8 @@ def main():
     compiler = Compiler()
     program = compiler.compile(src)
 
-    print(program)
+    if '--listing' in sys.arg:
+        print(program)
 
     if '--debug' in sys.argv:
         from pudb import set_trace
