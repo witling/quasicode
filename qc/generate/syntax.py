@@ -20,9 +20,10 @@ SYN_OPERATORS = [
 ]
 
 SYN_KEYWORDS = [
+    ('use', Use),               # import functions from a file
     ('uzbl', UzblConstant),     # True
-    # TODO: remove this, same as `not uzbl`
-    ('nuzbl', Constant),        # False
+    # TODO: remove this, same as `not uzbl` ?
+    #  ('nuzbl', Constant),        # False
     ('quasi', Print),           # output value
     ('und', LogicalAnd),        # logical and; concatenate strings (?)
     ('oder', LogicalOr),        # logical or

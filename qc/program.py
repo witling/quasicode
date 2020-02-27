@@ -21,6 +21,7 @@ class Program:
     def __init__(self):
         self._idents = {}
         self._flow = []
+        self._uses = []
         self._entry_point = None
 
     # load a program from filepointer
@@ -55,6 +56,12 @@ class Program:
 
     def idents(self) -> dict:
         return self._idents
+
+    def use(self, name):
+        self._uses.append(name)
+
+    def uses(self) -> list:
+        return self._uses
 
     def __str__(self) -> str:
         fixed = map(lambda x: '{}:\n{}'.format(x[0], x[1]), self._idents.items())

@@ -27,7 +27,12 @@ class Context:
         scope = self._locals[-1][0] if self._locals else self._inner
         scope[str(key)] = value
 
+    def _search_file(self, name):
+        pass
+
     def load(self, program: Program):
+        for use in program.uses():
+            print('search for file and import here', use)
         self._loaded.append(program)
 
     def loaded(self):

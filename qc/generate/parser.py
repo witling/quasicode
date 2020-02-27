@@ -289,6 +289,11 @@ class Parser:
             for arg in line:
                 item.add_arg(self._parse_expression([arg]))
 
+        elif isof(item, Use):
+            for arg in line:
+                assert isof(arg, Ident)
+                item.add_arg(arg)
+
         elif isof(item, Value) or isof(item, Parens):
             assert line
 

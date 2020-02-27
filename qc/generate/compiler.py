@@ -17,4 +17,9 @@ class Compiler:
                 if item.is_main():
                     program.set_entry_point(item.name())
                 program.ident(item.name(), Function(item.args(), item.block()))
+
+            elif isof(item, Use):
+                for arg in item.args():
+                    program.use(arg)
+
         return program

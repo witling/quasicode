@@ -11,6 +11,17 @@ class Print(Statement, Parameterized):
     def __str__(self):
         return 'print {}'.format(' '.join(map(str, self._args)))
 
+class Use(Statement, Parameterized):
+    def __init__(self):
+        Statement.__init__(self)
+        Parameterized.__init__(self)
+
+    def run(self, ctx: Context):
+        print('import')
+
+    def __str__(self):
+        return 'use'
+
 class Exit(Statement):
     def __init__(self):
         super().__init__()
