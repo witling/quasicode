@@ -3,8 +3,14 @@ from context import *
 from program import *
 
 class Interpreter:
+    LIB_PATH = '/usr/local/lib/quasicode'
+
     def __init__(self):
+        import os
+
         self._ctx = Context()
+        self._ctx.add_load_path(Interpreter.LIB_PATH)
+        self._ctx.add_load_path(os.getcwd())
 
     def load(self, program: Program):
         self._ctx.load(program)

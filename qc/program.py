@@ -18,6 +18,9 @@ class Function:
         return '\n'.join(map(str, self._block))
 
 class Program:
+    FEXT = '.qc'
+    FEXTC = '.qcc'
+
     def __init__(self):
         self._idents = {}
         self._flow = []

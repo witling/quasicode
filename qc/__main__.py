@@ -2,6 +2,7 @@ import sys
 
 from generate import Compiler
 from interpreter import Interpreter
+from program import Program
 
 def load_source(fname):
     with open(fname, 'r') as src:
@@ -12,12 +13,12 @@ def retrieve_program(fname):
 
     _, fext = splitext(fname)
 
-    if fext == '.qc':
+    if fext == Program.FEXT:
         src = load_source(sys.argv[1])
         compiler = Compiler()
         return compiler.compile(src)
 
-    elif fext == '.qcc':
+    elif fext == Program.FEXTC:
         return Program.load(fname)
 
     raise Exception('unsupported file extension')

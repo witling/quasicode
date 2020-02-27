@@ -16,9 +16,6 @@ class Use(Statement, Parameterized):
         Statement.__init__(self)
         Parameterized.__init__(self)
 
-    def run(self, ctx: Context):
-        print('import')
-
     def __str__(self):
         return 'use'
 
