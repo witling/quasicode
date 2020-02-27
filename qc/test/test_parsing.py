@@ -84,3 +84,12 @@ das holen wir nach
         program = parse(src)
         self.assertIsInstance(program[0], Assign)
         self.assertIsInstance(program[1], Repeat)
+
+    def test_string_parsing(self):
+        src = """
+"hello world" also str1
+str2 ist 'hallo welt'
+        """
+        program = parse(src)
+        self.assertIsInstance(program[0], RHAssign)
+        self.assertIsInstance(program[1], LHAssign)

@@ -55,6 +55,62 @@ class Lexer:
 
         return node['_op']
 
+    def _interpret_buffer(self, buf: str):
+        if buf in KEYWORDS:
+            return Keyword(buf)
+        elif buf.isnumeric():
+            return Number(float(buf))
+        else:
+            return Ident(buf)
+
+    def _reduce_lex(self, it: peekable):
+        reduced = []
+        for lexem in it:
+            if isof(lexem, Keyword):
+                stc = take_while(it, lambda it: isof(it.peek(), Keyword))
+                stc = [lexem.name(), *map(lambda kw: kw.name(), stc)]
+                kw = self._keywords_to_ast(stc)
+                reduced.append(kw())
+
+            else:
+                reduced.append(lexem)
+        
+        return reduced
+
+    def _lex_source(self, it: peekable):
+        lexed = []
+
+
+        buf = ''
+        for c in it:
+            if c == ' ':
+                pass
+
+            # parse strings here
+            elif c == '"' or c == "'":
+                buf = take_while(it, lambda it: it.peek() != c)
+                buf = ''.join(buf)
+                lexed.append(String(buf))
+                # skip trailing ' or "
+                next(it)
+                buf = ''
+                continue
+
+            else:
+                buf += c
+                continue
+
+            if buf:
+                out = self._interpret_buffer(buf)
+                lexed.append(out)
+                buf = ''
+
+        if buf:
+            out = self._interpret_buffer(buf)
+            lexed.append(out)
+
+        return self._reduce_lex(peekable(lexed))
+
     def lex(self, line: str):
         lexed = []
 
@@ -63,25 +119,9 @@ class Lexer:
             depth = match.span()[1]
             lexed.append(Indent(depth / self.INDENT_WIDTH))
 
-        it = peekable((part.lower() for part in line.strip().split(' ') if part != ''))
+        it = peekable(line.strip())
+        lexed.extend(self._lex_source(it))
 
-        while it:
-            lexem = it.peek()
-            # parse strings here
-            if lexem in KEYWORDS:
-                stc = take_while(it, lambda it: it.peek() in KEYWORDS)
-                kw = self._keywords_to_ast(stc)
-                lexed.append(kw())
-
-            else:
-                lexem = next(it)
-                if lexem[0] == '"':
-                    lexed.append(String(lexem))
-                elif lexem.isnumeric():
-                    lexed.append(Number(float(lexem)))
-                else:
-                    lexed.append(Ident(lexem))
-        
         return lexed
 
 class Parser:
@@ -148,6 +188,7 @@ class Parser:
                     stack[-1].add_arg(token)
                 else:
                     stack.append(token)
+
         assert len(stack) == 1
         return stack.pop()
 

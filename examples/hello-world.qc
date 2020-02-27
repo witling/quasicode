@@ -1,2 +1,3 @@
 und zwar main action please
-    quasi "helloworld"
+    quasi "hello world"
+    quasi 'hallo welt'
