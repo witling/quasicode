@@ -23,10 +23,15 @@ class Value:
     def __float__(self):
         return self._val
 
+    def __bool__(self):
+        return bool(self._val)
+
     def is_assignable(self):
         return False
     
     def __eq__(self, other):
+        if other is None:
+            return False
         if isinstance(other, float) or isinstance(other, int):
             return self._val == other
         return self._val == other._val

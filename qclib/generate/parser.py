@@ -97,10 +97,11 @@ class Lexer:
 
             elif c == '(':
                 sub = take_while(it, lambda it: it.peek() != ')')
-                sub = self._lex_source(sub)
+                if it:
+                    # drop trailing )
+                    assert next(it) == ')'
+                sub = self._lex_source(peekable(sub))
                 lexed.append(Parens(sub))
-                # drop trailing )
-                next(it)
                 continue
 
             # parse strings here

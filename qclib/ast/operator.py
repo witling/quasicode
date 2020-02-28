@@ -27,16 +27,22 @@ class LogicalAnd(Operator):
     def __init__(self):
         super().__init__()
 
+    def run(self, ctx):
+        return self._args[0].run(ctx) and self._args[1].run(ctx)
+
 class LogicalNot(Operator):
     def __init__(self):
         super().__init__()
 
     def run(self, ctx):
-        return not self._args[0]
+        return not self._args[0].run(ctx)
 
 class LogicalOr(Operator):
     def __init__(self):
         super().__init__()
+
+    def run(self, ctx):
+        return self._args[0].run(ctx) or self._args[1].run(ctx)
 
 class Add(Operator):
     def __init__(self):

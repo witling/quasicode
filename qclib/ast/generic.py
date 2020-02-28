@@ -101,6 +101,6 @@ class FunctionCall(Runnable, Parameterized):
         last = decl.block().run(ctx)
         ctx.pop_locals()
 
-        if self._ret:
+        if None != self._ret:
             return self._ret
         return last
