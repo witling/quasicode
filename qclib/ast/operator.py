@@ -31,6 +31,9 @@ class LogicalNot(Operator):
     def __init__(self):
         super().__init__()
 
+    def run(self, ctx):
+        return not self._args[0]
+
 class LogicalOr(Operator):
     def __init__(self):
         super().__init__()

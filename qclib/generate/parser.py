@@ -196,9 +196,8 @@ class Parser:
                     if not (isof(top, Value) or isof(top, Operator)):
                         assert False
                     token.add_arg(top)
-                    stack.append(token)
-                else:
-                    raise Error('prefix operators not supported')
+                
+                stack.append(token)
 
             elif isof(token, Value):
                 if stack:

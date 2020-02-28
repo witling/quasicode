@@ -21,4 +21,4 @@ und zwar teste
 
         ret = self._interpreter.call('teste', [])
         self.assertIsInstance(ret, Number)
-        self.assertTrue(0, float(ret))
+        self.assertEqual(float(0), float(ret))
