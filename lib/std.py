@@ -1,4 +1,4 @@
-from deps import *
+from .deps import *
 
 def create(name, fn):
     return PythonFunction(name, fn)

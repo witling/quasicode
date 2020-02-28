@@ -48,6 +48,7 @@ class Context:
     def load(self, program: Program):
         for use in program.uses():
             path = self._search_file(use)
+            print(path)
             if not path:
                 raise Exception('cannot use `{}`. not found'.format(str(use)))
             # TODO: allow loading non-compiled programs

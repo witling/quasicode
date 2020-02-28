@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 from unittest import TestLoader, TextTestRunner
 
 loader = TestLoader()

@@ -2,7 +2,7 @@ from .ast import *
 from .ast.generic import *
 import pickle
 
-class Function:
+class Function(object):
     def __init__(self, args, block):
         assert isof(args, list)
         assert isof(block, Block)
@@ -18,7 +18,7 @@ class Function:
     def __str__(self):
         return '\n'.join(map(str, self._block))
 
-class Program:
+class Program(object):
     FEXT = '.qc'
     FEXTC = '.qcc'
 
@@ -30,6 +30,7 @@ class Program:
 
     # load a program from filepointer
     def load(fp):
+        import lib
         return pickle.load(fp)
 
     # write a program into filepointer
@@ -77,7 +78,7 @@ class PythonLibrary(Program):
 
 class PythonFunction(Function):
     def __init__(self, args, fn):
-        super().__init__(args, [])
+        super().__init__(args, Block())
         self._fn = fn
 
     def block(self):
