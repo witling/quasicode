@@ -1,4 +1,4 @@
-from ast import *
+from ..ast import *
 
 SYN_PHRASES = [
     ('action please', MainMarker), # main method

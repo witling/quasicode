@@ -1,6 +1,6 @@
-from ast import *
-from context import *
-from program import *
+from .ast import *
+from .context import *
+from .program import *
 
 class Interpreter:
     LIB_PATH = '/usr/local/lib/quasicode'

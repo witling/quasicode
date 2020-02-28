@@ -1,4 +1,4 @@
-from .__init__ import *
+from .generic import *
 
 class Branch(NestedStatement, Runnable):
     def __init__(self):
@@ -14,7 +14,7 @@ class Branch(NestedStatement, Runnable):
     def set_default_branch(self, block):
         self._default_branch = block
 
-    def run(self, ctx: Context):
+    def run(self, ctx):
         for condition, block in self._branches:
             if condition.run(ctx):
                 block.run(ctx)

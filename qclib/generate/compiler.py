@@ -1,6 +1,6 @@
-from ast import *
+from ..ast import *
 from .parser import Parser
-from program import *
+from ..program import *
 
 class Compiler:
     def __init__(self):

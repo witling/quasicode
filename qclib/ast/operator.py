@@ -15,7 +15,7 @@ class Compare(Operator):
     def __init__(self):
         super().__init__()
 
-    def run(self, ctx: Context):
+    def run(self, ctx):
         return self._args[0].run(ctx) == self._args[1].run(ctx)
 
     def __str__(self):
@@ -37,7 +37,7 @@ class Add(Operator):
     def __init__(self):
         super().__init__()
 
-    def run(self, ctx: Context):
+    def run(self, ctx):
         return foldtwo(lambda a, b: a + b, self._args, ctx)
 
     def __str__(self):
@@ -47,7 +47,7 @@ class Sub(Operator):
     def __init__(self):
         super().__init__()
 
-    def run(self, ctx: Context):
+    def run(self, ctx):
         return foldtwo(lambda a, b: a - b, self._args, ctx)
 
     def __str__(self):
@@ -57,7 +57,7 @@ class Mul(Operator):
     def __init__(self):
         super().__init__()
 
-    def run(self, ctx: Context):
+    def run(self, ctx):
         return foldtwo(lambda a, b: a * b, self._args, ctx)
 
     def __str__(self):
@@ -67,7 +67,7 @@ class Div(Operator):
     def __init__(self):
         super().__init__()
 
-    def run(self, ctx: Context):
+    def run(self, ctx):
         return foldtwo(lambda a, b: a / b, self._args, ctx)
 
     def __str__(self):
@@ -77,7 +77,7 @@ class Mod(Operator):
     def __init__(self):
         super().__init__()
 
-    def run(self, ctx: Context):
+    def run(self, ctx):
         return foldtwo(lambda a, b: a % b, self._args, ctx)
 
     def __str__(self):

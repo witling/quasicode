@@ -17,7 +17,7 @@ class Assign(Statement, Runnable):
     def set_value(self, value):
         self._value = value
 
-    def run(self, ctx: Context):
+    def run(self, ctx):
         ctx[self._ident] = self._value.run(ctx)
 
     def __str__(self):

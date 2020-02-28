@@ -1,7 +1,6 @@
 import unittest
 
-from generate import Compiler
-from interpreter import Interpreter
+from context import *
 
 class TestInterpreter(unittest.TestCase):
     def setUp(self):

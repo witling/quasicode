@@ -1,10 +1,8 @@
-from context import Context
-
 def isof(var, cls) -> bool:
     return isinstance(var, cls) or any(isof(cls, b) for b in var.__class__.__bases__ if b.__name__ != 'object')
 
 class Runnable:
-    def run(self, ctx: Context):
+    def run(self, ctx):
         pass
 
 class Parameterized:
@@ -48,7 +46,7 @@ class NestedStatement(Statement, Runnable):
     def set_block(self, block):
         self._block = block
 
-    def run(self, ctx: Context):
+    def run(self, ctx):
         for step in self._block:
             step.run(ctx)
 
@@ -65,7 +63,7 @@ class Block(list, Runnable):
     def end(self):
         self._broken = True
 
-    def run(self, ctx: Context):
+    def run(self, ctx):
         self._broken = False
         last = None
         for step in self:
@@ -87,7 +85,7 @@ class FunctionCall(Runnable, Parameterized):
     def name(self):
         return self._name.name()
 
-    def run(self, ctx: Context):
+    def run(self, ctx):
         rvars = [arg.run(ctx) for arg in self.args()]
         decl = ctx.lookup(self.name())
 

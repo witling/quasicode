@@ -1,4 +1,4 @@
-from program import Program
+from .program import Program
 
 DEFUN = 10
 FUN = DEFUN * 10

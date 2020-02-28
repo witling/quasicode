@@ -5,7 +5,7 @@ class Print(Statement, Parameterized):
         Statement.__init__(self)
         Parameterized.__init__(self)
 
-    def run(self, ctx: Context):
+    def run(self, ctx):
         print(' '.join(map(lambda x: str(x.run(ctx)), self._args)))
 
     def __str__(self):
@@ -30,7 +30,7 @@ class Nop(NestedStatement):
     def __init__(self):
         super().__init__()
 
-    def run(self, ctx: Context):
+    def run(self, ctx):
         ctx.fun()
 
     def __str__(self):
@@ -48,7 +48,7 @@ class Return(Statement, Parameterized):
         Statement.__init__(self)
         Parameterized.__init__(self)
 
-    def run(self, ctx: Context):
+    def run(self, ctx):
         ctx.set_return(self.args()[0].run(ctx))
 
     def __str__(self):
@@ -62,7 +62,7 @@ class Repeat(NestedStatement):
     def end(self):
         self._broken = True
 
-    def run(self, ctx: Context):
+    def run(self, ctx):
         ctx.push_loop(self)
         while not self._broken:
             for step in self.block():
@@ -78,7 +78,7 @@ class Break(NestedStatement):
     def __init__(self):
         super().__init__()
 
-    def run(self, ctx: Context):
+    def run(self, ctx):
         ctx.last_loop().end()
 
     def __str__(self):

@@ -1,5 +1,3 @@
-from context import Context
-
 from .assign import *
 from .branch import *
 from .builtin import *

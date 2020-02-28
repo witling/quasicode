@@ -1,5 +1,3 @@
-from context import *
-
 class Value:
     def __init__(self, val):
         self._val = val
@@ -28,7 +26,7 @@ class Value:
     def eq(self, other):
         return True
 
-    def run(self, ctx: Context):
+    def run(self, ctx):
         return self._val
 
 class Constant(Value):
@@ -60,7 +58,7 @@ class Ident(Value):
     def name(self):
         return self._val
 
-    def run(self, ctx: Context):
+    def run(self, ctx):
         return ctx[self._val]
     
     def is_assignable(self):

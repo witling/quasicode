@@ -1,10 +1,11 @@
-import ast
+from .ast import *
+from .ast.generic import *
 import pickle
 
 class Function:
     def __init__(self, args, block):
-        assert ast.isof(args, list)
-        assert ast.isof(block, ast.Block)
+        assert isof(args, list)
+        assert isof(block, Block)
         self._args = args
         self._block = block
 

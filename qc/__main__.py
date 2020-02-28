@@ -1,8 +1,11 @@
 import sys
 
-from generate import Compiler
-from interpreter import Interpreter
-from program import Program
+try:
+    from qclib import *
+except:
+    from os.path import abspath, dirname, join
+    sys.path.insert(0, abspath(join(dirname(__file__), '..')))
+    from qclib import *
 
 def load_source(fname):
     with open(fname, 'r') as src:

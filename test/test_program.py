@@ -1,7 +1,6 @@
 import unittest
 
-from generate import Compiler
-from program import Program
+from context import *
 
 class TestProgram(unittest.TestCase):
     def setUp(self):
