@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 
 import os
+import sys
+
 from os.path import abspath, dirname, join, splitext
 from shutil import copyfile, rmtree
 
@@ -9,11 +11,16 @@ from qclib import Interpreter, PythonLibrary
 LIBRARY_BUILD = '/tmp/qclibs'
 IGNORE = ['deps', '__pycache__']
 
-def create_libraries():
+def prepare():
     rmtree(LIBRARY_BUILD)
     os.makedirs(LIBRARY_BUILD)
 
-    for script in os.listdir(join(dirname(__file__), 'lib')):
+def create_libraries():
+    prepare()
+
+    folder = join(dirname(__file__), 'lib')
+
+    for script in os.listdir(folder):
         fname, fext = splitext(script)
 
         if fname in IGNORE:

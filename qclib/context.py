@@ -17,8 +17,14 @@ class Context:
     def __getitem__(self, key):
         self.defun()
         key = str(key)
+
         if self._locals and key in self._locals[-1][0]:
             return self._locals[-1][0][key]
+
+        pitem = self.lookup(key)
+        if pitem:
+            return pitem
+
         return self._globals[key]
 
     def __setitem__(self, key, value):
@@ -48,7 +54,6 @@ class Context:
     def load(self, program: Program):
         for use in program.uses():
             path = self._search_file(use)
-            print(path)
             if not path:
                 raise Exception('cannot use `{}`. not found'.format(str(use)))
             # TODO: allow loading non-compiled programs

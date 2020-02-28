@@ -1,3 +1,6 @@
+from .generic import FunctionCall, isof
+from ..program import Function
+
 class Value:
     def __init__(self, val):
         self._val = val
@@ -59,7 +62,11 @@ class Ident(Value):
         return self._val
 
     def run(self, ctx):
-        return ctx[self._val]
+        val = ctx[self._val]
+        # TODO: execute FunctionCall
+        if isof(val, Function):
+            return FunctionCall(self, []).run(ctx)
+        return val
     
     def is_assignable(self):
         return True

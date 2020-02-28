@@ -1,5 +1,10 @@
 from .ast import *
 from .ast.generic import *
+from .lib import *
+from . import lib
+import sys
+import re
+
 import pickle
 
 class Function(object):
@@ -24,13 +29,12 @@ class Program(object):
 
     def __init__(self):
         self._idents = {}
-        self._flow = []
-        self._uses = []
+        self._flow, self._uses = [], []
         self._entry_point = None
 
     # load a program from filepointer
     def load(fp):
-        import lib
+        sys.modules['lib'] = lib
         return pickle.load(fp)
 
     # write a program into filepointer
@@ -82,10 +86,10 @@ class PythonFunction(Function):
         self._fn = fn
 
     def block(self):
-        return None
+        return self
 
     def __str__(self):
         return '<python function>'
 
     def run(self, ctx):
-        return fn(ctx)
+        return self._fn(ctx)
