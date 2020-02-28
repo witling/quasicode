@@ -18,7 +18,7 @@ def prepare():
 def create_libraries():
     prepare()
 
-    folder = join(dirname(__file__), 'lib')
+    folder = join(dirname(__file__), 'qclib/lib')
 
     for script in os.listdir(folder):
         fname, fext = splitext(script)
@@ -26,7 +26,7 @@ def create_libraries():
         if fname in IGNORE:
             continue
 
-        import_path = 'lib.{}'.format(fname)
+        import_path = 'qclib.lib.{}'.format(fname)
         sub = __import__(import_path)
 
     subclasses = PythonLibrary.__subclasses__()

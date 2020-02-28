@@ -1,7 +1,9 @@
 from .generic import *
 
 def foldtwo(fn, args, ctx):
-    return fn(args[0].run(ctx), args[1].run(ctx))
+    arg1 = args[0].run(ctx)
+    arg2 = args[1].run(ctx)
+    return fn(float(arg1), float(arg2))
 
 class Operator(Keyword, Parameterized):
     def __init__(self):

@@ -26,8 +26,10 @@ class Value:
     def is_assignable(self):
         return False
     
-    def eq(self, other):
-        return True
+    def __eq__(self, other):
+        if isinstance(other, float) or isinstance(other, int):
+            return self._val == other
+        return self._val == other._val
 
     def run(self, ctx):
         return self._val
@@ -46,6 +48,9 @@ class UzblConstant(Constant):
 class Number(Value):
     def __init__(self, val):
         super().__init__(val)
+
+    def run(self, ctx):
+        return self
 
     def __str__(self):
         return str(self._val)

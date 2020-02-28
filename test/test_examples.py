@@ -17,6 +17,8 @@ class TestExamples(unittest.TestCase):
 
         for example in examples:
             src_path = patch_path('examples', example)
+            print('$', example)
+
             src = load_source(src_path)
             program = compiler.compile(src)
 
