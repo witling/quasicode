@@ -70,3 +70,21 @@ class Program:
     def __str__(self) -> str:
         fixed = map(lambda x: '{}:\n{}'.format(x[0], x[1]), self._idents.items())
         return '\n'.join(fixed)
+
+class PythonLibrary(Program):
+    def __init__(self):
+        super().__init__()
+
+class PythonFunction(Function):
+    def __init__(self, args, fn):
+        super().__init__(args, [])
+        self._fn = fn
+
+    def block(self):
+        return None
+
+    def __str__(self):
+        return '<python function>'
+
+    def run(self, ctx):
+        return fn(ctx)
