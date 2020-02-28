@@ -63,7 +63,9 @@ class Lexer:
         return node['_op']
 
     def _interpret_buffer(self, buf: str):
-        if buf in KEYWORDS:
+        if buf == 'uzbl':
+            return UzblConstant()
+        elif buf in KEYWORDS:
             return Keyword(buf)
         elif buf.isnumeric():
             return Number(float(buf))
@@ -295,37 +297,34 @@ class Parser:
                 item.add_arg(arg)
 
         elif isof(item, Value) or isof(item, Parens):
-            assert line
-
-            if isof(item, Value) and isof(line.peek(), Value):
+            if isof(item, Ident) and line and isof(line.peek(), Value):
                 args = take_while(line, peek_is(Value))
                 return FunctionCall(item, args)
 
+            if isof(item, Parens):
+                item = self._parse_expression(item.expr())
+
+            kw = self._parse_keyword(line)
+            if kw != None:
+                if isof(kw, Return):
+                    kw.add_arg(item)
+
+                elif isof(kw, Statement):
+                    val = self._parse_expression(line)
+
+                    if isof(kw, LHAssign) and isof(item, Ident):
+                        kw.set_ident(item)
+                        kw.set_value(val)
+                    elif isof(kw, RHAssign) and isof(val, Ident):
+                        kw.set_ident(val)
+                        kw.set_value(item)
+                    else:
+                        assert False
+
+                return kw
+
             else:
-                if isof(item, Parens):
-                    item = self._parse_expression(item.expr())
-
-                kw = self._parse_keyword(line)
-                if kw != None:
-                    if isof(kw, Return):
-                        kw.add_arg(item)
-
-                    elif isof(kw, Statement):
-                        val = self._parse_expression(line)
-
-                        if isof(kw, LHAssign) and isof(item, Ident):
-                            kw.set_ident(item)
-                            kw.set_value(val)
-                        elif isof(kw, RHAssign) and isof(val, Ident):
-                            kw.set_ident(val)
-                            kw.set_value(item)
-                        else:
-                            assert False
-
-                    return kw
-
-                else:
-                    return item
+                return item
 
         return item
 
