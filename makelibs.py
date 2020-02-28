@@ -6,7 +6,7 @@ import sys
 from os.path import abspath, dirname, join, splitext
 from shutil import copyfile, rmtree
 
-from qclib import Interpreter, PythonLibrary
+from qclib import Interpreter, Program, PythonLibrary
 
 LIBRARY_BUILD = '/tmp/qclibs'
 IGNORE = ['deps', '__pycache__']
@@ -33,7 +33,7 @@ def create_libraries():
 
     for cls in subclasses:
         name = cls.__module__.split('.')[-1]
-        path = join(LIBRARY_BUILD, '{}.qcc'.format(name))
+        path = join(LIBRARY_BUILD, '{}{}'.format(name, Program.FEXTC))
         instance = cls()
         with open(path, 'wb') as f:
             instance.save(f)
