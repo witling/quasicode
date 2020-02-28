@@ -1,6 +1,6 @@
 import unittest
 
-from context import *
+from deps import *
 
 class TestProgram(unittest.TestCase):
     def setUp(self):

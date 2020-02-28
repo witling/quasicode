@@ -1,8 +1,7 @@
 import os
 import unittest
 
-from context import *
-#from qc import Compiler, Interpreter
+from deps import *
 
 def patch_path(*args):
     return os.path.join(os.getcwd(), *args)

@@ -1,6 +1,6 @@
 import unittest
 
-from context import *
+from deps import *
 
 class TestInterpreter(unittest.TestCase):
     def setUp(self):
