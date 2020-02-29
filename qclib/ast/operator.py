@@ -29,7 +29,7 @@ class Less(Operator):
         super().__init__()
 
     def run(self, ctx):
-        return self._args[0].run(ctx) < self._args[1].run(ctx)
+        return float(self._args[0].run(ctx)) < float(self._args[1].run(ctx))
 
 class LogicalAnd(Operator):
     def __init__(self):

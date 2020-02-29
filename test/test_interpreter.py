@@ -43,3 +43,17 @@ und zwar and_falsch
 
         self.assertTrue(self._interpreter.call('and_wahr'))
         self.assertFalse(self._interpreter.call('and_falsch'))
+
+    def test_comparison(self):
+        src = """
+und zwar kleiner mit a b
+    kris? a < b
+        uzbl und fertig
+    (not uzbl) und fertig
+        """
+        program = self._compiler.compile(src)
+        self._interpreter.load(program)
+
+        self.assertTrue(self._interpreter.call('kleiner', [1, 2]))
+        self.assertFalse(self._interpreter.call('kleiner', [2, 1]))
+        self.assertFalse(self._interpreter.call('kleiner', [2, 2]))
