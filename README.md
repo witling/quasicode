@@ -13,7 +13,7 @@ Usage | `qc` Keyword | Description | Example
 ---|---|---|---
 print | `quasi <value>` | put a value to stdout | `quasi "gut"`
 true, false | `uzbl`, `not uzbl` | truth values | `vim ist not uzbl`
-operators | `+`, `-`, `*`, `/`, `modulo` | mutate values | `quasi (1 + 1)`
+operators | `+`, `-`, `*`, `/`, `modulo`, `<` | mutate values | `quasi (1 + 1)`
 logical operators | `<value> das ist <value>` | compare two values | `0 das ist 0`
 if | `kris?` | ask kris. he has all the answers | `kris? a das ist b`
 else if | `kris??` | if he didn't know first, he'll know now | `kris?? i modulo 10 das ist 0`
