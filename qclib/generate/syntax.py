@@ -17,6 +17,7 @@ SYN_OPERATORS = [
     ('*', Mul),
     ('/', Div),
     ('modulo', Mod),
+    ('<', Less),
 ]
 
 SYN_KEYWORDS = [
@@ -39,7 +40,7 @@ SYN_KEYWORDS = [
     ('patrick!', Break),        # break
     ('softwareproblem', Raise), # raise error
     ('fähler', Raise),          # raise error
-    ('oettinger', Nop)          # keine ahnung
+    ('oettinger', Nop),         # keine ahnung
 ]
 
 KEYWORDS = []

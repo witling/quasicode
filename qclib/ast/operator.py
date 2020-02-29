@@ -23,6 +23,13 @@ class Compare(Operator):
     def __str__(self):
         return super().__str__('==')
 
+class Less(Operator):
+    def __init__(self):
+        super().__init__()
+
+    def run(self, ctx):
+        return self._args[0].run(ctx) < self._args[1].run(ctx)
+
 class LogicalAnd(Operator):
     def __init__(self):
         super().__init__()
