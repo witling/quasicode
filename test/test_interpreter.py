@@ -24,16 +24,16 @@ und zwar rechne mit x
     def test_logical(self):
         src = """
 und zwar or_wahr
-    ((not uzbl) or uzbl) und fertig
+    ((not uzbl) oder uzbl) und fertig
 
 und zwar or_falsch
-    ((not uzbl) or (not uzbl)) und fertig
+    ((not uzbl) oder (not uzbl)) und fertig
 
 und zwar and_wahr
-    (uzbl and uzbl) und fertig
+    (uzbl und uzbl) und fertig
 
 und zwar and_falsch
-    ((not uzbl) and uzbl) und fertig
+    ((not uzbl) und uzbl) und fertig
         """
         program = self._compiler.compile(src)
         self._interpreter.load(program)

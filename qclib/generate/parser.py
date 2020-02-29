@@ -96,7 +96,21 @@ class Lexer:
                 pass
 
             elif c == '(':
-                sub = take_while(it, lambda it: it.peek() != ')')
+
+                def parens_parser(init):
+                    paren_stack = init
+                    def predicate(it):
+                        p = it.peek()
+                        if p == '(':
+                            paren_stack.append(p)
+                        elif p == ')':
+                            paren_stack.pop()
+                            return 0 < len(paren_stack)
+                        return True
+                    return predicate
+
+                sub = take_while(it, parens_parser(['(']))
+                #sub = take_while(it, lambda it: it.peek() != ')')
                 if it:
                     # drop trailing )
                     assert next(it) == ')'
@@ -214,7 +228,12 @@ class Parser:
                     stack.append(token)
 
             elif isof(token, Parens):
-                stack.append(self._parse_expression(token.expr()))
+                sub = self._parse_expression(token.expr()) 
+                if stack:
+                    assert len(stack[-1].args()) < 2
+                    stack[-1].add_arg(sub)
+                else:
+                    stack.append(sub)
 
         if len(stack) != 1:
             print(stack)
