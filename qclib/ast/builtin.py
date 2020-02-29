@@ -11,6 +11,17 @@ class Print(Statement, Parameterized):
     def __str__(self):
         return 'print {}'.format(' '.join(map(str, self._args)))
 
+class Debug(Statement):
+    def __init__(self):
+        super().__init__()
+
+    def run(self, ctx):
+        from pudb import set_trace
+        set_trace()
+
+    def __str__(self):
+        return 'debug'
+
 class Use(Statement, Parameterized):
     def __init__(self):
         Statement.__init__(self)
