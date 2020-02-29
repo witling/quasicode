@@ -8,8 +8,13 @@ class Value:
     def create(val):
         if isinstance(val, int) or isinstance(val, float):
             return Number(float(val))
-        if isinstance(val, bool) and val:
-            return UzblConstant()
+        if isinstance(val, bool):
+            if val:
+                return UzblConstant()
+            else:
+                op = LogicalNot()
+                op.add_arg(UzblConstant())
+                return op
         if isinstance(val, str):
             return String(val)
         raise Exception()

@@ -1,4 +1,5 @@
 from .generic import *
+from .value import *
 
 def foldtwo(fn, args, ctx):
     arg1 = args[0].run(ctx)
@@ -49,7 +50,11 @@ class LogicalOr(Operator):
         super().__init__()
 
     def run(self, ctx):
-        return self._args[0].run(ctx) or self._args[1].run(ctx)
+        if self._args[0].run(ctx):
+            return Value.create(True)
+        if self._args[1].run(ctx):
+            return Value.create(True)
+        return Value.create(False)
 
 class Add(Operator):
     def __init__(self):
