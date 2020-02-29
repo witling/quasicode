@@ -37,6 +37,7 @@ SYN_KEYWORDS = [
     ('kris?', If),              # if
     ('kris??', Elif),           # else if
     ('patrick!', Break),        # break
+    ('hä', Debug),              # acts as breakpoint for debugger
     ('softwareproblem', Raise), # raise error
     ('fähler', Raise),          # raise error
     ('oettinger', Nop)          # keine ahnung
