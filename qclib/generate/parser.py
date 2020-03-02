@@ -328,6 +328,12 @@ class Parser:
                 if isof(kw, Return):
                     kw.add_arg(item)
 
+                elif isof(kw, Construct):
+                    wrapper = LHAssign()
+                    wrapper.set_ident(item)
+                    wrapper.set_value(Menge())
+                    return wrapper
+
                 elif isof(kw, Statement):
                     val = self._parse_expression(line)
 

@@ -9,6 +9,7 @@ SYN_PHRASES = [
     ('und fertig', Return),         # return from a function: <value> und fertig
     ('das holen wir nach', Repeat), # repeat last statement
     ('ach kris.', Else),            # add an else branch to an if
+    ('ist menge', Construct),       # create an object
 ]
 
 SYN_OPERATORS = [
