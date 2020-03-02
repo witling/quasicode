@@ -1,14 +1,14 @@
 from ..ast import *
 
 SYN_PHRASES = [
-    ('action please', MainMarker), # main method
-    ('passt so', Operator), # rounding nums: <value> passt so 
-    ('das ist', Compare),  # comparison
-    ('im quadrat', Operator), # square something
-    ('und zwar', Declaration),  # function declaration: und zwar <ident> mit <ident1>
-    ('und fertig', Return),  # return from a function: <value> und fertig
+    ('action please', MainMarker),  # main method
+    ('passt so', Operator),         # rounding nums: <value> passt so 
+    ('das ist', Compare),           # comparison
+    ('im quadrat', Operator),       # square something
+    ('und zwar', Declaration),      # function declaration: und zwar <ident> mit <ident1>
+    ('und fertig', Return),         # return from a function: <value> und fertig
     ('das holen wir nach', Repeat), # repeat last statement
-    ('ach kris.', Else),        # add an else branch to an if
+    ('ach kris.', Else),            # add an else branch to an if
 ]
 
 SYN_OPERATORS = [
@@ -23,8 +23,6 @@ SYN_OPERATORS = [
 SYN_KEYWORDS = [
     ('use', Use),               # import functions from a file
     ('uzbl', UzblConstant),     # True
-    # TODO: remove this, same as `not uzbl` ?
-    #  ('nuzbl', Constant),        # False
     ('quasi', Print),           # output value
     ('und', LogicalAnd),        # logical and; concatenate strings (?)
     ('oder', LogicalOr),        # logical or
@@ -40,7 +38,7 @@ SYN_KEYWORDS = [
     ('patrick!', Break),        # break
     ('hä', Debug),              # acts as breakpoint for debugger
     ('softwareproblem', Raise), # raise error
-    ('fähler', Raise),          # raise error
+    ('fähler', Raise),          # read last error
     ('oettinger', Nop),         # keine ahnung
 ]
 
