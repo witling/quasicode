@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import inspect
 import os
 import sys
 
@@ -21,7 +22,7 @@ def prepare():
 def create_libraries():
     prepare()
 
-    folder = join(dirname(__file__), 'qclib/lib')
+    folder = abspath(join(dirname(__file__), 'qclib/lib'))
 
     for script in os.listdir(folder):
         fname, fext = splitext(script)
@@ -35,6 +36,13 @@ def create_libraries():
     subclasses = Library.__subclasses__()
 
     for cls in subclasses:
+        fpath = inspect.getfile(cls)
+        try:
+            if fpath.index(folder) != 0:
+                continue
+        except ValueError:
+            continue
+
         name = cls.__module__.split('.')[-1]
         path = join(LIBRARY_BUILD, '{}{}'.format(name, Program.FEXTC))
         instance = cls()
@@ -42,6 +50,9 @@ def create_libraries():
             instance.save(f)
 
 def install_libraries():
+    if not os.path.exists(Interpreter.LIB_PATH):
+        os.makedirs(Interpreter.LIB_PATH)
+
     for src in os.listdir(LIBRARY_BUILD):
         dst = join(Interpreter.LIB_PATH, src)
         src = join(LIBRARY_BUILD, src)

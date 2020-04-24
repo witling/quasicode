@@ -3,9 +3,6 @@ from .util import *
 import math
 import random
 
-def create(name, fn):
-    return PythonFunction(name, fn)
-
 def sqrt(ctx):
     return Number(math.sqrt(float(ctx['arg1'])))
 
