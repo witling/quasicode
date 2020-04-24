@@ -40,13 +40,15 @@ class Library(object):
         return self._idents[key]
 
     # load a program from filepointer
-    def load(fp):
+    def load(fname):
         init_vlibs()
-        return pickle.load(fp)
+        with open(fname, 'rb') as fp:
+            return pickle.load(fp)
 
     # write a program into filepointer
-    def save(self, fp):
-        pickle.dump(self, fp)
+    def save(self, fname):
+        with open(fname, 'wb') as fp:
+            pickle.dump(self, fp)
         return True
 
     def ident(self, ident: str, value):

@@ -66,8 +66,7 @@ def build_libraries(folder, ignore=[]):
         name = cls.__module__.split('.')[-1]
         path = join(LIBRARY_BUILD, '{}{}'.format(name, Program.FEXTC))
         instance = cls()
-        with open(path, 'wb') as f:
-            instance.save(f)
+        instance.save(path)
 
 def install_libraries(build_dir, dst_dir):
     if not os.path.exists(dst_dir):

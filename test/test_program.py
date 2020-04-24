@@ -13,10 +13,8 @@ und zwar gib_aus
         self._fname = '/tmp/qc_test_program.qcc'
 
     def test_1saving(self):
-        with open(self._fname, 'wb') as f:
-            self.assertTrue(self._program.save(f))
+        self.assertTrue(self._program.save(self._fname))
 
     def test_2loading(self):
-        with open(self._fname, 'rb') as f:
-            loaded_prog = Program.load(f)
-            self.assertIsInstance(loaded_prog, Program)
+        loaded_prog = Program.load(self._fname)
+        self.assertIsInstance(loaded_prog, Program)

@@ -63,8 +63,7 @@ class Context:
                 raise Exception('cannot use `{}`. not found'.format(str(use)))
             # TODO: allow loading non-compiled programs
             # TODO: avoid reimporting programs
-            with open(path, 'rb') as f:
-                self.load(Program.load(f))
+            self.load(Program.load(path))
 
         self._loaded.append(program)
 
