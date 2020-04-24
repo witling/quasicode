@@ -29,10 +29,10 @@ def retrieve_program(fname):
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Runtime for Quasicode. The best language around.'
+        description='Runtime for quasicode. The best language around.'
     )
 
-    parser.add_argument('program', metavar='PROGRAM', type=str, help='the Quasicode program to run.')
+    parser.add_argument('program', metavar='PROGRAM', type=str, help='the quasicode program to run.')
     parser.add_argument('--listing', action='store_true', default=False, help='printout the program before running.')
     parser.add_argument('--debug', action='store_true', default=False, help='enable interpreter debugging.')
     parser.add_argument('--nichluschdich', action='store_true', default=False, help='disable the funny mode.')

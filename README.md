@@ -7,6 +7,17 @@ $ python3 qc examples/hello-world.qc
 hello world
 ```
 
+## Installing
+
+``` bash
+git clone https://github.com/witling/quasicode
+
+cd quasicode
+chmod +x install
+
+./install
+```
+
 ## How To Use
 
 Usage | `qc` Keyword | Description | Example

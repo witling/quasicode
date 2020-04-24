@@ -1,0 +1,9 @@
+#!/bin/bash
+
+echo "Installing quasicode..."
+pip3 install . > /dev/null
+
+echo "Building standard library..."
+sudo python3 makelibs.py
+
+echo "Done. Have fun."
