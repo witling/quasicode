@@ -32,6 +32,7 @@ def main():
         return
 
     program = retrieve_program(sys.argv[1])
+    interpreter = Interpreter()
 
     if '--listing' in sys.argv:
         print(program)
@@ -40,7 +41,9 @@ def main():
         from pudb import set_trace
         set_trace()
 
-    interpreter = Interpreter()
+    if '--nichluschdich' in sys.argv:
+        interpreter.disable_funny_mode()
+
     interpreter.load(program)
     interpreter.run()
 
