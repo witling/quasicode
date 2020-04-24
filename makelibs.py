@@ -12,7 +12,10 @@ LIBRARY_BUILD = '/tmp/qclibs'
 IGNORE = ['deps', '__pycache__']
 
 def prepare():
-    rmtree(LIBRARY_BUILD)
+    try:
+        rmtree(LIBRARY_BUILD)
+    except FileNotFoundError:
+        pass
     os.makedirs(LIBRARY_BUILD)
 
 def create_libraries():
@@ -44,5 +47,6 @@ def install_libraries():
         src = join(LIBRARY_BUILD, src)
         copyfile(src, dst)
 
-create_libraries()
-install_libraries()
+if __name__ == '__main__':
+    create_libraries()
+    install_libraries()
