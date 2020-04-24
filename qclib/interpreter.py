@@ -1,4 +1,5 @@
 from .ast import *
+from .ast.generic import isof
 from .context import *
 from .program import *
 
@@ -32,6 +33,8 @@ class Interpreter:
     def run(self):
         try:
             for loaded in self._ctx.loaded():
+                if not isof(loaded, Program):
+                    continue
                 ep = loaded.entry_point()
                 if ep:
                     self._run_func(loaded[ep], self._ctx)

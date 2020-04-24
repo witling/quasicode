@@ -9,7 +9,7 @@ def create(name, fn):
 def create_const(name, fn):
     return PythonFunction(name, fn)
 
-class BotLibrary(PythonLibrary):
+class BotLibrary(Library):
     MIN_DIST = 20
     MAX_DIST = 50
 

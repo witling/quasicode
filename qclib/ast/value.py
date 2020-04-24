@@ -1,5 +1,5 @@
 from .generic import FunctionCall, isof
-from ..program import Function
+from ..function import Function
 
 class Value:
     def __init__(self, val):

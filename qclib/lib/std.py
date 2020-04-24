@@ -12,7 +12,7 @@ def sqrt(ctx):
 def rnd(ctx):
     return Number(random.random())
 
-class StdLibrary(PythonLibrary):
+class StdLibrary(Library):
     def __init__(self):
         super().__init__()
 
