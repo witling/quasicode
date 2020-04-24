@@ -14,6 +14,11 @@ class Context:
         self._fun = 100
         self._loaded, self._locals, self._loops = [], [], []
 
+        self._funny_mode = True
+
+    def disable_funny_mode(self):
+        self._funny_mode = False
+
     def __getitem__(self, key):
         self.defun()
         key = str(key)
@@ -73,12 +78,18 @@ class Context:
         return None
 
     def fun(self):
+        if not self._funny_mode:
+            return
+
         if self._fun <= 0:
             raise OutOfOettingerException
         if self._fun <= 75:
             self._fun += FUN
 
     def defun(self):
+        if not self._funny_mode:
+            return
+
         self._fun -= DEFUN
         if self._fun <= 0:
             raise OutOfOettingerException

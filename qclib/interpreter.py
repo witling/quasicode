@@ -12,6 +12,9 @@ class Interpreter:
         self._ctx.add_include_path(Interpreter.LIB_PATH)
         self._ctx.add_include_path(os.getcwd())
 
+    def disable_funny_mode(self):
+        self._ctx.disable_funny_mode()
+
     def load(self, program: Program):
         self._ctx.load(program)
 

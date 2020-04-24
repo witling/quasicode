@@ -1,3 +1,4 @@
+import argparse
 import sys
 
 try:
@@ -17,7 +18,7 @@ def retrieve_program(fname):
     _, fext = splitext(fname)
 
     if fext == Program.FEXT:
-        src = load_source(sys.argv[1])
+        src = load_source(fname)
         compiler = Compiler()
         return compiler.compile(src)
 
@@ -27,20 +28,32 @@ def retrieve_program(fname):
     raise Exception('unsupported file extension')
 
 def main():
-    if len(sys.argv) < 2:
-        print('no file given')
-        return
+    parser = argparse.ArgumentParser(
+        description='Runtime for Quasicode. The best language around.'
+    )
 
-    program = retrieve_program(sys.argv[1])
+    parser.add_argument('program', metavar='PROGRAM', type=str, help='the Quasicode program to run.')
+    parser.add_argument('--listing', action='store_true', default=False, help='printout the program before running.')
+    parser.add_argument('--debug', action='store_true', default=False, help='enable interpreter debugging.')
+    parser.add_argument('--nichluschdich', action='store_true', default=False, help='disable the funny mode.')
 
-    if '--listing' in sys.argv:
+    args = parser.parse_args()
+
+    program = retrieve_program(args.program)
+    interpreter = Interpreter()
+    
+    if args.listing:
+        print('=== Listing', '=' * 8)
         print(program)
+        print('=' * 20)
 
-    if '--debug' in sys.argv:
+    if args.debug:
         from pudb import set_trace
         set_trace()
 
-    interpreter = Interpreter()
+    if args.nichluschdich:
+        interpreter.disable_funny_mode()
+
     interpreter.load(program)
     interpreter.run()
 
