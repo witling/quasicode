@@ -1,4 +1,4 @@
-from .deps import *
+from .util import *
 
 #from botlib.bot import Bot
 #from botlib.sonar import Sonar

@@ -1,4 +1,4 @@
-from .deps import *
+from .util import *
 
 import math
 import random

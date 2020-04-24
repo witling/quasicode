@@ -9,7 +9,7 @@ from shutil import copyfile, rmtree
 from qclib import Interpreter, Program, Library
 
 LIBRARY_BUILD = '/tmp/qclibs'
-IGNORE = ['deps', '__pycache__']
+IGNORE = ['util', '__pycache__']
 
 def prepare():
     try:
