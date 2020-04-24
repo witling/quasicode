@@ -6,5 +6,6 @@ setup(
     name='quasicode',
     version='0.0.1',
     description='the best programming language around.',
-    packages=find_packages()
+    packages=find_packages(),
+    entry_points={'console_scripts': ['qc=qc.__main__:main']}
 )
