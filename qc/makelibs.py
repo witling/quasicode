@@ -9,7 +9,7 @@ from os.path import abspath, dirname, expanduser, join, splitext
 from shutil import copyfile, rmtree
 
 from qclib import Interpreter, Program, Library
-from qclib.library import Library, init_vlibs
+from qclib.library import Library, init_vlib, get_vlib_modname
 
 def random_id(n=6):
     sample = random.sample('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', n)
@@ -36,7 +36,7 @@ def cleanup(build_dir):
 def build_libraries(folder, ignore=[]):
     import importlib.util
 
-    init_vlibs()
+    init_vlib()
 
     for script in os.listdir(folder):
         fname, _ = splitext(script)
@@ -45,13 +45,13 @@ def build_libraries(folder, ignore=[]):
             continue
 
         fpath = join(folder, script)
-        modname = '{}.{}'.format(Library.VIRTUAL_MODULE, fname)
+        modname = get_vlib_modname(fname)
 
         spec = importlib.util.spec_from_file_location(modname, fpath)
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)
 
-        sys.modules[modname] = mod
+        init_vlib(modname, mod)
 
     subclasses = Library.__subclasses__()
 

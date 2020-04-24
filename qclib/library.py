@@ -3,10 +3,9 @@ from .ast.generic import *
 #from .lib import *
 #from . import lib
 
-import sys
-import re
-
 import pickle
+import re
+import sys
 
 def create(name, fn):
     return PythonFunction(name, fn)
@@ -14,18 +13,35 @@ def create(name, fn):
 def create_const(name, fn):
     return PythonFunction(name, fn)
 
-def init_vlibs():
+def get_vlib_modname_by_path(path):
+    from os.path import abspath, basename, splitext
+    fname = basename(abspath(path))
+    fname, _ = splitext(fname)
+    return get_vlib_modname(fname)
+
+def get_vlib_modname(sub=None):
+    if sub is None:
+        return Library.VIRTUAL_MODULE
+    return '{}.{}'.format(Library.VIRTUAL_MODULE, sub)
+
+def init_vlib(modname=None, mod=None):
     """
     this initializes a virtual module containing all loaded qc library files.
     """
     import types
-    libmod = types.ModuleType(Library.VIRTUAL_MODULE, 'virtual module for importing libraries')
-    sys.modules[Library.VIRTUAL_MODULE] = libmod
+
+    if modname is None:
+        modname = get_vlib_modname()
+
+    if mod is None:
+        mod = types.ModuleType(modname, 'virtual module for importing libraries')
+
+    sys.modules[modname] = mod
 
 class Library(object):
     FEXT = '.qc'
     FEXTC = '.qcc'
-    VIRTUAL_MODULE = 'vlibs'
+    VIRTUAL_MODULE = 'vlib'
 
     def __init__(self):
         self._idents = {}
@@ -41,7 +57,10 @@ class Library(object):
 
     # load a program from filepointer
     def load(fname):
-        init_vlibs()
+        modname = get_vlib_modname_by_path(fname)
+        init_vlib()
+        init_vlib(modname)
+
         with open(fname, 'rb') as fp:
             return pickle.load(fp)
 
