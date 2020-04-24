@@ -4,6 +4,6 @@ echo "Installing quasicode..."
 pip3 install . > /dev/null
 
 echo "Building standard library..."
-python3 makelibs.py
+qc install ./qclib/lib --ignore util.py
 
 echo "Done. Have fun."

@@ -1,4 +1,4 @@
-from .util import *
+from qclib.library import *
 
 import math
 import random

@@ -41,6 +41,7 @@ def argument_parser():
 
     parser_install = subparser.add_parser('install', help='install a library.')
     parser_install.add_argument('library', metavar='LIBRARY', type=str, help='path to the library to install.')
+    parser_install.add_argument('--ignore', type=str, nargs='+', help='files to ignore')
 
     return parser
 
@@ -64,7 +65,13 @@ def run(args):
     interpreter.run()
 
 def install(args):
-    pass
+    from .makelibs import process
+    from os.path import abspath
+
+    process(
+        src_dir=args.library,
+        ignore=args.ignore
+    )
 
 def main():
     args = argument_parser().parse_args()
@@ -72,8 +79,11 @@ def main():
     if 'program' in args:
         run(args)
 
-    if 'library' in args:
+    elif 'library' in args:
         install(args)
+
+    else:
+        print('no command specified.')
 
 if __name__ == '__main__':
     main()

@@ -1,4 +1,4 @@
-from .util import *
+from qclib.library import *
 
 #from botlib.bot import Bot
 #from botlib.sonar import Sonar
