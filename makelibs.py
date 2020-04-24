@@ -2,26 +2,35 @@
 
 import inspect
 import os
+import random
 import sys
 
-from os.path import abspath, dirname, join, splitext
+from os.path import abspath, dirname, expanduser, join, splitext
 from shutil import copyfile, rmtree
 
 from qclib import Interpreter, Program, Library
 
-LIBRARY_BUILD = '/tmp/qclibs'
+def random_id(n=6):
+    sample = random.sample('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', n)
+    return ''.join(sample)
+
+LIBRARY_BUILD = '/tmp/qclibs_{}'.format(random_id())
 IGNORE = ['util', '__pycache__']
 
 def prepare():
+    assert not os.path.exists(LIBRARY_BUILD)
+    os.makedirs(LIBRARY_BUILD)
+
+def cleanup():
     try:
         rmtree(LIBRARY_BUILD)
     except FileNotFoundError:
         pass
-    os.makedirs(LIBRARY_BUILD)
+    except PermissionError:
+        print('insufficient permissions to remove file')
+        exit()
 
 def create_libraries():
-    prepare()
-
     folder = abspath(join(dirname(__file__), 'qclib/lib'))
 
     for script in os.listdir(folder):
@@ -49,15 +58,23 @@ def create_libraries():
         with open(path, 'wb') as f:
             instance.save(f)
 
-def install_libraries():
-    if not os.path.exists(Interpreter.LIB_PATH):
-        os.makedirs(Interpreter.LIB_PATH)
+def install_libraries(directory):
+    if not os.path.exists(directory):
+        os.makedirs(directory)
 
     for src in os.listdir(LIBRARY_BUILD):
-        dst = join(Interpreter.LIB_PATH, src)
+        dst = join(directory, src)
         src = join(LIBRARY_BUILD, src)
         copyfile(src, dst)
 
-if __name__ == '__main__':
+def main():
+    prepare()
     create_libraries()
-    install_libraries()
+
+    directory = expanduser(Interpreter.USERLIB_PATH)
+    install_libraries(directory)
+
+    cleanup()
+
+if __name__ == '__main__':
+    main()
