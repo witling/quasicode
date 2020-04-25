@@ -43,6 +43,17 @@ function declaration | `und zwar <ident> (mit <arg1> <arg2>) (action please)` | 
 breakpoint | `hä` | open pudb to debug the interpreter | `hä`
 speed up | `so` |  | `so`
 
+## How To Extend
+
+Quasicode heavily relies on Python functionality. To implement a new library, create a Python class that inherits from `qclib.library.PyLibrary`.
+
+There are some quirks to fix when implementing libraries. This is mainly due to the way libraries are serialized. **Note:**
+
+- The classes `__module__` should be set to `__main__`.
+- Also, don't use `super()` to address the parent class but rather write the name out e.g. `super().__init__()` becomes `PyLibrary.__init__(self)`.
+- Function-local `import` does not work. Import everything at the top of the file.
+- All functions must be subject to the library class.
+
 ### Development
 
 use this to format code before committing:
