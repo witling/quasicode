@@ -62,9 +62,6 @@ class Library(object):
             return None
         return self._idents[key]
 
-    def bind(self, bridge):
-        pass
-
     # load a program from filepointer
     def load(fname):
         modname = get_vlib_modname_by_path(fname)
@@ -101,10 +98,6 @@ class Library(object):
 class PyLibrary(Library):
     def __init__(self):
         Library.__init__(self)
-        self._bridge = None
-
-    def bind(self, bridge):
-        self._bridge = bridge
 
 class PyFunction(Function):
     def __init__(self, args, fn):

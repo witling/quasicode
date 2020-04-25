@@ -1,5 +1,4 @@
 from .program import Program
-from .bridge import Bridge
 
 DEFUN = 10
 FUN = DEFUN * 10
@@ -11,7 +10,6 @@ class Context:
     def __init__(self):
         self._globals = {}
         self._includes = []
-        self._bridge = Bridge()
 
         self._fun = 100
         self._loaded, self._locals, self._loops = [], [], []
@@ -65,9 +63,6 @@ class Context:
                 raise Exception('cannot use `{}`. not found'.format(str(use)))
 
             program = Program.load(path)
-
-            if hasattr(program, 'bind'):
-                program.bind(self._bridge)
 
             # TODO: allow loading non-compiled programs
             # TODO: avoid reimporting programs
