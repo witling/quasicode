@@ -1,6 +1,13 @@
 def isof(var, cls) -> bool:
     return isinstance(var, cls) or any(isof(cls, b) for b in var.__class__.__bases__ if b.__name__ != 'object')
 
+def decl_key(k):
+    if isinstance(k, str):
+        return k
+    if hasattr(k, 'name'):
+        return k.name()
+    raise Exception('variable `{}` is not valid as function argument'.format(k))
+
 class Runnable:
     def run(self, ctx):
         pass
@@ -90,7 +97,7 @@ class FunctionCall(Runnable, Parameterized):
         decl = ctx.lookup(self.name())
 
         assert len(decl.args()) == len(rvars)
-        frame = {k.name(): v for k, v in zip(decl.args(), rvars)}
+        frame = {decl_key(k): v for k, v in zip(decl.args(), rvars)}
         self._ret = None
 
         def receive_return(v):

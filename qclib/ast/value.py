@@ -17,7 +17,9 @@ class Value:
                 return op
         if isinstance(val, str):
             return String(val)
-        raise Exception()
+        if isinstance(val, bytes):
+            return String(val.decode('utf-8'))
+        raise Exception('cannot create value from `{}`'.format(val))
 
     def __str__(self):
         return self._val

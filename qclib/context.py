@@ -29,14 +29,17 @@ class Context:
         if self._locals and key in self._locals[-1][0]:
             return self._locals[-1][0][key]
 
-        pitem = self.lookup(key)
-        if pitem:
-            return pitem
+        try:
+            return self.lookup(key)
+
+        except LookupException:
+            pass
 
         return self._globals[key]
 
     def __setitem__(self, key, value):
         self.defun()
+        # if there is a last stack frame, assign to it
         scope = self._locals[-1][0] if self._locals else self._globals
         scope[str(key)] = value
 
