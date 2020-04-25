@@ -3,9 +3,15 @@
 Programming as it should be.
 
 ``` bash
-$ python3 qc examples/hello-world.qc
+$ qc run examples/hello-world.qc
 hello world
 ```
+
+What Is Implemented? | What Doesn't 'Work'?
+---|---
+endless loops, breaking | `qc` does not prioritize mathematical operators. This is not a bug but rather a feature.
+variable assignment, computing with the standard math operators `+`, `-`, `*`, `/`, `modulo`™ | 
+function declaration | 
 
 ## Installing
 
@@ -36,16 +42,6 @@ return | `<value> und fertig` | set the return value of a function | `42 und fer
 function declaration | `und zwar <ident> (mit <arg1> <arg2>) (action please)` | declare a function. `action please` marks the program entry point | `und zwar main action please`
 breakpoint | `hä` | open pudb to debug the interpreter | `hä`
 speed up | `so` |  | `so`
-
-## What Is Implemented?
-
-- endless loops, breaking
-- variable assignment, computing with the standard math operators `+`, `-`, `*`, `/`, `modulo`™
-- function declaration
-
-## What Doesn't 'Work'?
-
-- `qc` does not prioritize mathematical operators. This is not a bug but rather a feature.
 
 ### Development
 
