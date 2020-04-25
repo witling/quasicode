@@ -6,10 +6,10 @@ import re
 import sys
 
 def create(name, fn):
-    return PythonFunction(name, fn)
+    return PyFunction(name, fn)
 
 def create_const(name, fn):
-    return PythonFunction(name, fn)
+    return PyFunction(name, fn)
 
 def get_vlib_modname_by_path(path):
     from os.path import abspath, basename, splitext
@@ -62,6 +62,9 @@ class Library(object):
             return None
         return self._idents[key]
 
+    def bind(self, bridge):
+        pass
+
     # load a program from filepointer
     def load(fname):
         modname = get_vlib_modname_by_path(fname)
@@ -76,7 +79,7 @@ class Library(object):
     # write a program into filepointer
     def save(self, fname):
         with open(fname, 'wb') as fp:
-            dill.dump(self, fp)
+            dill.dump(self, fp, recurse=True)
         return True
 
     def ident(self, ident: str, value):
@@ -95,7 +98,15 @@ class Library(object):
         fixed = map(lambda x: '{}:\n{}'.format(x[0], x[1]), self._idents.items())
         return '\n'.join(fixed)
 
-class PythonFunction(Function):
+class PyLibrary(Library):
+    def __init__(self):
+        Library.__init__(self)
+        self._bridge = None
+
+    def bind(self, bridge):
+        self._bridge = bridge
+
+class PyFunction(Function):
     def __init__(self, args, fn):
         super().__init__(args, Block())
         self._fn = fn

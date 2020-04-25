@@ -9,7 +9,7 @@ from os.path import abspath, dirname, expanduser, join, splitext
 from shutil import copyfile, rmtree
 
 from qclib import Interpreter, Program, Library
-from qclib.library import Library, init_vlib, get_vlib_modname
+from qclib.library import PyLibrary, init_vlib, get_vlib_modname
 
 def random_id(n=6):
     sample = random.sample('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', n)
@@ -53,11 +53,11 @@ def build_libraries(folder, ignore=[]):
 
         init_vlib(modname, mod)
 
-    subclasses = Library.__subclasses__()
+    subclasses = PyLibrary.__subclasses__()
 
     for cls in subclasses:
         try:
-            if cls.__module__.index(Library.VIRTUAL_MODULE) != 0:
+            if cls.__module__.index(PyLibrary.VIRTUAL_MODULE) != 0:
                 continue
         except ValueError:
             continue
