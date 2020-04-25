@@ -56,14 +56,13 @@ def build_libraries(folder, ignore=[]):
     subclasses = Library.__subclasses__()
 
     for cls in subclasses:
-        fpath = inspect.getfile(cls)
         try:
-            if fpath.index(folder) != 0:
+            if cls.__module__.index(Library.VIRTUAL_MODULE) != 0:
                 continue
         except ValueError:
             continue
 
-        name = cls.__module__.split('.')[-1]
+        name = cls.__name__.lower()[:-len('library')]
         path = join(LIBRARY_BUILD, '{}{}'.format(name, Program.FEXTC))
         instance = cls()
         instance.save(path)

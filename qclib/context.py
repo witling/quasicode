@@ -61,6 +61,10 @@ class Context:
             path = self._search_file(use)
             if not path:
                 raise Exception('cannot use `{}`. not found'.format(str(use)))
+
+            #program = Program.load(path)
+            #program.bind(self.bridge)
+
             # TODO: allow loading non-compiled programs
             # TODO: avoid reimporting programs
             self.load(Program.load(path))

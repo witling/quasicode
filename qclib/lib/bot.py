@@ -4,11 +4,13 @@ from qclib.library import *
 #from botlib.sonar import Sonar
 
 class BotLibrary(Library):
+    __module__ = '__main__'
+
     MIN_DIST = 20
     MAX_DIST = 50
 
     def __init__(self):
-        super().__init__()
+        Library.__init__(self)
         self._inst = None
 
         self.ident('fahre', create([Ident('arg1')], self._drive))

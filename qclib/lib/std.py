@@ -1,17 +1,19 @@
+import qclib
 from qclib.library import *
 
-import math
-import random
-
-def sqrt(ctx):
-    return Number(math.sqrt(float(ctx['arg1'])))
-
-def rnd(ctx):
-    return Number(random.random())
-
 class StdLibrary(Library):
-    def __init__(self):
-        super().__init__()
+    __module__ = '__main__'
 
-        self.ident('random', create([], rnd))
-        self.ident('sqrt', create([Ident('arg1')], sqrt))
+    def __init__(self):
+        Library.__init__(self)
+
+        self.ident('random', create([], self._rnd))
+        self.ident('sqrt', create([Ident('arg1')], self._sqrt))
+
+    def _sqrt(self, ctx):
+        #self.binder.wimport('math')
+        return Number(math.sqrt(float(ctx['arg1'])))
+    
+    def _rnd(self, ctx):
+        #self.library.wimport('random')
+        return Number(random.random())

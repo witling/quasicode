@@ -1,9 +1,7 @@
 from .ast import *
 from .ast.generic import *
-#from .lib import *
-#from . import lib
 
-import pickle
+import dill
 import re
 import sys
 
@@ -33,15 +31,24 @@ def init_vlib(modname=None, mod=None):
     if modname is None:
         modname = get_vlib_modname()
 
-    if mod is None:
-        mod = types.ModuleType(modname, 'virtual module for importing libraries')
+    if modname in sys.modules and modname == Library.VIRTUAL_MODULE:
+        # this makes 'vlib' a package
+        sys.modules[modname].__path__ = iter([])
+    
+    else:
+        if mod is None:
+            mod = types.ModuleType(modname, 'virtual module for importing libraries')
 
-    sys.modules[modname] = mod
+        if modname == Library.VIRTUAL_MODULE:
+            # this makes 'vlib' a package
+            mod.__path__ = iter([])
+
+        sys.modules[modname] = mod
 
 class Library(object):
     FEXT = '.qc'
     FEXTC = '.qcc'
-    VIRTUAL_MODULE = 'vlib'
+    VIRTUAL_MODULE = '__main__'
 
     def __init__(self):
         self._idents = {}
@@ -62,12 +69,14 @@ class Library(object):
         init_vlib(modname)
 
         with open(fname, 'rb') as fp:
-            return pickle.load(fp)
+            sys.modules[modname] = dill.load(fp)
+
+        return sys.modules.get(modname)
 
     # write a program into filepointer
     def save(self, fname):
         with open(fname, 'wb') as fp:
-            pickle.dump(self, fp)
+            dill.dump(self, fp)
         return True
 
     def ident(self, ident: str, value):
