@@ -23,5 +23,7 @@ class TestExamples(unittest.TestCase):
             program = compiler.compile(src)
 
             interpreter = Interpreter()
+            interpreter.disable_funny_mode()
+
             interpreter.load(program)
             interpreter.run()
