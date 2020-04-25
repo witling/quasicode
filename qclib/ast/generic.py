@@ -96,7 +96,9 @@ class FunctionCall(Runnable, Parameterized):
         rvars = [arg.run(ctx) for arg in self.args()]
         decl = ctx.lookup(self.name())
 
-        assert len(decl.args()) == len(rvars)
+        if len(decl.args()) != len(rvars):
+            raise Exception('call to `{}` expected {} arguments, got {}'.format(self.name(), len(decl.args()), len(rvars)))
+
         frame = {decl_key(k): v for k, v in zip(decl.args(), rvars)}
         self._ret = None
 
