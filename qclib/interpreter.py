@@ -42,8 +42,7 @@ class Interpreter:
                     self._run_func(loaded[ep], self._ctx)
                     break
             else:
-                print('no starting point.')
-                return
+                raise Exception('no starting point')
 
         except Exception as e:
             import traceback
