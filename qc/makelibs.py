@@ -5,7 +5,7 @@ import os
 import random
 import sys
 
-from os.path import abspath, dirname, expanduser, join, splitext
+from os.path import abspath, basename, dirname, expanduser, join, splitext
 from shutil import copyfile, rmtree
 
 from qclib import Interpreter, Program, Library
@@ -67,7 +67,7 @@ def build_libraries(folder, ignore=[]):
         path = join(LIBRARY_BUILD, '{}{}'.format(name, Program.FEXTC))
         instance = cls()
         if instance.save(path):
-            print('Built', path, '...')
+            print('Built', name, '...')
 
 def install_libraries(build_dir, dst_dir):
     if not os.path.exists(dst_dir):
@@ -77,7 +77,7 @@ def install_libraries(build_dir, dst_dir):
         dst = join(dst_dir, src)
         src = join(build_dir, src)
         ret = copyfile(src, dst)
-        print('Installed', src, 'into', dst, '...')
+        print('Installed', splitext(basename(src))[0], 'into', dst, '...')
 
 def process(
     src_dir,
