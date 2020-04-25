@@ -41,7 +41,7 @@ def argument_parser():
 
     parser_install = subparser.add_parser('install', help='install a library.')
     parser_install.add_argument('library', metavar='LIBRARY', type=str, help='path to the library to install.')
-    parser_install.add_argument('--ignore', type=str, nargs='+', help='files to ignore')
+    parser_install.add_argument('--ignore', type=str, default=[], nargs='+', help='files to ignore')
 
     return parser
 

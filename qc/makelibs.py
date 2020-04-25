@@ -38,7 +38,8 @@ def build_libraries(folder, ignore=[]):
 
     init_vlib()
 
-    for script in os.listdir(folder):
+    # ignore hidden files
+    for script in (path for path in os.listdir(folder) if not path.startswith('.')):
         fname, _ = splitext(script)
 
         if script in ignore:
@@ -65,7 +66,8 @@ def build_libraries(folder, ignore=[]):
         name = cls.__name__.lower()[:-len('library')]
         path = join(LIBRARY_BUILD, '{}{}'.format(name, Program.FEXTC))
         instance = cls()
-        instance.save(path)
+        if instance.save(path):
+            print('Built', path, '...')
 
 def install_libraries(build_dir, dst_dir):
     if not os.path.exists(dst_dir):
@@ -74,7 +76,8 @@ def install_libraries(build_dir, dst_dir):
     for src in os.listdir(build_dir):
         dst = join(dst_dir, src)
         src = join(build_dir, src)
-        copyfile(src, dst)
+        ret = copyfile(src, dst)
+        print('Installed', src, 'into', dst, '...')
 
 def process(
     src_dir,
