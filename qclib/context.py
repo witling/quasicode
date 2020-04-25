@@ -1,9 +1,12 @@
-from .program import Program
+from .program import Library, Program
 
 DEFUN = 10
 FUN = DEFUN * 10
 
 class OutOfOettingerException(Exception):
+    pass
+
+class LookupException(Exception):
     pass
 
 class Context:
@@ -60,13 +63,11 @@ class Context:
         for use in program.uses():
             path = self._search_file(use)
             if not path:
-                raise Exception('cannot use `{}`. not found'.format(str(use)))
-
-            program = Program.load(path)
+                raise LookupException('cannot use `{}`, not found'.format(str(use)))
 
             # TODO: allow loading non-compiled programs
             # TODO: avoid reimporting programs
-            self.load(program)
+            self.load(Library.load(path))
 
         self._loaded.append(program)
 
@@ -77,7 +78,7 @@ class Context:
         for loaded in self.loaded():
             if name in loaded:
                 return loaded[name]
-        return None
+        raise LookupException('cannot use `{}`, not found.'.format(name))
 
     def fun(self):
         if not self._funny_mode:

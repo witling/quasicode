@@ -44,5 +44,6 @@ class Interpreter:
             else:
                 print('no starting point.')
                 return
-        except OutOfOettingerException:
-            print('out of oettinger exception')
+
+        except Exception as e:
+            print(e)
