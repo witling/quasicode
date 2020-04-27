@@ -3,6 +3,8 @@ title: quasicode | examples
 layout: default
 ---
 
-<pre>
+### Hello World
+
+```
 quasi "hello world"
-</pre>
+```
