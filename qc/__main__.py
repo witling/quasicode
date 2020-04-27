@@ -8,25 +8,6 @@ except:
     sys.path.insert(0, abspath(join(dirname(__file__), '..')))
     from qclib import *
 
-def load_source(fname):
-    with open(fname, 'r') as src:
-        return src.read()
-
-def retrieve_program(fname):
-    from os.path import splitext
-
-    _, fext = splitext(fname)
-
-    if fext == Program.FEXT:
-        src = load_source(fname)
-        compiler = Compiler()
-        return compiler.compile(src)
-
-    elif fext == Program.FEXTC:
-        return Program.load(fname)
-
-    raise Exception('unsupported file extension')
-
 def argument_parser():
     parser = argparse.ArgumentParser(
         description='Runtime for quasicode. The best language around.'
@@ -46,7 +27,7 @@ def argument_parser():
     return parser
 
 def run(args):
-    program = retrieve_program(args.program)
+    program = Program.load(args.program)
     interpreter = Interpreter()
     
     if args.listing:

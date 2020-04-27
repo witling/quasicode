@@ -22,6 +22,21 @@ def get_vlib_modname(sub=None):
         return Library.VIRTUAL_MODULE
     return '{}.{}'.format(Library.VIRTUAL_MODULE, sub)
 
+def _load_binary(fname):
+    modname = get_vlib_modname_by_path(fname)
+    init_vlib()
+    init_vlib(modname)
+
+    with open(fname, 'rb') as fp:
+        sys.modules[modname] = dill.load(fp)
+
+    return sys.modules.get(modname)
+
+def _load_source():
+    compiler = Compiler()
+    with open(fname, 'r') as src:
+        return compiler.compile(src.read())
+
 def init_vlib(modname=None, mod=None):
     """
     this initializes a virtual module containing all loaded qc library files.
@@ -64,14 +79,17 @@ class Library(object):
 
     # load a program from filepointer
     def load(fname):
-        modname = get_vlib_modname_by_path(fname)
-        init_vlib()
-        init_vlib(modname)
+        from os.path import splitext
 
-        with open(fname, 'rb') as fp:
-            sys.modules[modname] = dill.load(fp)
+        _, fext = splitext(fname)
 
-        return sys.modules.get(modname)
+        if fext == Library.FEXT:
+            return _load_source(fname)
+
+        elif fext == Library.FEXTC:
+            return _load_binary(fname)
+
+        raise Exception('unsupported file extension')
 
     # write a program into filepointer
     def save(self, fname):
