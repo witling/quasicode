@@ -6,6 +6,9 @@ class Compiler:
     def __init__(self):
         self._parser = Parser()
 
+    def parser(self):
+        return self._parser
+
     def compile(self, src):
         parsed = self._parser.parse(src)
         return self._finalize(parsed)

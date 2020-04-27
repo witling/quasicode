@@ -1,7 +1,7 @@
 import os
-import unittest
+import pytest
 
-from deps import *
+from .deps import *
 
 def patch_path(*args):
     return os.path.join(os.getcwd(), *args)
@@ -10,7 +10,7 @@ def load_source(fname):
     with open(fname, 'r') as src:
         return src.read()
 
-class TestExamples(unittest.TestCase):
+class TestExamples(Test):
     def test_all(self):
         examples = os.listdir(patch_path('examples'))
         compiler = Compiler()

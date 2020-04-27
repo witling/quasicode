@@ -1,13 +1,9 @@
-import unittest
+import pytest
 
-from deps import *
+from .deps import *
 
-class TestConstants(unittest.TestCase):
-    def setUp(self):
-        self._interpreter = Interpreter()
-        self._compiler = Compiler()
-
-    def test_uzbl(self):
+class TestConstants(Test):
+    def test_uzbl(self, internals):
         src = """
 und zwar teste
     a ist uzbl
@@ -16,9 +12,9 @@ und zwar teste
         1 und fertig
     0 und fertig
         """
-        program = self._compiler.compile(src)
-        self._interpreter.load(program)
+        program = internals.compiler.compile(src)
+        internals.interpreter.load(program)
 
-        ret = self._interpreter.call('teste', [])
+        ret = internals.interpreter.call('teste', [])
         self.assertIsInstance(ret, Number)
         self.assertEqual(float(0), float(ret))

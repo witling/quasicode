@@ -1,20 +1,30 @@
-import unittest
+import pytest
 
-from deps import *
+from .deps import *
 
-class TestProgram(unittest.TestCase):
-    def setUp(self):
-        src = """
+@pytest.fixture(scope='session')
+def srcdir(tmpdir_factory):
+    d = tmpdir_factory.mktemp('tmp')
+
+    fname = d.join('test.qc')
+    src = """
 und zwar gib_aus
     quasi "hallo welt"
-        """
-        compiler = Compiler()
-        self._program = compiler.compile(src)
-        self._fname = '/tmp/qc_test_program.qcc'
+    """
+    fname.write(src)
 
-    def test_1saving(self):
-        self.assertTrue(self._program.save(self._fname))
+    return d
 
-    def test_2loading(self):
-        loaded_prog = Program.load(self._fname)
+class TestProgram(Test):
+    def test_saving(self, srcdir, internals):
+        fname = srcdir.join('test.qc')
+        with open(str(fname), 'r') as fp:
+            src = fp.read()
+
+        program = internals.compiler.compile(src)
+        self.assertTrue(program.save('{}c'.format(fname)))
+
+    def test_loading(self, srcdir):
+        fname = srcdir.join('test.qcc')
+        loaded_prog = Program.load(str(fname))
         self.assertIsInstance(loaded_prog, Program)

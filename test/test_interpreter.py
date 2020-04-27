@@ -1,13 +1,9 @@
-import unittest
+import pytest
 
-from deps import *
+from .deps import *
 
-class TestInterpreter(unittest.TestCase):
-    def setUp(self):
-        self._compiler = Compiler()
-        self._interpreter = Interpreter()
-
-    def test_maths(self):
+class TestInterpreter(Test):
+    def test_maths(self, internals):
         src = """
 und zwar const
     42 und fertig
@@ -15,13 +11,13 @@ und zwar const
 und zwar rechne mit x
     (x + 1) und fertig
         """
-        program = self._compiler.compile(src)
-        self._interpreter.load(program)
+        program = internals.compiler.compile(src)
+        internals.interpreter.load(program)
 
-        self.assertEqual(42, float(self._interpreter.call('const')))
-        self.assertEqual(2, float(self._interpreter.call('rechne', [1])))
+        self.assertEqual(42, float(internals.interpreter.call('const')))
+        self.assertEqual(2, float(internals.interpreter.call('rechne', [1])))
 
-    def test_logical(self):
+    def test_logical(self, internals):
         src = """
 und zwar or_wahr
     ((not uzbl) oder uzbl) und fertig
@@ -35,25 +31,25 @@ und zwar and_wahr
 und zwar and_falsch
     ((not uzbl) und uzbl) und fertig
         """
-        program = self._compiler.compile(src)
-        self._interpreter.load(program)
+        program = internals.compiler.compile(src)
+        internals.interpreter.load(program)
 
-        self.assertTrue(self._interpreter.call('or_wahr'))
-        self.assertFalse(self._interpreter.call('or_falsch'))
+        self.assertTrue(internals.interpreter.call('or_wahr'))
+        self.assertFalse(internals.interpreter.call('or_falsch'))
 
-        self.assertTrue(self._interpreter.call('and_wahr'))
-        self.assertFalse(self._interpreter.call('and_falsch'))
+        self.assertTrue(internals.interpreter.call('and_wahr'))
+        self.assertFalse(internals.interpreter.call('and_falsch'))
 
-    def test_comparison(self):
+    def test_comparison(self, internals):
         src = """
 und zwar kleiner mit a b
     kris? a < b
         uzbl und fertig
     (not uzbl) und fertig
         """
-        program = self._compiler.compile(src)
-        self._interpreter.load(program)
+        program = internals.compiler.compile(src)
+        internals.interpreter.load(program)
 
-        self.assertTrue(self._interpreter.call('kleiner', [1, 2]))
-        self.assertFalse(self._interpreter.call('kleiner', [2, 1]))
-        self.assertFalse(self._interpreter.call('kleiner', [2, 2]))
+        self.assertTrue(internals.interpreter.call('kleiner', [1, 2]))
+        self.assertFalse(internals.interpreter.call('kleiner', [2, 1]))
+        self.assertFalse(internals.interpreter.call('kleiner', [2, 2]))
