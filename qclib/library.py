@@ -68,6 +68,7 @@ class Library(object):
     def __init__(self):
         self._idents = {}
         self._uses = []
+        self._file = None
 
     def __contains__(self, key):
         return key in self._idents
@@ -77,6 +78,10 @@ class Library(object):
             return None
         return self._idents[key]
 
+    def set_file_path(self, fname):
+        from os.path import abspath
+        self._file = fname
+
     # load a program from filepointer
     def load(fname):
         from os.path import splitext
@@ -84,12 +89,17 @@ class Library(object):
         _, fext = splitext(fname)
 
         if fext == Library.FEXT:
-            return _load_source(fname)
+            lib = _load_source(fname)
 
         elif fext == Library.FEXTC:
-            return _load_binary(fname)
+            lib = _load_binary(fname)
 
-        raise Exception('unsupported file extension')
+        else:
+            raise Exception('unsupported file extension')
+
+        lib.set_file_path(fname)
+
+        return lib
 
     # write a program into filepointer
     def save(self, fname):
