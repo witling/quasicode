@@ -7,8 +7,8 @@ class StringLibrary(PyLibrary):
     def __init__(self):
         PyLibrary.__init__(self)
 
-        self.ident('concat', create(['first', 'second'], self._concat))
-        self.ident('format', create(['template', 'arg'], self._format))
+        self.ident('concat', create_fn(['first', 'second'], self._concat))
+        self.ident('format', create_fn(['template', 'arg'], self._format))
 
     def _concat(self, ctx):
         first, second = ctx['first'], ctx['second']

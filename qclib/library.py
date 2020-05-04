@@ -5,7 +5,7 @@ import dill
 import re
 import sys
 
-def create(name, fn):
+def create_fn(name, fn):
     return PyFunction(name, fn)
 
 def create_const(name, value):

@@ -10,8 +10,8 @@ class StdLibrary(PyLibrary):
     def __init__(self):
         PyLibrary.__init__(self)
 
-        self.ident('random', create([], self._rnd))
-        self.ident('sqrt', create([Ident('arg1')], self._sqrt))
+        self.ident('random', create_fn([], self._rnd))
+        self.ident('sqrt', create_fn([Ident('arg1')], self._sqrt))
 
     def _sqrt(self, ctx):
         return Number(math.sqrt(float(ctx['arg1'])))

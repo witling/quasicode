@@ -13,13 +13,13 @@ class BotLibrary(PyLibrary):
         PyLibrary.__init__(self)
         self._inst = None
 
-        self.ident('fahre', create([Ident('arg1')], self._drive))
-        self.ident('lenke', create([Ident('arg1')], self._steer))
-        self.ident('stop', create([], self._stop))
-        self.ident('linetracker', create([Ident('arg1')], self._linetracker))
+        self.ident('fahre', create_fn([Ident('arg1')], self._drive))
+        self.ident('lenke', create_fn([Ident('arg1')], self._steer))
+        self.ident('stop', create_fn([], self._stop))
+        self.ident('linetracker', create_fn([Ident('arg1')], self._linetracker))
 
-        self.ident('ist_sensor_frei?', create([Ident('arg1')], self._check_sensor))
-        self.ident('klassifiziere?', create([Ident('arg1')], self._classify))
+        self.ident('ist_sensor_frei?', create_fn([Ident('arg1')], self._check_sensor))
+        self.ident('klassifiziere?', create_fn([Ident('arg1')], self._classify))
 
         self.ident('links', create_const(Sonar.LEFT))
         self.ident('links45', create_const(Sonar.LEFT45))

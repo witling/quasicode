@@ -9,7 +9,7 @@ class NetLibrary(PyLibrary):
     def __init__(self):
         PyLibrary.__init__(self)
 
-        self.ident('ziehe', create(['url'], self._download))
+        self.ident('ziehe', create_fn(['url'], self._download))
 
     def _download(self, ctx):
         url = ctx['url']

@@ -7,8 +7,8 @@ class IOLibrary(PyLibrary):
     def __init__(self):
         PyLibrary.__init__(self)
 
-        self.ident('schreibe', create(['path', 'content'], self._write))
-        self.ident('inhaliere', create(['path'], self._read))
+        self.ident('schreibe', create_fn(['path', 'content'], self._write))
+        self.ident('inhaliere', create_fn(['path'], self._read))
 
     def _read(self, ctx):
         path = ctx['path']
