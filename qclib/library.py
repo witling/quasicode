@@ -8,8 +8,8 @@ import sys
 def create(name, fn):
     return PyFunction(name, fn)
 
-def create_const(name, fn):
-    return PyFunction(name, fn)
+def create_const(name, value):
+    return Value.create(value)
 
 def get_vlib_modname_by_path(path):
     from os.path import abspath, basename, splitext

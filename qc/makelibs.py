@@ -50,9 +50,13 @@ def build_libraries(folder, ignore=[]):
 
         spec = importlib.util.spec_from_file_location(modname, fpath)
         mod = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(mod)
 
-        init_vlib(modname, mod)
+        try:
+            spec.loader.exec_module(mod)
+            init_vlib(modname, mod)
+
+        except Exception:
+            print('Error building', fpath, '. Invalid python code or library missing.')
 
     subclasses = PyLibrary.__subclasses__()
 

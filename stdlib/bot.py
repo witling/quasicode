@@ -1,7 +1,7 @@
 from qclib.library import *
 
-#from botlib.bot import Bot
-#from botlib.sonar import Sonar
+from botlib.bot import Bot
+from botlib.sonar import Sonar
 
 class BotLibrary(PyLibrary):
     __module__ = '__main__'
@@ -21,13 +21,13 @@ class BotLibrary(PyLibrary):
         self.ident('ist_sensor_frei?', create([Ident('arg1')], self._check_sensor))
         self.ident('klassifiziere?', create([Ident('arg1')], self._classify))
 
-        #self.ident('links', create_const(Sonar.LEFT))
-        #self.ident('links45', create_const(Sonar.LEFT45))
-        #self.ident('linksvorne', create_const(Sonar.LEFT_FRONT))
-        #self.ident('rechtsvorne', create_const(Sonar.RIGHT_FRONT))
-        #self.ident('rechts45', create_const(Sonar.RIGHT45))
-        #self.ident('rechts', create_const(Sonar.RIGHT))
-        #self.ident('hinten', create_const(Sonar.BACK))
+        self.ident('links', create_const(Sonar.LEFT))
+        self.ident('links45', create_const(Sonar.LEFT45))
+        self.ident('linksvorne', create_const(Sonar.LEFT_FRONT))
+        self.ident('rechtsvorne', create_const(Sonar.RIGHT_FRONT))
+        self.ident('rechts45', create_const(Sonar.RIGHT45))
+        self.ident('rechts', create_const(Sonar.RIGHT))
+        self.ident('hinten', create_const(Sonar.BACK))
 
     def _get_inst(self):
         if not self._inst:
