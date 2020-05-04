@@ -24,6 +24,8 @@ chmod +x install
 ./install
 ```
 
+We have a [vim plugin](https://github.com/witling/quasi.vim) for syntax support. What else do you really need?
+
 ## How To Use
 
 Usage | `qc` Keyword | Description | Example
