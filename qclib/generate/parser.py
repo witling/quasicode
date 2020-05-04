@@ -1,10 +1,10 @@
-from ast import *
 from more_itertools import peekable
-from .syntax import *
-
-from pudb import set_trace
-
 import re
+
+from ..ast import *
+
+from .error import ParserError
+from .syntax import *
 
 peek_is = lambda cls: lambda it: isof(it.peek(), cls)
 
@@ -38,9 +38,6 @@ class Parens:
     def expr(self):
         return self._expr
 
-class Error(Exception):
-    pass
-
 class Lexer:
     INDENT_RE = re.compile('^(\\t|\s{4})+')
     INDENT_WIDTH = 4
@@ -55,10 +52,10 @@ class Lexer:
                 node = node[k]
             except KeyError:
                 possible = ','.join(map(lambda x: '`{}`'.format(x), node.keys()))
-                raise Error('expected one of {}. got `{}`'.format(possible, name))
+                raise ParserError('expected one of {}. got `{}`'.format(possible, name))
 
         if '_op' not in node:
-            raise Error('unexpected symbol `{}` in `{}`'.format(name, stc))
+            raise ParserError('unexpected symbol `{}` in `{}`'.format(name, stc))
 
         return node['_op']
 
@@ -119,6 +116,7 @@ class Lexer:
                 continue
 
             # parse strings here
+            # TODO: discourage use of ' here
             elif c == '"' or c == "'":
                 buf = take_while(it, lambda it: it.peek() != c)
                 buf = ''.join(buf)

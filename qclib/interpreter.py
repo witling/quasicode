@@ -1,16 +1,19 @@
 from .ast import *
+from .ast.generic import isof
 from .context import *
 from .program import *
 
 class Interpreter:
     LIB_PATH = '/usr/local/lib/quasicode'
+    USERLIB_PATH = '~/.local/lib/quasicode'
 
     def __init__(self):
         import os
 
         self._ctx = Context()
-        self._ctx.add_include_path(Interpreter.LIB_PATH)
         self._ctx.add_include_path(os.getcwd())
+        self._ctx.add_include_path(os.path.expanduser(Interpreter.USERLIB_PATH))
+        self._ctx.add_include_path(Interpreter.LIB_PATH)
 
     def disable_funny_mode(self):
         self._ctx.disable_funny_mode()
@@ -32,12 +35,16 @@ class Interpreter:
     def run(self):
         try:
             for loaded in self._ctx.loaded():
+                if not isof(loaded, Program):
+                    continue
                 ep = loaded.entry_point()
                 if ep:
                     self._run_func(loaded[ep], self._ctx)
                     break
             else:
-                print('no starting point.')
-                return
-        except OutOfOettingerException:
-            print('out of oettinger exception')
+                raise Exception('no starting point')
+
+        except Exception as e:
+            import traceback
+            print(traceback.format_exc())
+            print(e)

@@ -1,3 +1,5 @@
 from .generate import *
+from .function import Function
 from .interpreter import Interpreter
-from .program import Program, PythonFunction, PythonLibrary
+from .library import Library, PyFunction, PyLibrary
+from .program import Program

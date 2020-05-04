@@ -1,9 +1,12 @@
-from .program import Program
+from .program import Library, Program
 
 DEFUN = 10
 FUN = DEFUN * 10
 
 class OutOfOettingerException(Exception):
+    pass
+
+class LookupException(Exception):
     pass
 
 class Context:
@@ -26,14 +29,17 @@ class Context:
         if self._locals and key in self._locals[-1][0]:
             return self._locals[-1][0][key]
 
-        pitem = self.lookup(key)
-        if pitem:
-            return pitem
+        try:
+            return self.lookup(key)
+
+        except LookupException:
+            pass
 
         return self._globals[key]
 
     def __setitem__(self, key, value):
         self.defun()
+        # if there is a last stack frame, assign to it
         scope = self._locals[-1][0] if self._locals else self._globals
         scope[str(key)] = value
 
@@ -60,11 +66,11 @@ class Context:
         for use in program.uses():
             path = self._search_file(use)
             if not path:
-                raise Exception('cannot use `{}`. not found'.format(str(use)))
+                raise LookupException('cannot use `{}`, not found'.format(str(use)))
+
             # TODO: allow loading non-compiled programs
             # TODO: avoid reimporting programs
-            with open(path, 'rb') as f:
-                self.load(Program.load(f))
+            self.load(Library.load(path))
 
         self._loaded.append(program)
 
@@ -75,7 +81,7 @@ class Context:
         for loaded in self.loaded():
             if name in loaded:
                 return loaded[name]
-        return None
+        raise LookupException('cannot use `{}`, not found.'.format(name))
 
     def fun(self):
         if not self._funny_mode:

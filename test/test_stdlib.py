@@ -1,20 +1,22 @@
-import unittest
+import pytest
 
-from deps import *
+from .deps import *
 
-class TestStdlib(unittest.TestCase):
-    def setUp(self):
-        self._interpreter = Interpreter()
+@pytest.fixture
+def std():
+    obj = Internals()
+    src = """use std"""
 
-        src = """use std"""
-        program = Compiler().compile(src)
-        self._interpreter.load(program)
+    program = obj.compiler.compile(src)
+    obj.interpreter.load(program)
+    return obj
 
-    def test_random(self):
-        ret = self._interpreter.call('random', [])
+class TestStdlib(Test):
+    def test_random(self, std):
+        ret = std.interpreter.call('random', [])
         self.assertIsInstance(ret, Number)
         self.assertTrue(0 <= float(ret) <= 1)
 
-    def test_sqrt(self):
-        ret = self._interpreter.call('sqrt', [16])
+    def test_sqrt(self, std):
+        ret = std.interpreter.call('sqrt', [16])
         self.assertEqual(float(ret), 4)

@@ -38,6 +38,10 @@ class Use(Statement, Parameterized):
         Statement.__init__(self)
         Parameterized.__init__(self)
 
+    def run(self, ctx):
+        modname = self.args()[0]
+        raise Exception('local use is not implemented :(')
+
     def __str__(self):
         return 'use'
 

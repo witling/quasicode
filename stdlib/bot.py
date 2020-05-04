@@ -1,20 +1,16 @@
-from .deps import *
+from qclib.library import *
 
 #from botlib.bot import Bot
 #from botlib.sonar import Sonar
 
-def create(name, fn):
-    return PythonFunction(name, fn)
+class BotLibrary(PyLibrary):
+    __module__ = '__main__'
 
-def create_const(name, fn):
-    return PythonFunction(name, fn)
-
-class BotLibrary(PythonLibrary):
     MIN_DIST = 20
     MAX_DIST = 50
 
     def __init__(self):
-        super().__init__()
+        PyLibrary.__init__(self)
         self._inst = None
 
         self.ident('fahre', create([Ident('arg1')], self._drive))
