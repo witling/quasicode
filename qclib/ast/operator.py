@@ -11,17 +11,17 @@ class Operator(Keyword, Parameterized):
         super().__init__()
         Parameterized.__init__(self)
 
-    def _name(self):
+    def _repr(self):
         return ''
 
     def __str__(self):
-        return '({} {})'.format(self._name(), ' '.join(map(str, self._args)))
+        return '({} {})'.format(self._repr(), ' '.join(map(str, self._args)))
 
 class Compare(Operator):
     def __init__(self):
         super().__init__()
 
-    def _name(self):
+    def _repr(self):
         return '=='
 
     def run(self, ctx):
@@ -31,7 +31,7 @@ class Less(Operator):
     def __init__(self):
         super().__init__()
 
-    def _name(self):
+    def _repr(self):
         return '<'
 
     def run(self, ctx):
@@ -41,7 +41,7 @@ class LogicalAnd(Operator):
     def __init__(self):
         super().__init__()
 
-    def _name(self):
+    def _repr(self):
         return 'und'
 
     def run(self, ctx):
@@ -51,7 +51,7 @@ class LogicalNot(Operator):
     def __init__(self):
         super().__init__()
 
-    def _name(self):
+    def _repr(self):
         return 'not'
 
     def run(self, ctx):
@@ -61,7 +61,7 @@ class LogicalOr(Operator):
     def __init__(self):
         super().__init__()
 
-    def _name(self):
+    def _repr(self):
         return 'oder'
 
     def run(self, ctx):
@@ -75,7 +75,7 @@ class Add(Operator):
     def __init__(self):
         super().__init__()
 
-    def _name(self):
+    def _repr(self):
         return '+'
 
     def run(self, ctx):
@@ -85,7 +85,7 @@ class Sub(Operator):
     def __init__(self):
         super().__init__()
 
-    def _name(self):
+    def _repr(self):
         return '-'
 
     def run(self, ctx):
@@ -95,7 +95,7 @@ class Mul(Operator):
     def __init__(self):
         super().__init__()
 
-    def _name(self):
+    def _repr(self):
         return '*'
 
     def run(self, ctx):
@@ -105,7 +105,7 @@ class Div(Operator):
     def __init__(self):
         super().__init__()
 
-    def _name(self):
+    def _repr(self):
         return '/'
 
     def run(self, ctx):
@@ -115,7 +115,7 @@ class Mod(Operator):
     def __init__(self):
         super().__init__()
 
-    def _name(self)
+    def _repr(self):
         return 'modulo'
 
     def run(self, ctx):
