@@ -62,6 +62,8 @@ class Lexer:
     def _interpret_buffer(self, buf: str):
         if buf == 'uzbl':
             return UzblConstant()
+        elif buf == 'menge':
+            return Menge()
         elif buf in KEYWORDS:
             return Keyword(buf)
         elif buf.isnumeric():
@@ -325,12 +327,6 @@ class Parser:
             if kw != None:
                 if isof(kw, Return):
                     kw.add_arg(item)
-
-                elif isof(kw, Construct):
-                    wrapper = LHAssign()
-                    wrapper.set_ident(item)
-                    wrapper.set_value(Menge())
-                    return wrapper
 
                 elif isof(kw, Statement):
                     val = self._parse_expression(line)

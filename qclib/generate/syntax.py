@@ -9,7 +9,6 @@ SYN_PHRASES = [
     ('und fertig', Return),         # return from a function: <value> und fertig
     ('das holen wir nach', Repeat), # repeat last statement
     ('ach kris.', Else),            # add an else branch to an if
-    ('ist menge', Construct),       # create an object
 ]
 
 SYN_OPERATORS = [
@@ -24,6 +23,7 @@ SYN_OPERATORS = [
 SYN_KEYWORDS = [
     ('use', Use),               # import functions from a file
     ('uzbl', UzblConstant),     # True
+    ('menge', Menge),           # object-like thing
     ('quasi', Print),           # output value
     ('und', LogicalAnd),        # logical and; concatenate strings (?)
     ('oder', LogicalOr),        # logical or
