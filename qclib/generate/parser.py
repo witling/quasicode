@@ -116,6 +116,7 @@ class Lexer:
                 continue
 
             # parse strings here
+            # TODO: discourage use of ' here
             elif c == '"' or c == "'":
                 buf = take_while(it, lambda it: it.peek() != c)
                 buf = ''.join(buf)
