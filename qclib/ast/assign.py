@@ -1,4 +1,5 @@
 from .generic import *
+from .value import Access
 
 class Assign(Statement, Runnable):
     def __init__(self):
@@ -18,7 +19,16 @@ class Assign(Statement, Runnable):
         self._value = value
 
     def run(self, ctx):
-        ctx[self._ident] = self._value.run(ctx)
+        if isof(self._ident, Access):
+            menge = ctx[self._ident]
+            last = self._ident.subparts()[-1]
+
+            for subpart in self._ident.subparts()[:-1]:
+                menge = menge[subpart]
+
+            menge[last] = self._value.run(ctx)
+        else:
+            ctx[self._ident] = self._value.run(ctx)
 
     def __str__(self):
         return '{} = {}'.format(self._ident, self._value)

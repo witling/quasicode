@@ -19,4 +19,4 @@ class TestStdlib(Test):
 
     def test_sqrt(self, std):
         ret = std.interpreter.call('sqrt', [16])
-        self.assertEqual(float(ret), 4)
+        self.assertEqual(4, float(ret))

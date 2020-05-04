@@ -21,7 +21,7 @@ und zwar hier mit a b
         program = internals.parser.parse(src)
 
         self.assertIsInstance(program[0], Declaration)
-        self.assertEqual(len(program[0].args()), 2)
+        self.assertEqual(2, len(program[0].args()))
 
     def test_declare_args_main(self, internals):
         src = """
@@ -31,7 +31,7 @@ und zwar hier mit a b action please
         program = internals.parser.parse(src)
 
         self.assertIsInstance(program[0], Declaration)
-        self.assertEqual(len(program[0].args()), 2)
+        self.assertEqual(2, len(program[0].args()))
         self.assertTrue(program[0].is_main())
 
     def test_branch(self, internals):
@@ -53,7 +53,7 @@ kris?? 3 das ist 3
         """
         program = internals.parser.parse(src)
         self.assertIsInstance(program[0], If)
-        self.assertEqual(len(program[0].branches()), 3)
+        self.assertEqual(3, len(program[0].branches()))
 
     def test_branch_elif_else(self, internals):
         src = """
@@ -66,7 +66,7 @@ ach kris.
         """
         program = internals.parser.parse(src)
         self.assertIsInstance(program[0], If)
-        self.assertEqual(len(program[0].branches()), 3)
+        self.assertEqual(3, len(program[0].branches()))
 
     def test_repeat(self, internals):
         src = """

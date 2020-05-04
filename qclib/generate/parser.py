@@ -69,7 +69,11 @@ class Lexer:
         elif buf.isnumeric():
             return Number(float(buf))
         else:
-            return Ident(buf)
+            parts = buf.split('.')
+            if 1 < len(parts):
+                return Access(parts)
+            else:
+                return Ident(buf)
 
     def _reduce_lex(self, it: peekable):
         reduced = []
@@ -109,7 +113,6 @@ class Lexer:
                     return predicate
 
                 sub = take_while(it, parens_parser(['(']))
-                #sub = take_while(it, lambda it: it.peek() != ')')
                 if it:
                     # drop trailing )
                     assert next(it) == ')'

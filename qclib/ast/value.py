@@ -71,6 +71,12 @@ class Menge(Value):
     def __init__(self):
         super().__init__({})
 
+    def __getitem__(self, key):
+        return self._val[key]
+
+    def __setitem__(self, key, value):
+        self._val[key] = value
+
     def run(self, ctx):
         return self
 
@@ -97,3 +103,23 @@ class Ident(Value):
     
     def is_assignable(self):
         return True
+
+class Access(Ident):
+    def __init__(self, parts: list):
+        super().__init__(parts[0])
+        self._subparts = parts[1:]
+
+    def name(self):
+        return self._val
+
+    def subparts(self):
+        return self._subparts
+
+    def run(self, ctx):
+        val = ctx[self._val]
+        assert isof(val, Menge)
+
+        for subpart in self._subparts:
+            val = val[subpart]
+
+        return val
