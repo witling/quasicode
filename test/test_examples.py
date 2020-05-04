@@ -14,8 +14,12 @@ class TestExamples(Test):
     def test_all(self):
         examples = os.listdir(patch_path('examples'))
         compiler = Compiler()
+        ignore = ['bot.qc']
 
         for example in examples:
+            if example in ignore:
+                continue
+
             src_path = patch_path('examples', example)
             print('$', example)
 
