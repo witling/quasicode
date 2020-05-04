@@ -1,6 +1,8 @@
 from ..ast import *
-from .parser import Parser
 from ..program import *
+
+from .error import CompilerError
+from .parser import Parser
 
 class Compiler:
     def __init__(self):
@@ -24,5 +26,8 @@ class Compiler:
             elif isof(item, Use):
                 for arg in item.args():
                     program.use(arg)
+
+            else:
+                raise CompilerError('unexpected `{}`. only declarations and imports are allowed at top-level.'.format(item))
 
         return program
