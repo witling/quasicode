@@ -5,15 +5,21 @@ from .deps import *
 class TestObjects(Test):
     def test_creation(self, internals):
         src = """
-und zwar main action please
+und zwar create_indirect
     obj1 ist menge
-    
-    obj1.x ist 1
-    obj1.y ist 1
+    obj1 und fertig
+
+und zwar create
+    menge und fertig
         """
         program = internals.compiler.compile(src)
         internals.interpreter.load(program)
-        internals.interpreter.run()
+
+        ret = internals.interpreter.call('create')
+        self.assertIsInstance(ret, Menge)
+
+        ret = internals.interpreter.call('create_indirect')
+        self.assertIsInstance(ret, Menge)
 
     def test_object_access(self, internals):
         src = """
