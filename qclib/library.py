@@ -32,7 +32,8 @@ def _load_binary(fname):
 
     return sys.modules.get(modname)
 
-def _load_source():
+def _load_source(fname):
+    from .generate import Compiler
     compiler = Compiler()
     with open(fname, 'r') as src:
         return compiler.compile(src.read())
