@@ -68,7 +68,6 @@ class Context:
             if not path:
                 raise LookupException('cannot use `{}`, not found'.format(str(use)))
 
-            # TODO: allow loading non-compiled programs
             # TODO: avoid reimporting programs
             self.load(Library.load(path))
 
