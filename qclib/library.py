@@ -18,19 +18,7 @@ def create_fn(fn):
             conv_fn = param.annotation
         param_protocols.append((param_name, conv_fn))
 
-    def _quasi_to_py_wrapper(ctx):
-        kwargs = {}
-
-        # generate a **kwargs out of ctx when called; pass it to `fn`
-        for param_name, conv_fn in param_protocols:
-            kwargs[param_name] = ctx[param_name]
-            if not conv_fn is None:
-                kwargs[param_name] = conv_fn(kwargs[param_name])
-
-        return fn(**kwargs)
-
-    args = [name for name, _ in param_protocols]
-    return PyFunction(args, _quasi_to_py_wrapper)
+    return PyFunction(param_protocols, fn)
 
 #def create_fn_with_context(name, fn):
 #    return PyFunction(name, fn)
@@ -160,6 +148,9 @@ class PyFunction(Function):
         super().__init__(args, Block())
         self._fn = fn
 
+    def args(self):
+        return [name for name, _ in self._args]
+
     def block(self):
         return self
 
@@ -167,4 +158,12 @@ class PyFunction(Function):
         return '<python function>'
 
     def run(self, ctx):
-        return self._fn(ctx)
+        kwargs = {}
+
+        # generate a **kwargs out of ctx when called; pass it to `fn`
+        for param_name, conv_fn in self._args:
+            kwargs[param_name] = ctx[param_name]
+            if not conv_fn is None:
+                kwargs[param_name] = conv_fn(kwargs[param_name])
+
+        return self._fn(**kwargs)
