@@ -9,10 +9,9 @@ class NetLibrary(PyLibrary):
     def __init__(self):
         PyLibrary.__init__(self)
 
-        self.ident('ziehe', create_fn(['url'], self._download))
+        self.ident('ziehe', create_fn(self._download))
 
-    def _download(self, ctx):
-        url = ctx['url']
+    def _download(self, url):
         req = request.urlopen(url)
         if req.msg == 'OK':
             return Value.create(req.read())

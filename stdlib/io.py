@@ -7,15 +7,13 @@ class IOLibrary(PyLibrary):
     def __init__(self):
         PyLibrary.__init__(self)
 
-        self.ident('schreibe', create_fn(['path', 'content'], self._write))
-        self.ident('inhaliere', create_fn(['path'], self._read))
+        self.ident('schreibe', create_fn(self._write))
+        self.ident('inhaliere', create_fn(self._read))
 
-    def _read(self, ctx):
-        path = ctx['path']
+    def _read(self, path):
         with open(path, 'r') as fp:
             return fp.read()
 
-    def _write(self, ctx):
-        path, content = ctx['path'], ctx['content']
+    def _write(self, path, content):
         with open(path, 'w') as fp:
             fp.write(content)

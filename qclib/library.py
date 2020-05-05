@@ -2,11 +2,38 @@ from .ast import *
 from .ast.generic import *
 
 import dill
+import inspect
 import re
 import sys
 
-def create_fn(name, fn):
-    return PyFunction(name, fn)
+def create_fn(fn):
+    sig = inspect.signature(fn)
+    param_protocols = []
+
+    # create a list of (param_name, conv_fn)-pairs where 
+    # conv_fn is called on values retrieved from the context
+    for param_name, param in sig.parameters.items():
+        conv_fn = None
+        if param.annotation != inspect._empty:
+            conv_fn = param.annotation
+        param_protocols.append((param_name, conv_fn))
+
+    def _quasi_to_py_wrapper(ctx):
+        kwargs = {}
+
+        # generate a **kwargs out of ctx when called; pass it to `fn`
+        for param_name, conv_fn in param_protocols:
+            kwargs[param_name] = ctx[param_name]
+            if not conv_fn is None:
+                kwargs[param_name] = conv_fn(kwargs[param_name])
+
+        return fn(**kwargs)
+
+    args = [name for name, _ in param_protocols]
+    return PyFunction(args, _quasi_to_py_wrapper)
+
+#def create_fn_with_context(name, fn):
+#    return PyFunction(name, fn)
 
 def create_const(name, value):
     return Value.create(value)
