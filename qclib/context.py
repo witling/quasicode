@@ -15,7 +15,7 @@ class Context:
         self._includes = []
 
         self._fun = 100
-        self._loaded, self._locals, self._loops = [], [], []
+        self._loaded, self._locals, self._loops = {}, [], []
 
         self._funny_mode = True
 
@@ -71,13 +71,13 @@ class Context:
             # TODO: avoid reimporting programs
             self.load(Library.load(path))
 
-        self._loaded.append(program)
+        self._loaded[program.modname()] = program
 
     def loaded(self):
         return self._loaded
 
     def lookup(self, name):
-        for loaded in self.loaded():
+        for _, loaded in self.loaded().items():
             if name in loaded:
                 return loaded[name]
         raise LookupException('cannot use `{}`, not found.'.format(name))
