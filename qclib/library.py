@@ -135,6 +135,14 @@ class Library(object):
     def uses(self) -> list:
         return self._uses
 
+    def modname(self):
+        if self._file is None:
+            return None
+
+        from os.path import basename, splitext
+        fname, _ = splitext(basename(self._file))
+        return fname
+
     def __str__(self) -> str:
         fixed = map(lambda x: '{}:\n{}'.format(x[0], x[1]), self._idents.items())
         return '\n'.join(fixed)

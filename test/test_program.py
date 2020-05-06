@@ -29,3 +29,4 @@ class TestProgram(Test):
         loaded_prog = Program.load(str(fname))
         self.assertIsInstance(loaded_prog, Program)
         self.assertTrue(loaded_prog._file.endswith('test.qcc'))
+        self.assertEqual('test', loaded_prog.modname())
