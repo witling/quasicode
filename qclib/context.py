@@ -1,13 +1,8 @@
+from .error import LookupException, OutOfOettingerException
 from .program import Library, Program
 
 DEFUN = 10
 FUN = DEFUN * 10
-
-class OutOfOettingerException(Exception):
-    pass
-
-class LookupException(Exception):
-    pass
 
 class Context:
     def __init__(self):
