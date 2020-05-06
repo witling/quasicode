@@ -39,6 +39,10 @@ class Keyword:
     def __str__(self):
         return self.name()
 
+class Arguments(Keyword):
+    def __init__(self):
+        super().__init__()
+
 class Statement(Keyword):
     def __init__(self):
         super().__init__()

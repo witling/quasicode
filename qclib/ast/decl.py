@@ -30,7 +30,3 @@ class Declaration(NestedStatement):
 
     def __str__(self):
         return 'Declaration'
-
-class Arguments(Marker):
-    def __init__(self):
-        super().__init__()
