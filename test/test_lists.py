@@ -20,3 +20,19 @@ und zwar create
 
         ret = internals.interpreter.call('create_indirect')
         self.assertIsInstance(ret, Liste)
+
+    def test_creation_parameterized(self, internals):
+        src = """
+und zwar create_indirect
+    a ist 1
+    b ist 3
+    obj1 ist liste mit a 2 b 4
+    obj1 und fertig
+        """
+        program = internals.compiler.compile(src)
+        internals.interpreter.load(program)
+
+        ret = internals.interpreter.call('create_indirect')
+        self.assertIsInstance(ret, Liste)
+        self.assertTrue(ret._val)
+        self.assertEqual(2, float(ret._val[1]))

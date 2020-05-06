@@ -240,6 +240,12 @@ class Parser:
                 else:
                     stack.append(sub)
 
+            elif isof(token, Arguments):
+                assert isof(stack[-1], Liste)
+                pred = lambda it: peek_is(Value)(it) or peek_is(Ident)(it)
+                args = take_while(line, pred)
+                stack[-1]._val = args
+
             else:
                 raise ParserError('token `{}` not expected in this position'.format(token))
 
