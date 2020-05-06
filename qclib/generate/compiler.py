@@ -20,6 +20,8 @@ class Compiler:
         for item in parsed:
             if isof(item, Declaration):
                 if item.is_main():
+                    if not program.entry_point() is None:
+                        raise CompilerError('main entry point declared twice')
                     program.set_entry_point(item.name())
                 program.ident(item.name(), Function(item.args(), item.block()))
 
