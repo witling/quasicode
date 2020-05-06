@@ -25,6 +25,8 @@ class Parameterized:
 class Keyword:
     def __init__(self, name=None):
         self._name = name
+        if self._name is None:
+            self._name = self.__class__.__name__
 
     def name(self):
         return self._name

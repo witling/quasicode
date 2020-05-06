@@ -240,6 +240,9 @@ class Parser:
                 else:
                     stack.append(sub)
 
+            else:
+                raise ParserError('token `{}` not expected in this position'.format(token))
+
         if len(stack) != 1:
             print(stack)
             assert False
