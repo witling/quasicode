@@ -250,7 +250,7 @@ class Parser:
 
         while line:
             for kw in take_while(line, peek_is(Keyword)):
-                if isof(kw, DeclarationArgs):
+                if isof(kw, Arguments):
                     args = take_while(line, peek_is(Ident))
                 elif isof(kw, Marker):
                     markers.append(kw)
