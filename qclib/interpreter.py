@@ -34,7 +34,7 @@ class Interpreter:
 
     def run(self):
         try:
-            for loaded in self._ctx.loaded():
+            for _, loaded in self._ctx.loaded().items():
                 if not isof(loaded, Program):
                     continue
                 ep = loaded.entry_point()
@@ -46,5 +46,6 @@ class Interpreter:
 
         except Exception as e:
             import traceback
+            self._ctx.set_exit_code(1)
             print(traceback.format_exc())
             print(e)
