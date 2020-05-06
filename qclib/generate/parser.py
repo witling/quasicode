@@ -298,6 +298,8 @@ class Parser:
                 try:
                     while isof(cls, Elif):
                         line = next(lines)
+                        # drop elif keyword
+                        line = line[1:]
                         condition = self._parse_expression(line)
                         block = self._take_block(lines)
                         block = self._parse_lines(block)
