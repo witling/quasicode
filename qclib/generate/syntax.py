@@ -24,6 +24,7 @@ SYN_KEYWORDS = [
     ('use', Use),               # import functions from a file
     ('uzbl', UzblConstant),     # True
     ('menge', Menge),           # object-like thing
+    ('liste', Liste),           # list-like thing
     ('quasi', Print),           # output value
     ('und', LogicalAnd),        # logical and; concatenate strings (?)
     ('oder', LogicalOr),        # logical or

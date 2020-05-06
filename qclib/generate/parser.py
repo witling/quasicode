@@ -64,6 +64,8 @@ class Lexer:
             return UzblConstant()
         elif buf == 'menge':
             return Menge()
+        elif buf == 'liste':
+            return Liste()
         elif buf in KEYWORDS:
             return Keyword(buf)
         elif buf.isnumeric():
