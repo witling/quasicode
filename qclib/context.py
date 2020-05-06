@@ -11,8 +11,15 @@ class Context:
 
         self._fun = 100
         self._loaded, self._locals, self._loops = {}, [], []
+        self._exit_code = 0
 
         self._funny_mode = True
+
+    def exit_code(self):
+        return self._exit_code
+
+    def set_exit_code(self, code):
+        self._exit_code = code
 
     def disable_funny_mode(self):
         self._funny_mode = False

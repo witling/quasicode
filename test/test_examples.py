@@ -31,3 +31,5 @@ class TestExamples(Test):
 
             interpreter.load(program)
             interpreter.run()
+
+            self.assertEqual(0, interpreter._ctx.exit_code())
