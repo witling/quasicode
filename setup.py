@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-from setuptools import setup, find_packages
+from setuptools import find_package, setup
 
 setup(
     name='quasicode',
