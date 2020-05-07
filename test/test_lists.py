@@ -38,3 +38,17 @@ und zwar create_indirect
 
         for i in range(4):
             self.assertEqual(i+1, float(ret._val[i]))
+
+    def test_creation_inline(self, internals):
+        src = """
+und zwar create_indirect
+    (liste mit 1 2 3) und fertig
+        """
+        program = internals.compiler.compile(src)
+        internals.interpreter.load(program)
+
+        ret = internals.interpreter.call('create_indirect')
+        self.assertIsInstance(ret, Liste)
+
+        for i in range(3):
+            self.assertEqual(i+1, float(ret._val[i]))
