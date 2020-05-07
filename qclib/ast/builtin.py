@@ -1,4 +1,21 @@
 from .generic import *
+from .value import Ident, Liste
+
+class Construct(Parameterized):
+    def __init__(self, ty, init):
+        self._ty = ty
+        self._init = init
+
+    def run(self, ctx):
+        if isof(self._ty, Liste):
+            liste = self._ty
+            for item in self._init:
+                if isof(item, Ident):
+                    liste._val.append(item.run(ctx))
+                else:
+                    liste._val.append(item)
+            return liste
+        raise Exception('unexpected type')
 
 class Print(Statement, Parameterized):
     def __init__(self):

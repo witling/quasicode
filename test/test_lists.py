@@ -35,4 +35,6 @@ und zwar create_indirect
         ret = internals.interpreter.call('create_indirect')
         self.assertIsInstance(ret, Liste)
         self.assertTrue(ret._val)
-        self.assertEqual(2, float(ret._val[1]))
+
+        for i in range(4):
+            self.assertEqual(i+1, float(ret._val[i]))

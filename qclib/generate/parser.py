@@ -241,10 +241,11 @@ class Parser:
                     stack.append(sub)
 
             elif isof(token, Arguments):
-                assert isof(stack[-1], Liste)
+                top = stack.pop()
+                assert isof(top, Liste)
                 pred = lambda it: peek_is(Value)(it) or peek_is(Ident)(it)
                 args = take_while(line, pred)
-                stack[-1]._val = args
+                stack.append(Construct(top, args))
 
             else:
                 raise ParserError('token `{}` not expected in this position'.format(token))
