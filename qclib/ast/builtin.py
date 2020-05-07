@@ -26,11 +26,15 @@ class Readin(Statement, Parameterized):
 
     def run(self, ctx):
         question = ' '.join(map(str, self.args()))
-        ret = input(question)
+
+        ctx.stdout().write(question)
+        ctx.stdout().flush()
+
+        ret = ctx.stdin().readline()
 
         if ctx.is_funny_mode():
             from random import choice
-            print(choice(Readin.RESPONSES))
+            ctx.stdout().write('{}\n'.format(choice(Readin.RESPONSES)))
 
         return ret
 
@@ -43,7 +47,8 @@ class Print(Statement, Parameterized):
         Parameterized.__init__(self)
 
     def run(self, ctx):
-        print(' '.join(map(lambda x: str(x.run(ctx)), self._args)))
+        msg = ' '.join(map(lambda x: str(x.run(ctx)), self._args)) + '\n'
+        ctx.stdout().write(msg)
 
     def __str__(self):
         return 'print {}'.format(' '.join(map(str, self._args)))

@@ -1,11 +1,14 @@
 from .error import LookupException, OutOfOettingerException
 from .program import Library, Program
 
+import sys
+
 DEFUN = 10
 FUN = DEFUN * 10
 
 class Context:
     def __init__(self):
+        self._stdin, self._stdout = sys.stdin, sys.stdout
         self._globals = {}
         self._includes = []
 
@@ -14,18 +17,6 @@ class Context:
         self._exit_code = 0
 
         self._funny_mode = True
-
-    def exit_code(self):
-        return self._exit_code
-
-    def set_exit_code(self, code):
-        self._exit_code = code
-
-    def is_funny_mode(self):
-        return self._funny_mode
-
-    def disable_funny_mode(self):
-        self._funny_mode = False
 
     def __getitem__(self, key):
         self.defun()
@@ -63,6 +54,30 @@ class Context:
                         return os.path.join(path, fname)
 
         return None
+
+    def stdin(self):
+        return self._stdin
+
+    def set_stdin(self, stdin):
+        self._stdin = stdin
+
+    def stdout(self):
+        return self._stdout
+
+    def set_stdout(self, stdout):
+        self._stdout = stdout
+
+    def exit_code(self):
+        return self._exit_code
+
+    def set_exit_code(self, code):
+        self._exit_code = code
+
+    def is_funny_mode(self):
+        return self._funny_mode
+
+    def disable_funny_mode(self):
+        self._funny_mode = False
 
     def add_include_path(self, path):
         self._includes.append(path)
