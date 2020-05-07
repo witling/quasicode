@@ -365,6 +365,10 @@ class Parser:
             else:
                 return item
 
+        # drop empty indents
+        elif isof(item, Indent):
+            return None
+
         return item
 
     def _parse_lines(self, lines):
@@ -380,7 +384,8 @@ class Parser:
                 line = peekable(line)
 
             parsed = self._parse_line(line, lines)
-            block.append(parsed)
+            if not parsed is None:
+                block.append(parsed)
 
         return block
 

@@ -35,6 +35,7 @@ class Readin(Statement, Parameterized):
         if ctx.is_funny_mode():
             from random import choice
             ctx.stdout().write('{}\n'.format(choice(Readin.RESPONSES)))
+            ctx.stdout().flush()
 
         return ret
 
@@ -49,6 +50,7 @@ class Print(Statement, Parameterized):
     def run(self, ctx):
         msg = ' '.join(map(lambda x: str(x.run(ctx)), self._args)) + '\n'
         ctx.stdout().write(msg)
+        ctx.stdout().flush()
 
     def __str__(self):
         return 'print {}'.format(' '.join(map(str, self._args)))
