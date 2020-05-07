@@ -1,3 +1,4 @@
+import io
 import os
 import pytest
 
@@ -11,9 +12,10 @@ def load_source(fname):
         return src.read()
 
 class TestExamples(Test):
-    def test_all(self):
+    def test_all(self, internals):
+        internals.interpreter._ctx.set_stdin(io.StringIO())
+
         examples = os.listdir(patch_path('examples'))
-        compiler = Compiler()
         ignore = ['bot.qc']
 
         for example in examples:
@@ -24,12 +26,11 @@ class TestExamples(Test):
             print('$', example)
 
             src = load_source(src_path)
-            program = compiler.compile(src)
+            program = internals.compiler.compile(src)
 
-            interpreter = Interpreter()
-            interpreter.disable_funny_mode()
+            internals.interpreter.disable_funny_mode()
 
-            interpreter.load(program)
-            interpreter.run()
+            internals.interpreter.load(program)
+            internals.interpreter.run()
 
-            self.assertEqual(0, interpreter._ctx.exit_code())
+            self.assertEqual(0, internals.interpreter._ctx.exit_code())
