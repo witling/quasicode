@@ -52,7 +52,7 @@ class Lexer:
                 node = node[k]
             except KeyError:
                 possible = ','.join(map(lambda x: '`{}`'.format(x), node.keys()))
-                raise ParserError('expected one of {}. got `{}`'.format(possible, name))
+                raise ParserError('expected one of {}. got `{}`'.format(possible, k))
 
         if '_op' not in node:
             raise ParserError('unexpected symbol `{}` in `{}`'.format(name, stc))
@@ -247,6 +247,9 @@ class Parser:
                 args = take_while(line, pred)
                 stack.append(Construct(top, args))
 
+            elif isof(token, Readin):
+                stack.append(token)
+
             else:
                 raise ParserError('token `{}` not expected in this position'.format(token))
 
@@ -323,7 +326,7 @@ class Parser:
                 except StopIteration:
                     pass
 
-        elif isof(item, Print):
+        elif isof(item, Print) or isof(item, Readin):
             for arg in line:
                 item.add_arg(self._parse_expression([arg]))
 

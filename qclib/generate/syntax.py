@@ -26,6 +26,7 @@ SYN_KEYWORDS = [
     ('menge', Menge),           # object-like thing
     ('liste', Liste),           # list-like thing
     ('quasi', Print),           # output value
+    ('bitte?', Readin),         # input value
     ('und', LogicalAnd),        # logical and; concatenate strings (?)
     ('oder', LogicalOr),        # logical or
     ('not', LogicalNot),        # logical not

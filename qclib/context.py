@@ -21,6 +21,9 @@ class Context:
     def set_exit_code(self, code):
         self._exit_code = code
 
+    def is_funny_mode(self):
+        return self._funny_mode
+
     def disable_funny_mode(self):
         self._funny_mode = False
 
@@ -85,7 +88,7 @@ class Context:
         raise LookupException('cannot use `{}`, not found.'.format(name))
 
     def fun(self):
-        if not self._funny_mode:
+        if not self.is_funny_mode():
             return
 
         if self._fun <= 0:
@@ -94,7 +97,7 @@ class Context:
             self._fun += FUN
 
     def defun(self):
-        if not self._funny_mode:
+        if not self.is_funny_mode():
             return
 
         self._fun -= DEFUN
