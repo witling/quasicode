@@ -54,6 +54,9 @@ class Context:
                         return os.path.join(path, fname)
 
         return None
+    
+    def _load_postprocess(self, library):
+        pass
 
     def stdin(self):
         return self._stdin
@@ -88,8 +91,14 @@ class Context:
             if not path:
                 raise LookupException('cannot use `{}`, not found'.format(str(use)))
 
+            library = Library.load(path)
+
+            self._load_postprocess(library)
+
             # TODO: avoid reimporting programs
-            self.load(Library.load(path))
+            self.load(library)
+
+        self._load_postprocess(program)
 
         self._loaded[program.modname()] = program
 
@@ -136,3 +145,17 @@ class Context:
 
     def pop_locals(self):
         self._locals.pop()
+
+class RestrictedContext(Context):
+    def __init__(self):
+        super().__init__()
+        self._allowed_modules = None
+
+    def set_allowed_modules(self, ls):
+        self._allowed_modules = ls
+
+    def _load_postprocess(self, library):
+        modname = library.modname()
+        if not modname is None:
+            if self._allowed_modules and not modname in self._allowed_modules:
+                raise Exception('usage of module `{}` is not permitted in this context.'.format(modname))

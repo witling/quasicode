@@ -7,10 +7,10 @@ class Interpreter:
     LIB_PATH = '/usr/local/lib/quasicode'
     USERLIB_PATH = '~/.local/lib/quasicode'
 
-    def __init__(self):
+    def __init__(self, restricted=False):
         import os
 
-        self._ctx = Context()
+        self._ctx = Context() if not restricted else RestrictedContext()
         self._ctx.add_include_path(os.getcwd())
         self._ctx.add_include_path(os.path.expanduser(Interpreter.USERLIB_PATH))
         self._ctx.add_include_path(Interpreter.LIB_PATH)
