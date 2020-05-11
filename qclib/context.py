@@ -138,6 +138,8 @@ class Context:
         return self._loops[-1]
 
     def set_return(self, value):
+        if not self._locals:
+            # TODO: implement handling of main function return
         self._locals[-1][1](value)
 
     def push_locals(self, frame, rec_return):
