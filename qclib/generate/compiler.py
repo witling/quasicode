@@ -79,6 +79,10 @@ class Compiler:
 
         if istype(first, 'IDENT'):
             return Ident(first.value)
+        elif istype(first, 'index') or istype(first, 'slice'):
+            notimplemented()
+        elif istype(first, 'slice_from') or istype(first, 'slice_till'):
+            notimplemented()
 
         unreachable()
 
@@ -190,8 +194,13 @@ class Compiler:
         assure_type(item, 'break')
         return Break()
 
-    def _translate_return(self, ls):
-        notimplemented()
+    def _translate_return(self, item):
+        assure_type(item, 'return')
+        assert len(item.children) == 1
+        ret = Return()
+        value = self._to_value(item.children[0])
+        ret.add_arg(value)
+        return ret
 
     def _translate_assign(self, item):
         # first is lhassign/rhassign, second is newline
@@ -249,7 +258,7 @@ class Compiler:
         elif ty == 'break':
             return self._translate_break(first)
         elif ty == 'return':
-            return self._translate_return(first.children)
+            return self._translate_return(first)
         elif ty == 'assign':
             return self._translate_assign(first)
         elif ty == 'expression':
