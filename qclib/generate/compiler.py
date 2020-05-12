@@ -81,7 +81,8 @@ class Compiler:
         elif istype(item, 'NUMBER'):
             return Number(float(item.value))
         elif istype(item, 'STRING'):
-            return String(item.value)
+            val = item.value[1:-1]
+            return String(val)
         elif istype(item, 'computation'):
             return self._translate_computation(item)
         elif istype(item, 'construct'):
