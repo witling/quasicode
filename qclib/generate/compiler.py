@@ -73,7 +73,7 @@ class Compiler:
         else:
             unreachable()
 
-        return Construct(objty, init)
+        return Construct(objty(), init)
 
     def _to_value(self, item):
         if istype(item, 'IDENT'):
@@ -168,6 +168,7 @@ class Compiler:
                 for arg in item.children:
                     assure_ident(arg)
                     args.append(Ident(arg.value))
+                declaration.set_args(args)
             elif ty == 'block':
                 # parse block
                 block = self._translate_block(item)
