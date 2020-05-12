@@ -113,19 +113,19 @@ class Compiler:
             block.append(result)
         return block
 
-    def _translate_declare(self, ls):
-        name = ls[0]
+    def _translate_declare(self, item):
+        assure_type(item, 'declare')
+        name = item.children[0]
         assure_ident(name)
         declaration = Declaration()
         declaration.set_name(Ident(name.value))
 
-        it = iter(ls[1:])
-
+        it = iter(item.children[1:])
         # parse rest of declaration
         for item in it:
             ty = typeof(item)
             if ty == 'marker_main':
-                declaration.add_marker(MainMarker)
+                declaration.add_marker(MainMarker())
             elif ty == 'declare_args':
                 args = []
                 for arg in item.children:
@@ -141,8 +141,9 @@ class Compiler:
 
         return declaration
 
-    def _translate_import(self, ls):
-        modname = ls[0]
+    def _translate_import(self, item):
+        assure_type(item, 'import')
+        modname = item.children[0]
         assure_ident(modname)
         use = Use()
         use.add_arg(modname.value)
@@ -160,10 +161,11 @@ class Compiler:
         assert len(item.children) == 1
         return self._translate_block(item.children[0])
 
-    def _translate_branch(self, ls):
-        assert 2 <= len(ls)
+    def _translate_branch(self, item):
+        assure_type(item, 'if_branch')
+        assert 2 <= len(item.children)
         branch = Branch()
-        it = iter(ls)
+        it = iter(item.children)
 
         expr = self._translate_rexpression(next(it))
         block = self._translate_block(next(it))
@@ -248,11 +250,11 @@ class Compiler:
         ty = first.data
 
         if ty == 'import':
-            return self._translate_import(first.children)
+            return self._translate_import(first)
         elif ty == 'declare':
-            return self._translate_declare(first.children)
+            return self._translate_declare(first)
         elif ty == 'if_branch':
-            return self._translate_branch(first.children)
+            return self._translate_branch(first)
         elif ty == 'loop':
             return self._translate_loop(first)
         elif ty == 'break':
@@ -277,6 +279,7 @@ class Compiler:
                 if item.is_main():
                     if not program.entry_point() is None:
                         raise CompilerError('main entry point declared twice')
+                    program.set_entry_point(item.name())
 
                 program.ident(item.name(), Function(item.args(), item.block()))
             elif isof(item, Use):
