@@ -12,8 +12,11 @@ def unreachable():
 def notimplemented():
     raise Exception('this feature is not yet implemented.')
 
+def typeof(token):
+    return token.data if hasattr(token, 'data') else token.type
+
 def istype(token, name):
-    return token.data == name if hasattr(token, 'data') else token.type == name
+    return typeof(token) == name
 
 def assure_type(token, name):
     assert istype(token, name)
@@ -78,21 +81,21 @@ class Compiler:
 
         # parse rest of declaration
         for item in it:
-            ty = item.data if hasattr(item, 'data') else item.type
-            if ty == 'NEWLINE':
-                break
-            elif ty == 'marker_main':
+            ty = typeof(item)
+            if ty == 'marker_main':
                 declaration.add_marker(MainMarker)
             elif ty == 'declare_args':
                 args = []
                 for arg in item.children:
                     assure_ident(arg)
                     args.append(Ident(arg.value))
+            elif ty == 'block':
+                # parse block
+                block = self._translate_block(item)
+                declaration.set_block(block)
             else:
                 unreachable()
 
-        # parse block
-        block = self._translate_block(next(it))
 
         return declaration
 
@@ -106,8 +109,6 @@ class Compiler:
     def _translate_branch(self, ls):
         expr = self._translate_rexpression(ls[0])
         #block = self._translate_block()
-        for item in ls[2:][0].children:
-            print('>>>>', item)
 
     def _translate_loop(self, ls):
         notimplemented()

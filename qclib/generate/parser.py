@@ -1,28 +1,20 @@
-#from more_itertools import peekable
 from lark import Lark
-#import re
+from lark.indenter import Indenter
 
 from ..ast import *
 
 from .error import ParserError
 from .syntax import *
 
-#peek_is = lambda cls: lambda it: isof(it.peek(), cls)
-
 lark_grammar = """
-%ignore " "
-%import common.NEWLINE -> NEWLINE
+?start: (_NEWLINE | statement)*
 
-INDENT: /(\\t|\s{4})/
-OP_ADD: "+"
-OP_SUB: "-"
-OP_MUL: "*"
-OP_DIV: "/"
-OP_MOD: "modulo"
-OP_LT: "<"
-op_cmp: "das" "ist"
+%ignore /[\\t \\f]+/                  // ignore whitespace
+%ignore /\\[\\t \\f]*\\r?\\n/         // ignore whatever
+%declare _INDENT _DEDENT
+_NEWLINE: ( /\\r?\\n[\\t ]*/ )+
 
-operator: OP_ADD | OP_SUB | OP_MUL | OP_DIV | OP_MOD | OP_LT | op_cmp 
+// INDENT: /(\\t|\s{4})/
 
 IDENT: /\S+/
 NUMBER: /\d+/
@@ -32,6 +24,16 @@ construct_args: value+
 construct: objty ("mit" construct_args)?
 
 value: NUMBER | IDENT | construct
+
+OP_ADD: "+"
+OP_SUB: "-"
+OP_MUL: "*"
+OP_DIV: "/"
+OP_MOD: "modulo"
+OP_LT: "<"
+op_cmp: "das" "ist"
+
+operator: OP_ADD | OP_SUB | OP_MUL | OP_DIV | OP_MOD | OP_LT | op_cmp 
 
 index: value "bei" value
 slice_from: value "von" value
@@ -44,42 +46,49 @@ expression: value | index | slice | "(" expression ")" | expression operator exp
 
 // language constructs
 
-block: (INDENT statement)+
+block: _NEWLINE _INDENT statement+ _DEDENT
 
 lhassign: wexpression "ist" expression
 rhassign: expression "also" wexpression
-assign: (lhassign | rhassign) NEWLINE
+assign: lhassign | rhassign
 
-loop: "das" "holen" "wir" "nach" NEWLINE block
-break: "patrick!" NEWLINE
+loop: "das" "holen" "wir" "nach" block
+break: "patrick!"
 
-else_branch: "ach" "kris." NEWLINE block
-elif_branch: "kris??" expression NEWLINE block
-if_branch: "kris?" expression NEWLINE block elif_branch* else_branch?
+else_branch: "ach" "kris." block
+elif_branch: "kris??" expression block
+if_branch: "kris?" expression block elif_branch* else_branch?
 
-import: "use" IDENT NEWLINE
+import: "use" IDENT
 
 marker_main: "action" "please"
 declare_args: IDENT+
-declare: "und" "zwar" IDENT ("mit" declare_args)? marker_main? NEWLINE block
+declare: "und" "zwar" IDENT ("mit" declare_args)? marker_main? block
 
-return: value "und" "fertig" NEWLINE
+return: value "und" "fertig"
 
-statement: import 
+statement: (import _NEWLINE)
          | declare
          | if_branch 
          | loop 
-         | break 
-         | return 
-         | assign 
-         | call NEWLINE
-
-start: statement*
+         | (break _NEWLINE)
+         | (return _NEWLINE)
+         | (assign _NEWLINE)
+         | (expression _NEWLINE)
 """
+
+class QuasiIndenter(Indenter):
+    NL_type = '_NEWLINE'
+    OPEN_PAREN_types = ['LPAR']
+    CLOSE_PAREN_types = ['RPAR']
+    INDENT_type = '_INDENT'
+    DEDENT_type = '_DEDENT'
+    tab_len = 8
 
 class Parser:
     def __init__(self):
-        self._lark = Lark(lark_grammar, parser='lalr')
+        kwargs = dict(postlex=QuasiIndenter(), start='start')
+        self._lark = Lark(lark_grammar, parser='lalr', **kwargs)
 
     def parse(self, content: str) -> list:
         result = self._lark.parse(content)
