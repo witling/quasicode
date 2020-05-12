@@ -43,6 +43,21 @@ class Compiler:
             return None
         return tymap[name]
 
+    def _map_operator(self, name):
+        name = name.lower()
+        tymap = {
+            "add": Add,
+            "sub": Sub,
+            "mul": Mul,
+            "div": Div,
+            "mod": Mod,
+            "lt" : Less,
+            "cmp": Compare,
+        }
+        if not name in tymap:
+            return None
+        return tymap[name]
+
     def _to_construct(self, item):
         assure_type(item, 'construct')
         assert 1 <= len(item.children)
@@ -67,7 +82,25 @@ class Compiler:
             return self._to_value(item.children[0])
         elif istype(item, 'construct'):
             return self._to_construct(item)
+        elif istype(item, 'computation'):
+            return self._translate_computation(item)
         unreachable()
+
+    def _translate_computation(self, item):
+        assure_type(item, 'computation')
+        assert len(item.children) == 1
+        op = item.children[0]
+
+        ls = op.children
+        assert len(ls) == 2
+        left, right = ls[0], ls[1]
+        left, right = self._translate_rexpression(left), self._translate_rexpression(right)
+        
+        opcls = self._map_operator(op.data)
+        comp = opcls()
+        comp.add_arg(left)
+        comp.add_arg(right)
+        return comp
 
     def _translate_construct_args(self, item):
         assure_type(item, 'construct_args')

@@ -14,8 +14,6 @@ lark_grammar = """
 %declare _INDENT _DEDENT
 _NEWLINE: ( /\\r?\\n[\\t ]*/ )+
 
-// INDENT: /(\\t|\s{4})/
-
 IDENT: /\S+/
 NUMBER: /\d+/
 
@@ -25,15 +23,15 @@ construct: objty ("mit" construct_args)?
 
 value: NUMBER | IDENT | construct
 
-OP_ADD: "+"
-OP_SUB: "-"
-OP_MUL: "*"
-OP_DIV: "/"
-OP_MOD: "modulo"
-OP_LT: "<"
-op_cmp: "das" "ist"
+add: expression "+" expression
+sub: expression "-" expression
+mul: expression "*" expression
+div: expression "/" expression
+mod: expression "modulo" expression
+cmp: expression "das" "ist" expression
+lt: expression "<" expression
 
-operator: OP_ADD | OP_SUB | OP_MUL | OP_DIV | OP_MOD | OP_LT | op_cmp 
+computation: add | sub | mul | div | mod | cmp | lt
 
 index: value "bei" value
 slice_from: value "von" value
@@ -42,7 +40,7 @@ slice: slice_from | slice_till
 
 call: IDENT value+
 wexpression: IDENT | index | slice
-expression: value | index | slice | "(" expression ")" | expression operator expression | call
+expression: value | index | slice | "(" expression ")" | computation | call
 
 // language constructs
 
