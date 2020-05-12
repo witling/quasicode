@@ -62,7 +62,7 @@ import: "use" IDENT NEWLINE
 
 marker_main: "action" "please"
 declare_args: IDENT+
-declare: "und" "zwar" IDENT marker_main? ("mit" declare_args)? NEWLINE block
+declare: "und" "zwar" IDENT ("mit" declare_args)? marker_main? NEWLINE block
 
 return: value "und" "fertig" NEWLINE
 
@@ -84,7 +84,7 @@ class Parser:
 
     def parse(self, content: str) -> list:
         result = self._lark.parse(content)
-        return result.children
+        return result
 
 #def take_while(it, pred: callable):
 #    collect = []
