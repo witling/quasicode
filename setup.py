@@ -15,7 +15,8 @@ setup(
         'Operating System :: OS Independent',
     ],
     install_requires=[
-        'dill'
+        'dill',
+        'lark-parser',
     ],
     python_requires='>=3.5',
     entry_points={'console_scripts': ['qc=qc.__main__:main']}
