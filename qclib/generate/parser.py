@@ -19,7 +19,7 @@ _NEWLINE: ( /\\r?\\n[\\t ]*/ )+
 IDENT: /\S+/
 NUMBER: /\d+/
 
-objty: "menge" | "liste"
+!objty: "menge" | "liste"
 construct_args: value+
 construct: objty ("mit" construct_args)?
 

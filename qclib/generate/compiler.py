@@ -34,14 +34,44 @@ class Compiler:
         ast = self._parser.parse(src)
         return self._translate(ast)
 
+    def _map_builtin_type(self, name):
+        tymap = {
+            'liste': Liste,
+            'menge': Menge
+        }
+        if not name in tymap:
+            return None
+        return tymap[name]
+
+    def _to_construct(self, item):
+        assure_type(item, 'construct')
+        assert 1 <= len(item.children)
+
+        objty = item.children[0]
+        assure_type(objty, 'objty')
+
+        objty = self._map_builtin_type(objty.children[0].value)
+        init = []
+
+        if 2 == len(item.children):
+            init = self._translate_construct_args(item.children[1])
+        else:
+            unreachable()
+
+        return Construct(objty, init)
+
     def _to_value(self, item):
         if istype(item, 'IDENT'):
             return Ident(item.value)
         elif istype(item, 'value'):
             return self._to_value(item.children[0])
-        elif istype(item, 'expression'):
-            return self._translate_rexpression(item)
+        elif istype(item, 'construct'):
+            return self._to_construct(item)
         unreachable()
+
+    def _translate_construct_args(self, item):
+        assure_type(item, 'construct_args')
+        return [self._to_value(arg) for arg in item.children]
 
     def _translate_wexpression(self, item):
         assure_type(item, 'wexpression')
@@ -53,8 +83,16 @@ class Compiler:
         unreachable()
 
     def _translate_rexpression(self, item):
+        # FIXME: does not parse operations correctly
         assure_type(item, 'expression')
         first = item.children[0]
+        ty = typeof(first)
+
+        if ty == 'call':
+            return self._translate_call(first)
+        elif ty == 'expression':
+            return self._translate_rexpression(first)
+
         return self._to_value(first)
 
     def _translate_block(self, item):
@@ -106,15 +144,51 @@ class Compiler:
         use.add_arg(modname.value)
         return use
 
+    def _translate_branch_elif(self, item):
+        assure_type(item, 'elif_branch')
+        assert len(item.children) == 2
+        expr = self._translate_rexpression(item.children[0])
+        block = self._translate_block(item.children[1])
+        return expr, block
+
+    def _translate_branch_else(self, item):
+        assure_type(item, 'else_branch')
+        assert len(item.children) == 1
+        return self._translate_block(item.children[0])
+
     def _translate_branch(self, ls):
-        expr = self._translate_rexpression(ls[0])
-        #block = self._translate_block()
+        assert 2 <= len(ls)
+        branch = Branch()
+        it = iter(ls)
 
-    def _translate_loop(self, ls):
-        notimplemented()
+        expr = self._translate_rexpression(next(it))
+        block = self._translate_block(next(it))
+        branch.add_branch(expr, block)
 
-    def _translate_break(self, ls):
-        notimplemented()
+        for item in it:
+            ty = typeof(item)
+            if ty == 'elif_branch':
+                expr, block = self._translate_branch_elif(item)
+                branch.add_branch(expr, block)
+            elif ty == 'else_branch':
+                block = self._translate_branch_else(item)
+                branch.set_default_branch(block)
+            else:
+                unreachable()
+
+        return branch
+
+    def _translate_loop(self, item):
+        assure_type(item, 'loop')
+        assert len(item.children) == 1
+        loop = Repeat()
+        block = self._translate_block(item.children[0])
+        loop.set_block(block)
+        return loop
+
+    def _translate_break(self, item):
+        assure_type(item, 'break')
+        return Break()
 
     def _translate_return(self, ls):
         notimplemented()
@@ -122,7 +196,7 @@ class Compiler:
     def _translate_assign(self, item):
         # first is lhassign/rhassign, second is newline
         assure_type(item, 'assign')
-        assert len(item.children) == 2
+        assert len(item.children) == 1
         item = item.children[0]
 
         # dereference to lhassign/rhassign
@@ -144,8 +218,15 @@ class Compiler:
 
         return assign
 
-    def _translate_call(self, ls):
-        unreachable()
+    def _translate_call(self, item):
+        assure_type(item, 'call')
+        it = iter(item.children)
+
+        name = next(it)
+        assure_ident(name)
+        args = [self._to_value(arg) for arg in it]
+
+        return FunctionCall(Ident(name.value), args)
 
     def _translate_statement(self, statement):
         assure_type(statement, 'statement')
@@ -164,15 +245,15 @@ class Compiler:
         elif ty == 'if_branch':
             return self._translate_branch(first.children)
         elif ty == 'loop':
-            return self._translate_loop(first.children)
+            return self._translate_loop(first)
         elif ty == 'break':
-            return self._translate_break(first.children)
+            return self._translate_break(first)
         elif ty == 'return':
             return self._translate_return(first.children)
         elif ty == 'assign':
             return self._translate_assign(first)
-        elif ty == 'call':
-            return self._translate_call(first.children)
+        elif ty == 'expression':
+            return self._translate_rexpression(first)
 
         unreachable()
 
