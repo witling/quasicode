@@ -22,7 +22,7 @@ OP_MOD: "modulo"
 OP_LT: "<"
 op_cmp: "das" "ist"
 
-operator: OP_ADD | OP_SUB | OP_MUL | OP_DIV | OP_MOD | op_cmp | OP_LT
+operator: OP_ADD | OP_SUB | OP_MUL | OP_DIV | OP_MOD | OP_LT | op_cmp 
 
 IDENT: /\S+/
 NUMBER: /\d+/
@@ -31,8 +31,7 @@ objty: "menge" | "liste"
 construct_args: value+
 construct: objty ("mit" construct_args)?
 
-value: IDENT | NUMBER | construct
-
+value: NUMBER | IDENT | construct
 
 index: value "bei" value
 slice_from: value "von" value
