@@ -278,31 +278,28 @@ class Compiler:
         return FunctionCall(Ident(name.value), args)
 
     def _translate_statement(self, statement):
-        assure_type(statement, 'statement')
-        ls = statement.children
+        if istype(statement, 'statement'):
+            assert len(statement.children) == 1
+            statement = statement.children[0]
 
-        if not ls:
-            return None
-
-        first = ls[0]
-        ty = first.data
+        ty = typeof(statement)
 
         if ty == 'import':
-            return self._translate_import(first)
+            return self._translate_import(statement)
         elif ty == 'declare':
-            return self._translate_declare(first)
+            return self._translate_declare(statement)
         elif ty == 'if_branch':
-            return self._translate_branch(first)
+            return self._translate_branch(statement)
         elif ty == 'loop':
-            return self._translate_loop(first)
+            return self._translate_loop(statement)
         elif ty == 'break':
-            return self._translate_break(first)
+            return self._translate_break(statement)
         elif ty == 'return':
-            return self._translate_return(first)
+            return self._translate_return(statement)
         elif ty == 'assign':
-            return self._translate_assign(first)
+            return self._translate_assign(statement)
         elif ty == 'expression':
-            return self._translate_rexpression(first)
+            return self._translate_rexpression(statement)
 
         unreachable()
 

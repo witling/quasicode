@@ -8,10 +8,13 @@ class TestParsing(Test):
 und zwar hier action please
     quasi 1
         """
-        program = internals.parser.parse(src)
+        ast = internals.parser.parse(src)
 
-        self.assertIsInstance(program[0], Declaration)
-        self.assertTrue(program[0].is_main())
+        self.assertTrue(ast.find_data('declare'))
+        self.assertTrue(ast.find_data('marker_main'))
+
+        #self.assertIsInstance(program[0], Declaration)
+        #self.assertTrue(program[0].is_main())
 
     def test_declare_args(self, internals):
         src = """

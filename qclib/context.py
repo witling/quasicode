@@ -85,18 +85,21 @@ class Context:
     def add_include_path(self, path):
         self._includes.append(path)
 
+    def load_by_name(self, name):
+        path = self._search_file(name)
+        if not path:
+            raise LookupException('cannot use `{}`, not found'.format(str(use)))
+
+        library = Library.load(path)
+
+        self._load_postprocess(library)
+
+        # TODO: avoid reimporting programs
+        self.load(library)
+
     def load(self, program: Program):
         for use in program.uses():
-            path = self._search_file(use)
-            if not path:
-                raise LookupException('cannot use `{}`, not found'.format(str(use)))
-
-            library = Library.load(path)
-
-            self._load_postprocess(library)
-
-            # TODO: avoid reimporting programs
-            self.load(library)
+            self.load_by_name(use)
 
         self._load_postprocess(program)
 
@@ -104,6 +107,9 @@ class Context:
 
     def loaded(self):
         return self._loaded
+
+    def locals(self):
+        return self._locals[-1][0] if self._locals else None
 
     def lookup(self, name):
         for _, loaded in self.loaded().items():

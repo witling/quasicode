@@ -13,5 +13,8 @@ class Function(object):
     def block(self):
         return self._block
 
+    def is_builtin(self):
+        return False
+
     def __str__(self):
         return '\n'.join(map(str, self._block))

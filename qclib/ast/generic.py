@@ -98,16 +98,23 @@ class FunctionCall(Runnable, Parameterized):
     def name(self):
         return self._name.name()
 
-    def run(self, ctx):
+    def _call_builtin(self, decl, ctx):
+        frame = {str(i): arg.run(ctx) for i, arg in enumerate(self.args())}
+
+        ctx.push_locals(frame, None)
+        ret = decl.run(ctx)
+        ctx.pop_locals()
+
+        return ret
+
+    def _call(self, decl, ctx):
         rvars = [arg.run(ctx) for arg in self.args()]
-        # FIXME: reactivate if code fails to work
-        #decl = ctx.lookup(self.name())
-        decl = ctx[self.name()]
 
         if len(decl.args()) != len(rvars):
             raise Exception('call to `{}` expected {} arguments, got {}'.format(self.name(), len(decl.args()), len(rvars)))
 
         frame = {decl_key(k): v for k, v in zip(decl.args(), rvars)}
+
         self._ret = None
 
         def receive_return(v):
@@ -121,3 +128,11 @@ class FunctionCall(Runnable, Parameterized):
         if None != self._ret:
             return self._ret
         return last
+
+    def run(self, ctx):
+        # FIXME: reactivate if code fails to work
+        #decl = ctx.lookup(self.name())
+        decl = ctx[self.name()]
+        if decl.is_builtin():
+            return self._call_builtin(decl, ctx)
+        return self._call(decl, ctx)
