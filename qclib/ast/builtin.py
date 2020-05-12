@@ -17,44 +17,6 @@ class Construct(Parameterized):
             return liste
         raise Exception('unexpected type')
 
-class Readin(Statement, Parameterized):
-    RESPONSES = ['verstehe.', 'gut.', 'okay.', 'perfekt.']
-
-    def __init__(self):
-        Statement.__init__(self)
-        Parameterized.__init__(self)
-
-    def run(self, ctx):
-        question = ' '.join(map(str, self.args()))
-
-        ctx.stdout().write(question)
-        ctx.stdout().flush()
-
-        ret = ctx.stdin().readline()
-
-        if ctx.is_funny_mode():
-            from random import choice
-            ctx.stdout().write('{}\n'.format(choice(Readin.RESPONSES)))
-            ctx.stdout().flush()
-
-        return ret
-
-    def __str__(self):
-        return 'stdin_read {}'.format(' '.join(map(str, self.args())))
-
-class Print(Statement, Parameterized):
-    def __init__(self):
-        Statement.__init__(self)
-        Parameterized.__init__(self)
-
-    def run(self, ctx):
-        msg = ' '.join(map(lambda x: str(x.run(ctx)), self._args)) + '\n'
-        ctx.stdout().write(msg)
-        ctx.stdout().flush()
-
-    def __str__(self):
-        return 'print {}'.format(' '.join(map(str, self._args)))
-
 class Debug(Statement):
     def __init__(self):
         super().__init__()

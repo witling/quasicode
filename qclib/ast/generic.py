@@ -100,7 +100,9 @@ class FunctionCall(Runnable, Parameterized):
 
     def run(self, ctx):
         rvars = [arg.run(ctx) for arg in self.args()]
-        decl = ctx.lookup(self.name())
+        # FIXME: reactivate if code fails to work
+        #decl = ctx.lookup(self.name())
+        decl = ctx[self.name()]
 
         if len(decl.args()) != len(rvars):
             raise Exception('call to `{}` expected {} arguments, got {}'.format(self.name(), len(decl.args()), len(rvars)))

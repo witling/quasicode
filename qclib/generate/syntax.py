@@ -84,4 +84,4 @@ def setup():
         else:
             SYN_TREE[k]['_op'] = tag
 
-setup()
+#setup()

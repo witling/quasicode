@@ -1,5 +1,6 @@
 from .ast import *
 from .ast.generic import isof
+from .builtin import ReadFn, WriteFn
 from .context import *
 from .program import *
 
@@ -14,6 +15,12 @@ class Interpreter:
         self._ctx.add_include_path(os.getcwd())
         self._ctx.add_include_path(os.path.expanduser(Interpreter.USERLIB_PATH))
         self._ctx.add_include_path(Interpreter.LIB_PATH)
+
+        self._add_builtin_functions()
+
+    def _add_builtin_functions(self):
+        self._ctx['bitte?'] = ReadFn()
+        self._ctx['quasi'] = WriteFn()
 
     def disable_funny_mode(self):
         self._ctx.disable_funny_mode()

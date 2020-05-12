@@ -1,10 +1,9 @@
 from lark import Lark
 from lark.indenter import Indenter
 
-from ..ast import *
+#from ..ast import *
 
-from .error import ParserError
-from .syntax import *
+#from .error import ParserError
 
 lark_grammar = """
 ?start: (_NEWLINE | statement)*
