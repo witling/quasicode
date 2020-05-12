@@ -78,12 +78,16 @@ class Compiler:
     def _to_value(self, item):
         if istype(item, 'IDENT'):
             return Ident(item.value)
-        elif istype(item, 'value'):
-            return self._to_value(item.children[0])
-        elif istype(item, 'construct'):
-            return self._to_construct(item)
+        elif istype(item, 'NUMBER'):
+            return Number(float(item.value))
+        elif istype(item, 'STRING'):
+            return String(item.value)
         elif istype(item, 'computation'):
             return self._translate_computation(item)
+        elif istype(item, 'construct'):
+            return self._to_construct(item)
+        elif istype(item, 'value'):
+            return self._to_value(item.children[0])
         unreachable()
 
     def _translate_computation(self, item):
@@ -322,7 +326,7 @@ class Compiler:
                 unreachable()
 
         return program
-    
+
     #def _finalize(self, parsed) -> Program:
     #    program = Program()
     #    for item in parsed:

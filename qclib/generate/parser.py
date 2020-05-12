@@ -14,14 +14,15 @@ lark_grammar = """
 %declare _INDENT _DEDENT
 _NEWLINE: ( /\\r?\\n[\\t ]*/ )+
 
-IDENT: /\S+/
+STRING: /".*?(?<!\\\\)"/
+IDENT: /[^\d\s]\S*/
 NUMBER: /\d+/
 
 !objty: "menge" | "liste"
 construct_args: value+
 construct: objty ("mit" construct_args)?
 
-value: NUMBER | IDENT | construct
+value: NUMBER | STRING | IDENT | construct
 
 add: expression "+" expression
 sub: expression "-" expression
