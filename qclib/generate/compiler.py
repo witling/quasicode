@@ -259,7 +259,7 @@ class Compiler:
         if item.data == 'lhassign':
             wexpr, rexpr = self._translate_wexpression(left), self._translate_rexpression(right)
         elif item.data == 'rhassign':
-            rexpr, wexpr = self._translate_wexpression(left), self._translate_rexpression(right)
+            wexpr, rexpr = self._translate_wexpression(right), self._translate_rexpression(left)
         else:
             unreachable()
 

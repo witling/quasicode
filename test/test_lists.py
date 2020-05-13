@@ -2,7 +2,7 @@ import unittest
 
 from .deps import *
 
-class TestObjects(Test):
+class TestLists(Test):
     def test_creation(self, internals):
         src = """
 und zwar create_indirect

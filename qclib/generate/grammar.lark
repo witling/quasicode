@@ -1,0 +1,59 @@
+start: (_NEWLINE | statement)*
+
+%ignore /[\t \f]+/                  // ignore whitespace
+%ignore /\\[\t \f]*\r?\n/         // ignore whatever
+%declare _INDENT _DEDENT
+_NEWLINE: ( /\r?\n[\t ]*/ )+
+
+STRING: /".*?(?<!\\)"/
+IDENT: /[a-zA-Z_][\w\?!]*/
+NUMBER: /\d+/
+
+!objty: "menge" | "liste"
+construct_args: value+
+construct: objty ("mit" construct_args)?
+
+value: NUMBER | STRING | IDENT | construct
+
+add: expression "+" expression
+sub: expression "-" expression
+mul: expression "*" expression
+div: expression "/" expression
+mod: expression "modulo" expression
+cmp: expression "das" "ist" expression
+lt: expression "<" expression
+
+computation: add | sub | mul | div | mod | cmp | lt
+
+index: value "bei" value
+slice_from: value "von" value
+slice_till: (value | slice_from) "bis" value
+slice: slice_from | slice_till
+
+call: IDENT value+
+wexpression: IDENT | index | slice
+expression: value | index | slice | "(" expression ")" | computation | call
+
+// language constructs
+
+lhassign: wexpression "ist" expression
+rhassign: expression "also" wexpression
+assign: lhassign | rhassign
+break: "patrick!"
+import: "use" IDENT
+return: expression "und" "fertig"
+
+// block statements
+
+block: simple_statement | _NEWLINE _INDENT statement+ _DEDENT
+marker_main: "action" "please"
+declare_args: IDENT+
+declare: "und" "zwar" IDENT ("mit" declare_args)? marker_main? block
+loop: "das" "holen" "wir" "nach" block
+else_branch: "ach" "kris." block
+elif_branch: "kris??" expression block
+if_branch: "kris?" expression block elif_branch* else_branch?
+
+?simple_statement: (import | break | return | assign | expression) _NEWLINE
+?block_statement: (declare | if_branch | loop)
+?statement: simple_statement | block_statement

@@ -5,76 +5,6 @@ from lark.indenter import Indenter
 
 #from .error import ParserError
 
-lark_grammar = """
-?start: (_NEWLINE | statement)*
-
-%ignore /[\\t \\f]+/                  // ignore whitespace
-%ignore /\\[\\t \\f]*\\r?\\n/         // ignore whatever
-%declare _INDENT _DEDENT
-_NEWLINE: ( /\\r?\\n[\\t ]*/ )+
-
-STRING: /".*?(?<!\\\\)"/
-IDENT: /[^\d\s]\S*/
-NUMBER: /\d+/
-
-!objty: "menge" | "liste"
-construct_args: value+
-construct: objty ("mit" construct_args)?
-
-value: NUMBER | STRING | IDENT | construct
-
-add: expression "+" expression
-sub: expression "-" expression
-mul: expression "*" expression
-div: expression "/" expression
-mod: expression "modulo" expression
-cmp: expression "das" "ist" expression
-lt: expression "<" expression
-
-computation: add | sub | mul | div | mod | cmp | lt
-
-index: value "bei" value
-slice_from: value "von" value
-slice_till: (value | slice_from) "bis" value
-slice: slice_from | slice_till
-
-call: IDENT value+
-wexpression: IDENT | index | slice
-expression: value | index | slice | "(" expression ")" | computation | call
-
-// language constructs
-
-block: _NEWLINE _INDENT statement+ _DEDENT
-
-lhassign: wexpression "ist" expression
-rhassign: expression "also" wexpression
-assign: lhassign | rhassign
-
-loop: "das" "holen" "wir" "nach" block
-break: "patrick!"
-
-else_branch: "ach" "kris." block
-elif_branch: "kris??" expression block
-if_branch: "kris?" expression block elif_branch* else_branch?
-
-import: "use" IDENT
-
-marker_main: "action" "please"
-declare_args: IDENT+
-declare: "und" "zwar" IDENT ("mit" declare_args)? marker_main? block
-
-return: value "und" "fertig"
-
-statement: (import _NEWLINE)
-         | declare
-         | if_branch 
-         | loop 
-         | (break _NEWLINE)
-         | (return _NEWLINE)
-         | (assign _NEWLINE)
-         | (expression _NEWLINE)
-"""
-
 class QuasiIndenter(Indenter):
     NL_type = '_NEWLINE'
     OPEN_PAREN_types = ['LPAR']
@@ -86,7 +16,18 @@ class QuasiIndenter(Indenter):
 class Parser:
     def __init__(self):
         kwargs = dict(postlex=QuasiIndenter(), start='start')
-        self._lark = Lark(lark_grammar, parser='lalr', **kwargs)
+
+        self._lark = Lark(self._get_grammar(), parser='lalr', **kwargs)
+
+    def _get_grammar(self):
+        import os
+        fname = os.path.join(os.path.dirname(__file__), 'grammar.lark')
+        
+        lark_grammar = None
+        with open(fname, 'r') as fin:
+            lark_grammar = fin.read()
+
+        return lark_grammar
 
     def parse(self, content: str) -> list:
         result = self._lark.parse(content)
