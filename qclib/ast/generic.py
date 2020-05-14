@@ -132,8 +132,6 @@ class FunctionCall(Runnable, Parameterized):
         return last
 
     def run(self, ctx):
-        # FIXME: reactivate if code fails to work
-        #decl = ctx.lookup(self.name())
         decl = ctx[self.name()]
 
         if hasattr(decl, 'is_builtin'):
@@ -144,5 +142,5 @@ class FunctionCall(Runnable, Parameterized):
             return self._call(decl, ctx)
 
         else:
-            # FIXME: is this the correct behavior
+            # FIXME: is this the correct behavior?
             return decl

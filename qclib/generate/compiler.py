@@ -1,5 +1,3 @@
-#from more_itertools import peekable
-
 from ..ast import *
 from ..program import *
 
@@ -115,10 +113,6 @@ class Compiler:
         unreachable()
 
     def _translate_operation(self, item):
-        #assure_type(item, 'computation')
-        #assert len(item.children) == 1
-        #op = item.children[0]
-
         ls = item.children
         opcls = self._map_operator(item.data)
         comp = opcls()
@@ -381,22 +375,3 @@ class Compiler:
                 raise CompilerError('statement `{}` is not allowed at top-level. only import and declare.'.format(item))
 
         return program
-
-    #def _finalize(self, parsed) -> Program:
-    #    program = Program()
-    #    for item in parsed:
-    #        if isof(item, Declaration):
-    #            if item.is_main():
-    #                if not program.entry_point() is None:
-    #                    raise CompilerError('main entry point declared twice')
-    #                program.set_entry_point(item.name())
-    #            program.ident(item.name(), Function(item.args(), item.block()))
-
-    #        elif isof(item, Use):
-    #            for arg in item.args():
-    #                program.use(arg)
-
-    #        else:
-    #            raise CompilerError('unexpected `{}`. only declarations and imports are allowed at top-level.'.format(item))
-
-    #    return program
