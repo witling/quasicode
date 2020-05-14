@@ -312,6 +312,8 @@ class Compiler:
             for arg in args.children:
                 if istype(arg, 'value'):
                     call_args.append(self._to_value(arg))
+                elif istype(arg, 'access'):
+                    call_args.append(self._to_access(arg))
                 elif istype(arg, 'expression'):
                     call_args.append(self._translate_rexpression(arg))
                 else:
