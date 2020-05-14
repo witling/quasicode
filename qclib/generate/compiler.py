@@ -72,7 +72,7 @@ class Compiler:
 
     def _to_access(self, item):
         assure_type(item, 'access')
-        path = list(map(self._to_value, item.children))
+        path = list(item.children)
         return Access(path)
 
     def _to_construct(self, item):

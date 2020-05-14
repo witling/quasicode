@@ -36,8 +36,8 @@ und zwar return
         internals.interpreter.load(program)
 
         ret = internals.interpreter.call('return')
-        self.assertEqual(1, float(ret[Ident('b')]))
-        self.assertEqual(2, float(ret[Ident('sub')][Ident('a')]))
+        self.assertEqual(1, float(ret['b']))
+        self.assertEqual(2, float(ret['sub']['a']))
 
     def test_object_passing(self, internals):
         src = """

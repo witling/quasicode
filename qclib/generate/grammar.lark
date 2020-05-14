@@ -59,7 +59,7 @@ CONSTANT: "uzbl"
 
 value: NUMBER | STRING | CONSTANT | IDENT | construct
 
-access: IDENT ("." IDENT)+
+access: IDENT ("." (IDENT | NUMBER))+
 !objty: "menge" | "liste"
 construct_args: value+
 construct: objty ("mit" construct_args)?
