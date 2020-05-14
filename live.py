@@ -15,7 +15,7 @@ def main():
         program = Compiler().compile(fin.read())
 
     interpreter = Interpreter()
-    interpreter.disable_funny_mod()
+    interpreter.disable_funny_mode()
     interpreter.load(program)
     interpreter.run()
 

@@ -22,13 +22,13 @@ class Value:
         raise Exception('cannot create value from `{}`'.format(val))
 
     def __str__(self):
-        return self._val
+        return str(self._val)
 
     def __int__(self):
-        return self._val
+        return int(self._val)
 
     def __float__(self):
-        return self._val
+        return float(self._val)
 
     def __bool__(self):
         return bool(self._val)
@@ -86,6 +86,15 @@ class Menge(Value):
 class Liste(Value):
     def __init__(self):
         super().__init__([])
+
+    def _normalize_index(self, key):
+        return int(key) - 1
+
+    def __getitem__(self, key):
+        return self._val[self._normalize_index(key)]
+
+    def __setitem__(self, key, value):
+        self._val[self._normalize_index(key)] = value
 
     def run(self, ctx):
         return self

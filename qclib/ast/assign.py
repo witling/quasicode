@@ -27,6 +27,9 @@ class Assign(Statement, Runnable):
                 menge = menge[subpart]
 
             menge[last] = self._value.run(ctx)
+        elif self._ident.__class__ is Index:
+            target, index = self._ident.eval(ctx)
+            target[index] = self._value.run(ctx)
         else:
             ctx[self._ident] = self._value.run(ctx)
 

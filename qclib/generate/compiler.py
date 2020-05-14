@@ -88,6 +88,23 @@ class Compiler:
 
         return Construct(objty(), init)
 
+    def _to_index(self, item):
+        assure_type(item, 'index')
+        assert len(item.children) == 2
+        ident = self._to_value(item.children[0])
+        index = self._to_value(item.children[1])
+        return Index(ident, index)
+
+    def _to_slice(self, item, start, end):
+        ty = typeof(item)
+        notimplemented()
+
+    def _to_slice_left_closed(self, item):
+        notimplemented()
+
+    def _to_slice_right_closed(self, item):
+        notimplemented()
+
     def _to_value(self, item):
         ty = typeof(item)
         if ty == 'IDENT':
@@ -106,6 +123,8 @@ class Compiler:
             return self._to_construct(item)
         elif ty == 'expression':
             return self._translate_rexpression(item)
+        elif ty == 'index':
+            return self._to_index(item)
         elif ty == 'value':
             return self._to_value(item.children[0])
         elif not self._map_operator(ty) is None:
@@ -142,10 +161,14 @@ class Compiler:
 
         if ty == 'IDENT' or ty == 'access':
             return self._to_value(first)
-        elif ty == 'index' or ty == 'slice':
-            notimplemented()
-        elif ty == 'slice_from' or ty == 'slice_till':
-            notimplemented()
+        elif ty == 'index':
+            return self._to_index(first)
+        elif ty == 'slice':
+            return self._to_slice(first)
+        elif ty == 'slice_from':
+            return self._to_slice_left_closed(first)
+        elif ty == 'slice_till':
+            return self._to_slice_right_closed(first)
 
         unreachable()
 
