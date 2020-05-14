@@ -88,7 +88,7 @@ class Context:
     def load_by_name(self, name):
         path = self._search_file(name)
         if not path:
-            raise LookupException('cannot use `{}`, not found'.format(str(use)))
+            raise LookupException('cannot use `{}`, not found'.format(str(name)))
 
         library = Library.load(path)
 

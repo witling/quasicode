@@ -55,7 +55,8 @@ und zwar kleiner mit a b
         self.assertFalse(internals.interpreter.call('kleiner', [2, 2]))
 
     def test_unknown_use(self, internals):
-        src = """use non_existent"""
+        src = """use non_existent
+"""
         program = internals.compiler.compile(src)
         with pytest.raises(LookupException):
             internals.interpreter.load(program)

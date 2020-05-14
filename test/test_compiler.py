@@ -7,8 +7,6 @@ class TestCompiler(Test):
         src = """
 quasi "test"
 """
-        dump_test(src)
-
         with pytest.raises(CompilerError):
             program = internals.compiler.compile(src)
 
