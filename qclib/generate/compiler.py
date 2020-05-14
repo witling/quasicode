@@ -270,7 +270,7 @@ class Compiler:
         assure_type(item, 'return')
         assert len(item.children) == 1
         ret = Return()
-        value = self._translate_rexpression(item.children[0])
+        value = self._to_value(item.children[0])
         ret.add_arg(value)
         return ret
 

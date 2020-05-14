@@ -86,7 +86,7 @@ rhassign: expression "also" wexpression
 assign: lhassign | rhassign
 break: "patrick!"
 import: "use" IDENT
-return: expression "und" "fertig"
+return: atom "und" "fertig"
 nop: "oettinger"
 
 // block statements
