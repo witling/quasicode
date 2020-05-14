@@ -95,15 +95,35 @@ class Compiler:
         index = self._to_value(item.children[1])
         return Index(ident, index)
 
-    def _to_slice(self, item, start, end):
-        ty = typeof(item)
+    def _to_slice(self, item):
+        assure_type(item, 'slice')
+        assert len(item.children) == 1
+        ty, item = typeof(item), item.children[0]
+        assert len(item.children) == 2
+
+        if typeof(item.children[0]) == 'slice_start':
+            start_slice = self._to_slice_start(item.children[0])
+            end = self._to_value(item.children[1])
+        elif typeof(item.children[1]) == 'slice_start':
+            start_slice = self._to_slice_start(item.children[1])
+            end = self._to_value(item.children[0])
+        else:
+            unreachable()
+
+        start_slice._end = end
+        return start_slice
+
+    def _to_slice_end(self, item):
+        assure_type(item, 'slice_end')
+        print(item)
         notimplemented()
 
-    def _to_slice_left_closed(self, item):
-        notimplemented()
-
-    def _to_slice_right_closed(self, item):
-        notimplemented()
+    def _to_slice_start(self, item):
+        assure_type(item, 'slice_start')
+        assert len(item.children) == 2
+        target, start = item.children[0], item.children[1]
+        target, start = self._to_value(target), self._to_value(start)
+        return Slice(target, start=start)
 
     def _to_value(self, item):
         ty = typeof(item)
@@ -125,6 +145,8 @@ class Compiler:
             return self._translate_rexpression(item)
         elif ty == 'index':
             return self._to_index(item)
+        elif ty == 'slice':
+            return self._to_slice(item)
         elif ty == 'value':
             return self._to_value(item.children[0])
         elif not self._map_operator(ty) is None:
@@ -165,10 +187,10 @@ class Compiler:
             return self._to_index(first)
         elif ty == 'slice':
             return self._to_slice(first)
-        elif ty == 'slice_from':
-            return self._to_slice_left_closed(first)
-        elif ty == 'slice_till':
-            return self._to_slice_right_closed(first)
+        elif ty == 'slice_start':
+            return self._to_slice_start(first)
+        elif ty == 'slice_end':
+            return self._to_slice_end(first)
 
         unreachable()
 

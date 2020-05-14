@@ -86,18 +86,17 @@ und zwar first
 
         self.assertEqual(3, int(ret))
 
-    def test_slice_max(self, internals):
+    def test_slice_full(self, internals):
         src = """
 und zwar create
     eingabe ist liste mit 1 2 3 4
     (eingabe von 1 bis 4) und fertig
 """
-
         program = internals.compiler.compile(src)
         internals.interpreter.load(program)
 
         ret = internals.interpreter.call('create')
         self.assertEqual(3, len(ret._val))
 
-        for expected, got in zip(map(lambda x: x+1, range(3)), ret._val):
+        for expected, got in zip(map(lambda x: x+1, range(3)), map(int, ret._val)):
             self.assertEqual(expected, got)

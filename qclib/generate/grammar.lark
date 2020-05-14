@@ -54,9 +54,9 @@ construct_args: value+
 construct: objty ("mit" construct_args)?
 
 index: value "bei" value
-slice_from: value "von" value
-slice_till: (value | slice_from) "bis" value
-slice: slice_from | slice_till
+slice_start: value "von" value
+slice_end: (value | slice_start) "bis" value
+slice: slice_start | slice_end
 
 call_args: (value | access | "(" expression ")" )+
 call: IDENT call_args+
