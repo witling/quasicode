@@ -19,7 +19,8 @@ NUMBER: /\d+/
 //_calc_op: add | sub | mul | div | mod
 //_compare_op: cmp | lt
 
-?sign_comp: ("+" | "-")? expression
+// ?sign_comp: ("+" | "-")? atom
+?sign_comp: atom
 
 add: calc_comp "+" sign_comp
 sub: calc_comp "-" sign_comp
@@ -39,13 +40,6 @@ lt: compare_comp "<" calc_comp
             | cmp
             | lt
 
-computation: compare_comp
-
-//?power_computation: expression "hoch"
-//?signed_computation: (add | sub)? expression | power_computation
-//?calc_computation: signed_computation (_calc_op signed_computation)*
-//computation: calc_computation (_compare_op calc_computation)*
-
 !objty: "menge" | "liste"
 construct_args: value+
 construct: objty ("mit" construct_args)?
@@ -59,12 +53,12 @@ slice: slice_from | slice_till
 
 call: IDENT expression+
 wexpression: IDENT | index | slice
-expression: value 
-          // | computation 
+?atom: value 
           | index 
           | slice 
-          | "(" computation ")" 
+          | "(" expression ")" 
           | call
+expression: compare_comp
 
 // language constructs
 
@@ -74,6 +68,7 @@ assign: lhassign | rhassign
 break: "patrick!"
 import: "use" IDENT
 return: expression "und" "fertig"
+nop: "oettinger"
 
 // block statements
 
@@ -86,6 +81,6 @@ else_branch: "ach" "kris." block
 elif_branch: "kris??" expression block
 if_branch: "kris?" expression block elif_branch* else_branch?
 
-?simple_statement: (import | break | return | assign | expression) _NEWLINE
+?simple_statement: (import | break | return | assign | expression | nop) _NEWLINE
 ?block_statement: (declare | if_branch | loop)
 ?statement: simple_statement | block_statement

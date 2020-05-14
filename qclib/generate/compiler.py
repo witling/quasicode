@@ -46,13 +46,13 @@ class Compiler:
     def _map_operator(self, name):
         name = name.lower()
         tymap = {
-            "add": Add,
-            "sub": Sub,
-            "mul": Mul,
-            "div": Div,
-            "mod": Mod,
-            "lt" : Less,
-            "cmp": Compare,
+            'add': Add,
+            'sub': Sub,
+            'mul': Mul,
+            'div': Div,
+            'mod': Mod,
+            'lt' : Less,
+            'cmp': Compare,
         }
         if not name in tymap:
             return None
@@ -76,32 +76,34 @@ class Compiler:
         return Construct(objty(), init)
 
     def _to_value(self, item):
-        if istype(item, 'IDENT'):
+        ty = typeof(item)
+        if ty == 'IDENT':
             return Ident(item.value)
-        elif istype(item, 'NUMBER'):
+        elif ty == 'NUMBER':
             return Number(float(item.value))
-        elif istype(item, 'STRING'):
+        elif ty == 'STRING':
             val = item.value[1:-1]
             return String(val)
-        elif istype(item, 'computation'):
-            return self._translate_computation(item)
-        elif istype(item, 'construct'):
+        elif ty == 'construct':
             return self._to_construct(item)
-        elif istype(item, 'value'):
+        elif ty == 'value':
             return self._to_value(item.children[0])
+        elif not self._map_operator(ty) is None:
+            return self._translate_operation(item)
         unreachable()
 
-    def _translate_computation(self, item):
-        assure_type(item, 'computation')
-        assert len(item.children) == 1
-        op = item.children[0]
+    def _translate_operation(self, item):
+        #assure_type(item, 'computation')
+        #assert len(item.children) == 1
+        #op = item.children[0]
 
-        ls = op.children
+        ls = item.children
         assert len(ls) == 2
         left, right = ls[0], ls[1]
-        left, right = self._translate_rexpression(left), self._translate_rexpression(right)
+        #left, right = self._translate_rexpression(left), self._translate_rexpression(right)
+        left, right = self._to_value(left), self._to_value(right)
         
-        opcls = self._map_operator(op.data)
+        opcls = self._map_operator(item.data)
         comp = opcls()
         comp.add_arg(left)
         comp.add_arg(right)
@@ -278,6 +280,10 @@ class Compiler:
 
         return FunctionCall(Ident(name.value), args)
 
+    def _translate_nop(self, item):
+        assure_type(item, 'nop')
+        return Nop()
+
     def _translate_statement(self, statement):
         if istype(statement, 'statement'):
             assert len(statement.children) == 1
@@ -301,6 +307,8 @@ class Compiler:
             return self._translate_assign(statement)
         elif ty == 'expression':
             return self._translate_rexpression(statement)
+        elif ty == 'nop':
+            return self._translate_nop(statement)
 
         unreachable()
 

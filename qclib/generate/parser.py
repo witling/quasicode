@@ -17,7 +17,7 @@ class Parser:
     def __init__(self):
         kwargs = dict(postlex=QuasiIndenter(), start='start')
 
-        self._lark = Lark(self._get_grammar(), parser='lalr', debug=True, **kwargs)
+        self._lark = Lark(self._get_grammar(), parser='lalr', **kwargs)
 
     def _get_grammar(self):
         import os
