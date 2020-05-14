@@ -69,7 +69,8 @@ slice_from: value "von" value
 slice_till: (value | slice_from) "bis" value
 slice: slice_from | slice_till
 
-call: IDENT expression+
+call_args: (value | access | "(" expression ")" )+
+call: IDENT call_args+
 expression: or_comp
 wexpression: IDENT | access | index | slice
 ?atom: value 

@@ -1,5 +1,5 @@
 from qclib.library import *
-from qclib.ast import *
+from qclib.ast import Value
 
 class StringLibrary(PyLibrary):
     __module__ = '__main__'

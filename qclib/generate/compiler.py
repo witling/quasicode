@@ -304,9 +304,24 @@ class Compiler:
 
         name = next(it)
         assure_ident(name)
-        args = [self._translate_rexpression(arg) for arg in it]
 
-        return FunctionCall(Ident(name.value), args)
+        try:
+            args = next(it)
+            assure_type(args, 'call_args')
+            call_args = []
+            for arg in args.children:
+                if istype(arg, 'value'):
+                    call_args.append(self._to_value(arg))
+                elif istype(arg, 'expression'):
+                    call_args.append(self._translate_rexpression(arg))
+                else:
+                    unreachable()
+            return FunctionCall(Ident(name.value), call_args)
+
+        except StopIteration:
+            pass
+
+        return FunctionCall(Ident(name.value), [])
 
     def _translate_nop(self, item):
         assure_type(item, 'nop')
