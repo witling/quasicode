@@ -20,4 +20,4 @@ und zwar getname
         internals.interpreter.call('getname')
 
         output = sout.getvalue()
-        self.assertEqual('wie ist dein name? alfred\n\n', output)
+        self.assertEqual('wie ist dein name? alfred\n', output)

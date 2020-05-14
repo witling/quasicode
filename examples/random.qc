@@ -1,4 +1,4 @@
-use std
+use math
 
 und zwar sub mit i
     das holen wir nach

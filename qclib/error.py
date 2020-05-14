@@ -3,3 +3,6 @@ class OutOfOettingerException(Exception):
 
 class LookupException(Exception):
     pass
+
+class RuntimeException(Exception):
+    pass

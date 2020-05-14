@@ -9,19 +9,11 @@ class StdLibrary(PyLibrary):
     def __init__(self):
         PyLibrary.__init__(self)
 
-        self.ident('random', create_fn(self._rnd))
-        self.ident('sqrt', create_fn(self._sqrt))
         self.ident('quasi', WriteFn())
         self.ident('bitte?', ReadFn())
 
     def modname(self):
         return 'std'
-
-    def _sqrt(self, arg1: float):
-        return Number(math.sqrt(arg1))
-    
-    def _rnd(self):
-        return Number(random.random())
 
 class ReadFn(Function):
     RESPONSES = ['verstehe.', 'gut.', 'okay.', 'perfekt.']
@@ -46,10 +38,12 @@ class ReadFn(Function):
         ctx.stdout().flush()
 
         ret = ctx.stdin().readline()
+        # drop newline char
+        ret = ret[:-1]
 
         if ctx.is_funny_mode():
             from random import choice
-            ctx.stdout().write('{}\n'.format(choice(Readin.RESPONSES)))
+            ctx.stdout().write('{}\n'.format(choice(ReadFn.RESPONSES)))
             ctx.stdout().flush()
 
         return ret

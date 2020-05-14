@@ -156,7 +156,6 @@ class Compiler:
         unreachable()
 
     def _translate_rexpression(self, item):
-        # FIXME: does not parse operations correctly
         assure_type(item, 'expression')
         first = item.children[0]
         ty = typeof(first)

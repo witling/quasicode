@@ -4,10 +4,12 @@ from .deps import *
 
 class TestStdlib(Test):
     def test_random(self, internals):
-        ret = internals.interpreter.call('random', [])
-        self.assertIsInstance(ret, Number)
-        self.assertTrue(0 <= float(ret) <= 1)
+        import io
+        stdin = io.StringIO('hej\n')
+        internals.interpreter._ctx.set_stdin(stdin)
+        ret = internals.interpreter.call('bitte?', ['was war die frage?'])
+
+        self.assertEqual('hej', ret)
 
     def test_sqrt(self, internals):
-        ret = internals.interpreter.call('sqrt', [16])
-        self.assertEqual(4, float(ret))
+        internals.interpreter.call('quasi', ['hi'])

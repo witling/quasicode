@@ -1,3 +1,5 @@
+from ..error import RuntimeException
+
 def isof(var, cls) -> bool:
     return isinstance(var, cls) or any(isof(cls, b) for b in var.__class__.__bases__ if b.__name__ != 'object')
 
@@ -133,6 +135,14 @@ class FunctionCall(Runnable, Parameterized):
         # FIXME: reactivate if code fails to work
         #decl = ctx.lookup(self.name())
         decl = ctx[self.name()]
-        if decl.is_builtin():
-            return self._call_builtin(decl, ctx)
-        return self._call(decl, ctx)
+
+        if hasattr(decl, 'is_builtin'):
+            #raise RuntimeException('`{}` is not callable'.format(decl))
+
+            if decl.is_builtin():
+                return self._call_builtin(decl, ctx)
+            return self._call(decl, ctx)
+
+        else:
+            # FIXME: is this the correct behavior
+            return decl

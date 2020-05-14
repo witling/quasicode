@@ -101,6 +101,8 @@ class Ident(Value):
     def __init__(self, name: str):
         super().__init__(name)
 
+    # TODO: implement hash as str()
+
     def name(self):
         return self._val
 
