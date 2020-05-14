@@ -9,6 +9,7 @@ setup(
     description='the best programming language around.',
     url='https://github.com/witling/quasicode',
     packages=find_packages(),
+    include_package_data=True,
     classifiers=[
         'Programming Language :: Python :: 3',
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',

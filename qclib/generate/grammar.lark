@@ -5,19 +5,8 @@ start: (_NEWLINE | statement)*
 %declare _INDENT _DEDENT
 _NEWLINE: ( /\r?\n[\t ]*/ )+
 
-//add: "+"
-//sub: "-"
-//mul: "*"
-//div: "/"
-//mod: "modulo"
-//cmp: "das" "ist"
-//lt: "<"
-//_calc_op: add | sub | mul | div | mod
-//_compare_op: cmp | lt
-
-// ?sign_comp: ("+" | "-")? atom
-
 // operator precendence
+
 ?sign_comp: atom
 
 add: calc_comp "+" sign_comp
