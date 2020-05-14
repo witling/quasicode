@@ -127,3 +127,20 @@ i ist (0 + 1)
         ast = internals.parser.parse(src)
 
         self.assertTrue(ast)
+
+    def test_script_trailing_indent(self, internals):
+        src = """
+und zwar ich_bin_so_kuhl action please
+    quasi "kuhler als du"
+        """
+        ast = internals.parser.parse(src)
+
+        self.assertTrue(ast)
+
+    def test_script_no_trailing_newline(self, internals):
+        src = '''
+und zwar ich_bin_so_kuhl action please
+    quasi "kuhler als du"'''
+        ast = internals.parser.parse(src)
+
+        self.assertTrue(ast)
