@@ -26,5 +26,7 @@ class Parser:
         return lark_grammar
 
     def parse(self, content: str) -> list:
+        # append one newline as I'm not able to fix that parser :-)
+        content += '\n'
         result = self._lark.parse(content)
         return result
