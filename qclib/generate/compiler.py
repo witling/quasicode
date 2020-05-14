@@ -44,6 +44,7 @@ class Compiler:
         return tymap[name]
 
     def _map_operator(self, name):
+        # TODO: remove lower
         name = name.lower()
         tymap = {
             'add': Add,
@@ -53,10 +54,25 @@ class Compiler:
             'mod': Mod,
             'lt' : Less,
             'cmp': Compare,
+            'and': LogicalAnd,
+            'or': LogicalOr,
         }
         if not name in tymap:
             return None
         return tymap[name]
+
+    def _map_constant(self, name):
+        tymap = {
+            'uzbl': UzblConstant,
+        }
+        if not name in tymap:
+            return None
+        return tymap[name]
+
+    def _to_access(self, item):
+        assure_type(item, 'access')
+        path = list(map(self._to_value, item.children))
+        return Access(path)
 
     def _to_construct(self, item):
         assure_type(item, 'construct')
@@ -70,8 +86,6 @@ class Compiler:
 
         if 2 == len(item.children):
             init = self._translate_construct_args(item.children[1])
-        else:
-            unreachable()
 
         return Construct(objty(), init)
 
@@ -84,8 +98,15 @@ class Compiler:
         elif ty == 'STRING':
             val = item.value[1:-1]
             return String(val)
+        elif ty == 'CONSTANT':
+            const = self._map_constant(item)
+            return const()
+        elif ty == 'access':
+            return self._to_access(item)
         elif ty == 'construct':
             return self._to_construct(item)
+        elif ty == 'expression':
+            return self._translate_rexpression(item)
         elif ty == 'value':
             return self._to_value(item.children[0])
         elif not self._map_operator(ty) is None:
@@ -116,12 +137,13 @@ class Compiler:
     def _translate_wexpression(self, item):
         assure_type(item, 'wexpression')
         first = item.children[0]
+        ty = typeof(first)
 
-        if istype(first, 'IDENT'):
-            return Ident(first.value)
-        elif istype(first, 'index') or istype(first, 'slice'):
+        if ty == 'IDENT' or ty == 'access':
+            return self._to_value(first)
+        elif ty == 'index' or ty == 'slice':
             notimplemented()
-        elif istype(first, 'slice_from') or istype(first, 'slice_till'):
+        elif ty == 'slice_from' or ty == 'slice_till':
             notimplemented()
 
         unreachable()
@@ -241,7 +263,7 @@ class Compiler:
         assure_type(item, 'return')
         assert len(item.children) == 1
         ret = Return()
-        value = self._to_value(item.children[0])
+        value = self._translate_rexpression(item.children[0])
         ret.add_arg(value)
         return ret
 

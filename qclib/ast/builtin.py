@@ -1,5 +1,5 @@
 from .generic import *
-from .value import Ident, Liste
+from .value import Ident, Liste, Menge
 
 class Construct(Parameterized):
     def __init__(self, ty, init):
@@ -15,6 +15,9 @@ class Construct(Parameterized):
                 else:
                     liste._val.append(item)
             return liste
+        elif isof(self._ty, Menge):
+            # TODO: initialize object?
+            return self._ty
         raise Exception('unexpected type')
 
 class Debug(Statement):

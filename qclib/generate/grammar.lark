@@ -1,13 +1,9 @@
 start: (_NEWLINE | statement)*
 
-%ignore /[\t \f]+/                  // ignore whitespace
-%ignore /\\[\t \f]*\r?\n/         // ignore whatever
+%ignore /[\t \f]+/              // ignore whitespace
+%ignore /\\[\t \f]*\r?\n/       // ignore whatever
 %declare _INDENT _DEDENT
 _NEWLINE: ( /\r?\n[\t ]*/ )+
-
-STRING: /".*?(?<!\\)"/
-IDENT: /[a-zA-Z_][\w\?!]*/
-NUMBER: /\d+/
 
 //add: "+"
 //sub: "-"
@@ -20,6 +16,8 @@ NUMBER: /\d+/
 //_compare_op: cmp | lt
 
 // ?sign_comp: ("+" | "-")? atom
+
+// operator precendence
 ?sign_comp: atom
 
 add: calc_comp "+" sign_comp
@@ -40,11 +38,31 @@ lt: compare_comp "<" calc_comp
             | cmp
             | lt
 
+not: "not" compare_comp
+?not_comp: compare_comp
+         | not
+
+and: and_comp "und" not_comp
+?and_comp: not_comp
+         | and
+
+or: or_comp "oder" and_comp
+?or_comp: and_comp
+        | or
+
+// values
+
+STRING: /".*?(?<!\\)"/
+IDENT: /[a-zA-Z_][\w\?!]*/
+NUMBER: /\d+/
+CONSTANT: "uzbl"
+
+value: NUMBER | STRING | CONSTANT | IDENT | construct
+
+access: IDENT ("." IDENT)+
 !objty: "menge" | "liste"
 construct_args: value+
 construct: objty ("mit" construct_args)?
-
-value: NUMBER | STRING | IDENT | construct
 
 index: value "bei" value
 slice_from: value "von" value
@@ -52,13 +70,14 @@ slice_till: (value | slice_from) "bis" value
 slice: slice_from | slice_till
 
 call: IDENT expression+
-wexpression: IDENT | index | slice
+expression: or_comp
+wexpression: IDENT | access | index | slice
 ?atom: value 
-          | index 
-          | slice 
-          | "(" expression ")" 
-          | call
-expression: compare_comp
+     | access
+     | index 
+     | slice 
+     | "(" expression ")" 
+     | call
 
 // language constructs
 
@@ -72,7 +91,9 @@ nop: "oettinger"
 
 // block statements
 
-block: simple_statement | _NEWLINE _INDENT statement+ _DEDENT
+// block: _NEWLINE simple_statement | _NEWLINE _INDENT statement+ _DEDENT
+block: _NEWLINE _INDENT statement+ _DEDENT
+
 marker_main: "action" "please"
 declare_args: IDENT+
 declare: "und" "zwar" IDENT ("mit" declare_args)? marker_main? block
@@ -81,6 +102,6 @@ else_branch: "ach" "kris." block
 elif_branch: "kris??" expression block
 if_branch: "kris?" expression block elif_branch* else_branch?
 
-?simple_statement: (import | break | return | assign | expression | nop) _NEWLINE
-?block_statement: (declare | if_branch | loop)
-?statement: simple_statement | block_statement
+?simple_statement: import | break | return | assign | expression | nop
+?block_statement: declare | if_branch | loop
+?statement: (simple_statement (_NEWLINE | _DEDENT)) | block_statement

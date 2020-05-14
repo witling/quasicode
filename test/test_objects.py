@@ -11,7 +11,7 @@ und zwar create_indirect
 
 und zwar create
     menge und fertig
-        """
+"""
         program = internals.compiler.compile(src)
         internals.interpreter.load(program)
 
@@ -31,7 +31,7 @@ und zwar return
     obj1.sub.a ist 2
 
     obj1 und fertig
-        """
+"""
         program = internals.compiler.compile(src)
         internals.interpreter.load(program)
 
@@ -51,7 +51,7 @@ und zwar give
     obj1.c ist 3
 
     (select_one obj1) und fertig
-        """
+"""
         program = internals.compiler.compile(src)
         internals.interpreter.load(program)
 
@@ -67,7 +67,7 @@ und zwar give
     obj1.3 ist "third"
 
     obj1 und fertig
-        """
+"""
         program = internals.compiler.compile(src)
         internals.interpreter.load(program)
 
