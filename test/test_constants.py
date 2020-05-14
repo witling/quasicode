@@ -11,7 +11,7 @@ und zwar teste
     kris? a das ist b
         1 und fertig
     0 und fertig
-        """
+"""
         program = internals.compiler.compile(src)
         internals.interpreter.load(program)
 

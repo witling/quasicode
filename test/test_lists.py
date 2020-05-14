@@ -11,7 +11,7 @@ und zwar create_indirect
 
 und zwar create
     liste und fertig
-        """
+"""
         program = internals.compiler.compile(src)
         internals.interpreter.load(program)
 
@@ -28,7 +28,7 @@ und zwar create_indirect
     b ist 3
     obj1 ist liste mit a 2 b 4
     obj1 und fertig
-        """
+"""
         program = internals.compiler.compile(src)
         internals.interpreter.load(program)
 
@@ -43,7 +43,7 @@ und zwar create_indirect
         src = """
 und zwar create_indirect
     (liste mit 1 2 3) und fertig
-        """
+"""
         program = internals.compiler.compile(src)
         internals.interpreter.load(program)
 

@@ -6,7 +6,9 @@ class TestCompiler(Test):
     def test_unexpected_toplevel(self, internals):
         src = """
 quasi "test"
-        """
+"""
+        dump_test(src)
+
         with pytest.raises(CompilerError):
             program = internals.compiler.compile(src)
 
@@ -17,6 +19,6 @@ und zwar main2 action please
 
 und zwar main1 action please
     quasi "test"
-        """
+"""
         with pytest.raises(CompilerError):
             program = internals.compiler.compile(src)

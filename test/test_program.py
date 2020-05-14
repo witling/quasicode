@@ -10,7 +10,7 @@ def srcdir(tmpdir_factory):
     src = """
 und zwar gib_aus
     quasi "hallo welt"
-    """
+"""
     fname.write(src)
 
     return d

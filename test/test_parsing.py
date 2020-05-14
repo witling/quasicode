@@ -2,48 +2,60 @@ import pytest
 
 from .deps import *
 
+def node(ast, name):
+    ls = list(ast.find_data(name))
+    if not len(ls) == 1:
+        return None
+    return ls[0]
+
 class TestParsing(Test):
     def test_declare(self, internals):
         src = """
 und zwar hier action please
     quasi 1
-        """
+"""
         ast = internals.parser.parse(src)
 
-        self.assertTrue(ast.find_data('declare'))
-        self.assertTrue(ast.find_data('marker_main'))
-
-        #self.assertIsInstance(program[0], Declaration)
-        #self.assertTrue(program[0].is_main())
+        self.assertTrue(node(ast, 'declare'))
+        self.assertTrue(node(ast, 'marker_main'))
 
     def test_declare_args(self, internals):
         src = """
 und zwar hier mit a b
     quasi 1
-        """
-        program = internals.parser.parse(src)
+"""
+        ast = internals.parser.parse(src)
 
-        self.assertIsInstance(program[0], Declaration)
-        self.assertEqual(2, len(program[0].args()))
+        self.assertTrue(node(ast, 'declare'))
+
+        args = node(ast, 'declare_args')
+        self.assertTrue(args)
+        self.assertEqual(2, len(args.children))
 
     def test_declare_args_main(self, internals):
         src = """
-und zwar hier mit a b action please
+und zwar hier mit a b c action please
     quasi 1
-        """
-        program = internals.parser.parse(src)
+"""
+        ast = internals.parser.parse(src)
 
-        self.assertIsInstance(program[0], Declaration)
-        self.assertEqual(2, len(program[0].args()))
-        self.assertTrue(program[0].is_main())
+        self.assertTrue(node(ast, 'declare'))
+        self.assertTrue(node(ast, 'marker_main'))
+
+        args = node(ast, 'declare_args')
+        self.assertTrue(args)
+        self.assertEqual(3, len(args.children))
 
     def test_branch(self, internals):
         src = """
 kris? 1 das ist 1
     quasi "lol"
-        """
-        program = internals.parser.parse(src)
-        self.assertIsInstance(program[0], If)
+"""
+        ast = internals.parser.parse(src)
+
+        branch = node(ast, 'if_branch')
+        self.assertTrue(branch)
+        self.assertEqual(2, len(branch.children))
 
     def test_branch_elif(self, internals):
         src = """
@@ -53,10 +65,15 @@ kris?? 3 das ist 2
     quasi "buzz"
 kris?? 3 das ist 3
     quasi "buzz"
-        """
-        program = internals.parser.parse(src)
-        self.assertIsInstance(program[0], If)
-        self.assertEqual(3, len(program[0].branches()))
+"""
+        ast = internals.parser.parse(src)
+
+        branch = node(ast, 'if_branch')
+        self.assertTrue(branch)
+        self.assertEqual(4, len(branch.children))
+
+        elif_branches = list(branch.find_data('elif_branch'))
+        self.assertEqual(2, len(elif_branches))
 
     def test_branch_elif_else(self, internals):
         src = """
@@ -66,10 +83,18 @@ kris?? 1 das ist 1
     quasi "buzz"
 ach kris.
     quasi "nix"
-        """
-        program = internals.parser.parse(src)
-        self.assertIsInstance(program[0], If)
-        self.assertEqual(3, len(program[0].branches()))
+"""
+        ast = internals.parser.parse(src)
+
+        branch = node(ast, 'if_branch')
+        self.assertTrue(branch)
+        self.assertEqual(4, len(branch.children))
+
+        elif_branches = list(branch.find_data('elif_branch'))
+        self.assertEqual(1, len(elif_branches))
+
+        else_branches = list(branch.find_data('else_branch'))
+        self.assertEqual(1, len(else_branches))
 
     def test_repeat(self, internals):
         src = """
@@ -78,23 +103,27 @@ das holen wir nach
     i ist i + 1
     kris? i das ist 10
         patrick!
-        """
-        program = internals.parser.parse(src)
-        self.assertIsInstance(program[0], Assign)
-        self.assertIsInstance(program[1], Repeat)
+"""
+        ast = internals.parser.parse(src)
+
+        loop = node(ast, 'loop')
+        self.assertTrue(loop)
+        self.assertEqual(1, len(loop.children))
 
     def test_string_parsing(self, internals):
         src = """
 "hello world" also str1
-str2 ist 'hallo welt'
-        """
-        program = internals.parser.parse(src)
-        self.assertIsInstance(program[0], RHAssign)
-        self.assertIsInstance(program[1], LHAssign)
+str2 ist "hallo welt"
+"""
+        ast = internals.parser.parse(src)
+
+        strings = list(ast.find_data('value'))
+        self.assertEqual(2, len(strings))
 
     def test_parens(self, internals):
         src = """
 i ist (0 + 1)
-        """
-        program = internals.parser.parse(src)
-        self.assertIsInstance(program[0], LHAssign)
+"""
+        ast = internals.parser.parse(src)
+
+        self.assertTrue(ast)

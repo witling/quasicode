@@ -10,7 +10,7 @@ und zwar const
 
 und zwar rechne mit x
     (x + 1) und fertig
-        """
+"""
         program = internals.compiler.compile(src)
         internals.interpreter.load(program)
 
@@ -30,7 +30,7 @@ und zwar and_wahr
 
 und zwar and_falsch
     ((not uzbl) und uzbl) und fertig
-        """
+"""
         program = internals.compiler.compile(src)
         internals.interpreter.load(program)
 
@@ -46,7 +46,7 @@ und zwar kleiner mit a b
     kris? a < b
         uzbl und fertig
     (not uzbl) und fertig
-        """
+"""
         program = internals.compiler.compile(src)
         internals.interpreter.load(program)
 

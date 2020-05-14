@@ -9,7 +9,7 @@ class TestIO(Test):
 und zwar getname
     mein_name ist (bitte? "wie ist dein name? ")
     quasi mein_name
-        """
+"""
         sin, sout = io.StringIO('alfred\n'), io.StringIO()
         internals.interpreter._ctx.set_stdin(sin)
         internals.interpreter._ctx.set_stdout(sout)

@@ -56,6 +56,7 @@ class Compiler:
             'cmp': Compare,
             'and': LogicalAnd,
             'or': LogicalOr,
+            'not': LogicalNot,
         }
         if not name in tymap:
             return None
@@ -119,15 +120,21 @@ class Compiler:
         #op = item.children[0]
 
         ls = item.children
-        assert len(ls) == 2
-        left, right = ls[0], ls[1]
-        #left, right = self._translate_rexpression(left), self._translate_rexpression(right)
-        left, right = self._to_value(left), self._to_value(right)
-        
         opcls = self._map_operator(item.data)
         comp = opcls()
-        comp.add_arg(left)
-        comp.add_arg(right)
+        
+        if opcls is LogicalNot:
+            assert len(ls) == 1
+            arg = self._to_value(ls[0])
+            comp.add_arg(arg)
+
+        else:
+            assert len(ls) == 2
+            left, right = ls[0], ls[1]
+            left, right = self._to_value(left), self._to_value(right)
+            comp.add_arg(left)
+            comp.add_arg(right)
+
         return comp
 
     def _translate_construct_args(self, item):
@@ -344,15 +351,18 @@ class Compiler:
             if isof(item, Declaration):
                 if item.is_main():
                     if not program.entry_point() is None:
-                        raise CompilerError('main entry point declared twice')
+                        raise CompilerError('main entry point declared twice.')
                     program.set_entry_point(item.name())
 
                 program.ident(item.name(), Function(item.args(), item.block()))
+
             elif isof(item, Use):
                 assert len(item.args()) == 1
                 program.use(item.args()[0])
+
             else:
-                unreachable()
+                # TODO: allow other statements in certain modes
+                raise CompilerError('statement `{}` is not allowed at top-level. only import and declare.'.format(item))
 
         return program
 
