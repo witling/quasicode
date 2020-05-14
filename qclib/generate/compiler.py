@@ -86,7 +86,7 @@ class Compiler:
         if 2 == len(item.children):
             init = self._translate_construct_args(item.children[1])
 
-        return Construct(objty(), init)
+        return Construct(objty, init)
 
     def _to_index(self, item):
         assure_type(item, 'index')
@@ -346,6 +346,10 @@ class Compiler:
         assure_type(item, 'nop')
         return Nop()
 
+    def _translate_debug(self, item):
+        assure_type(item, 'debug')
+        return Debug()
+
     def _translate_statement(self, statement):
         if istype(statement, 'statement'):
             assert len(statement.children) == 1
@@ -371,6 +375,8 @@ class Compiler:
             return self._translate_rexpression(statement)
         elif ty == 'nop':
             return self._translate_nop(statement)
+        elif ty == 'debug':
+            return self._translate_debug(statement)
 
         unreachable()
 

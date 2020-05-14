@@ -78,10 +78,10 @@ break: "patrick!"
 import: "use" IDENT
 return: atom "und" "fertig"
 nop: "oettinger"
+debug: "hä"
 
 // block statements
 
-// block: _NEWLINE simple_statement | _NEWLINE _INDENT statement+ _DEDENT
 block: _NEWLINE _INDENT statement+ _DEDENT
 
 marker_main: "action" "please"
@@ -92,6 +92,6 @@ else_branch: "ach" "kris." block
 elif_branch: "kris??" expression block
 if_branch: "kris?" expression block elif_branch* else_branch?
 
-?simple_statement: import | break | return | assign | expression | nop
+?simple_statement: import | break | debug | return | assign | expression | nop
 ?block_statement: declare | if_branch | loop
 ?statement: (simple_statement (_NEWLINE | _DEDENT)) | block_statement

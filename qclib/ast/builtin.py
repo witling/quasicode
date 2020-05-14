@@ -2,23 +2,23 @@ from .generic import *
 from .liste import Liste
 from .value import Ident, Menge
 
-class Construct(Parameterized):
+class Construct:
     def __init__(self, ty, init):
         self._ty = ty
         self._init = init
 
     def run(self, ctx):
-        if isof(self._ty, Liste):
-            liste = self._ty
+        if self._ty is Liste:
+            liste = self._ty()
             for item in self._init:
                 if isof(item, Ident):
                     liste._val.append(item.run(ctx))
                 else:
                     liste._val.append(item)
             return liste
-        elif isof(self._ty, Menge):
+        elif self._ty is Menge:
             # TODO: initialize object?
-            return self._ty
+            return self._ty()
         raise Exception('unexpected type')
 
 class Debug(Statement):

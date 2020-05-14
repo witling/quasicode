@@ -7,7 +7,7 @@ sys.path.insert(0, abspath(join(dirname(__file__), '..')))
 from qclib import *
 
 def dump_test(src):
-    with open('/tmp/testout', 'w') as fout:
+    with open('/tmp/testout.qc', 'w') as fout:
         fout.write(src)
 
 class Test:

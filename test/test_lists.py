@@ -17,9 +17,11 @@ und zwar create
 
         ret = internals.interpreter.call('create')
         self.assertIsInstance(ret, Liste)
+        self.assertEqual(0, len(ret._val))
 
         ret = internals.interpreter.call('create_indirect')
         self.assertIsInstance(ret, Liste)
+        self.assertEqual(0, len(ret._val))
 
     def test_creation_parameterized(self, internals):
         src = """
@@ -77,11 +79,11 @@ und zwar first
     eingabe ist liste mit 3 4 5 1
     (eingabe bei 1) und fertig
 """
-
         program = internals.compiler.compile(src)
         internals.interpreter.load(program)
 
         ret = internals.interpreter.call('first')
+
         self.assertEqual(3, int(ret))
 
     def test_slice_max(self, internals):

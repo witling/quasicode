@@ -7,8 +7,8 @@ def normalize_index(key):
     return int(key) - 1
 
 class Liste(Value):
-    def __init__(self, init=[]):
-        super().__init__(init)
+    def __init__(self, init=None):
+        super().__init__(init if init else [])
 
     def __getitem__(self, key):
         return self._val[normalize_index(key)]
