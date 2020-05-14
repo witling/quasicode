@@ -274,7 +274,7 @@ class Compiler:
 
         name = next(it)
         assure_ident(name)
-        args = [self._to_value(arg) for arg in it]
+        args = [self._translate_rexpression(arg) for arg in it]
 
         return FunctionCall(Ident(name.value), args)
 
