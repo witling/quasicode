@@ -83,25 +83,6 @@ class Menge(Value):
     def __str__(self):
         return str(self._val)
 
-class Liste(Value):
-    def __init__(self):
-        super().__init__([])
-
-    def _normalize_index(self, key):
-        return int(key) - 1
-
-    def __getitem__(self, key):
-        return self._val[self._normalize_index(key)]
-
-    def __setitem__(self, key, value):
-        self._val[self._normalize_index(key)] = value
-
-    def run(self, ctx):
-        return self
-
-    def __str__(self):
-        return str(self._val)
-
 class String(Value):
     def __init__(self, val: str):
         super().__init__(val)

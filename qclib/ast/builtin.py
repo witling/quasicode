@@ -1,5 +1,6 @@
 from .generic import *
-from .value import Ident, Liste, Menge
+from .liste import Liste
+from .value import Ident, Menge
 
 class Construct(Parameterized):
     def __init__(self, ty, init):

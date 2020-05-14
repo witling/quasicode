@@ -66,6 +66,7 @@ und zwar create_indirect
 
         ret = internals.interpreter.call('create_indirect')
         self.assertIsInstance(ret, Liste)
+        self.assertEqual(4, len(ret._val))
 
         for expect, got in zip([2, 4, 5, 3], map(int, ret._val)):
             self.assertEqual(expect, got)
@@ -82,3 +83,19 @@ und zwar first
 
         ret = internals.interpreter.call('first')
         self.assertEqual(3, int(ret))
+
+    def test_slice_max(self, internals):
+        src = """
+und zwar create
+    eingabe ist liste mit 1 2 3 4
+    (eingabe von 1 bis 4) und fertig
+"""
+
+        program = internals.compiler.compile(src)
+        internals.interpreter.load(program)
+
+        ret = internals.interpreter.call('create')
+        self.assertEqual(3, len(ret._val))
+
+        for expected, got in zip(map(lambda x: x+1, range(3)), ret._val):
+            self.assertEqual(expected, got)

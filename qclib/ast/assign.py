@@ -1,4 +1,5 @@
 from .generic import *
+from .liste import Index
 from .value import Access
 
 class Assign(Statement, Runnable):

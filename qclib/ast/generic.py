@@ -51,26 +51,6 @@ class Statement(Keyword):
     def __init__(self):
         super().__init__()
 
-class Index(Runnable):
-    def __init__(self, target, index):
-        self._index = index
-        self._target = target
-
-    def eval(self, ctx):
-        target = self.target().run(ctx)
-        index = self.index().run(ctx)
-        return target, index
-
-    def run(self, ctx):
-        target, index = self.eval(ctx)
-        return target[index]
-
-    def target(self):
-        return self._target
-
-    def index(self):
-        return self._index
-
 class NestedStatement(Statement, Runnable):
     def __init__(self):
         self._block = Block()
