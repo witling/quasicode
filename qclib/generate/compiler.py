@@ -104,18 +104,17 @@ class Compiler:
         start_ast = list(item.find_data('slice_start'))
         end_ast = list(item.find_data('slice_end'))
 
-        if start_ast and end_ast:
-            start_ast, end_ast = start_ast[0], end_ast[0]
-            target = self._to_value(start_ast.children[0])
-            start = self._to_value(start_ast.children[1])
-            end = self._to_value(end_ast.children[1])
-        elif start_ast:
+        if start_ast:
             start_ast = start_ast[0]
             target = self._to_value(start_ast.children[0])
             start = self._to_value(start_ast.children[1])
-        elif end_ast:
+
+        if end_ast:
             end_ast = end_ast[0]
-            target = self._to_value(end_ast.children[0])
+
+            if target is None:
+                target = self._to_value(end_ast.children[0])
+
             end = self._to_value(end_ast.children[1])
 
         return Slice(target, start=start, end=end)
