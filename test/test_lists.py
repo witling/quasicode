@@ -98,5 +98,33 @@ und zwar create
         ret = internals.interpreter.call('create')
         self.assertEqual(3, len(ret._val))
 
-        for expected, got in zip(map(lambda x: x+1, range(3)), map(int, ret._val)):
+        for expected, got in zip([1, 2, 3], map(int, ret._val)):
+            self.assertEqual(expected, got)
+
+    def test_slice_till(self, internals):
+        src = """
+und zwar create
+    eingabe ist liste mit 1 2 3 4
+    (eingabe bis 2) und fertig
+"""
+        program = internals.compiler.compile(src)
+        internals.interpreter.load(program)
+
+        ret = internals.interpreter.call('create')
+        self.assertEqual(1, len(ret._val))
+        self.assertEqual(1, int(ret._val[0]))
+
+    def test_slice_from(self, internals):
+        src = """
+und zwar create
+    eingabe ist liste mit 1 2 3 4
+    (eingabe von 2) und fertig
+"""
+        program = internals.compiler.compile(src)
+        internals.interpreter.load(program)
+
+        ret = internals.interpreter.call('create')
+        self.assertEqual(3, len(ret._val))
+
+        for expected, got in zip([2, 3, 4], map(int, ret._val)):
             self.assertEqual(expected, got)

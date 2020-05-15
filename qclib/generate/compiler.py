@@ -98,32 +98,27 @@ class Compiler:
     def _to_slice(self, item):
         assure_type(item, 'slice')
         assert len(item.children) == 1
-        ty, item = typeof(item), item.children[0]
-        assert len(item.children) == 2
 
-        if typeof(item.children[0]) == 'slice_start':
-            start_slice = self._to_slice_start(item.children[0])
-            end = self._to_value(item.children[1])
-        elif typeof(item.children[1]) == 'slice_start':
-            start_slice = self._to_slice_start(item.children[1])
-            end = self._to_value(item.children[0])
-        else:
-            unreachable()
+        target, start, end = None, None, None 
 
-        start_slice._end = end
-        return start_slice
+        start_ast = list(item.find_data('slice_start'))
+        end_ast = list(item.find_data('slice_end'))
 
-    def _to_slice_end(self, item):
-        assure_type(item, 'slice_end')
-        print(item)
-        notimplemented()
+        if start_ast and end_ast:
+            start_ast, end_ast = start_ast[0], end_ast[0]
+            target = self._to_value(start_ast.children[0])
+            start = self._to_value(start_ast.children[1])
+            end = self._to_value(end_ast.children[1])
+        elif start_ast:
+            start_ast = start_ast[0]
+            target = self._to_value(start_ast.children[0])
+            start = self._to_value(start_ast.children[1])
+        elif end_ast:
+            end_ast = end_ast[0]
+            target = self._to_value(end_ast.children[0])
+            end = self._to_value(end_ast.children[1])
 
-    def _to_slice_start(self, item):
-        assure_type(item, 'slice_start')
-        assert len(item.children) == 2
-        target, start = item.children[0], item.children[1]
-        target, start = self._to_value(target), self._to_value(start)
-        return Slice(target, start=start)
+        return Slice(target, start=start, end=end)
 
     def _to_value(self, item):
         ty = typeof(item)
@@ -187,10 +182,10 @@ class Compiler:
             return self._to_index(first)
         elif ty == 'slice':
             return self._to_slice(first)
-        elif ty == 'slice_start':
-            return self._to_slice_start(first)
-        elif ty == 'slice_end':
-            return self._to_slice_end(first)
+        #elif ty == 'slice_start':
+        #    return self._to_slice_start(first)
+        #elif ty == 'slice_end':
+        #    return self._to_slice_end(first)
 
         unreachable()
 

@@ -56,12 +56,15 @@ class Slice(Runnable):
     def eval(self, ctx):
         target = self.target().run(ctx)
         start, end = self.range()
-        start, end = start.run(ctx), end.run(ctx)
+        if start:
+            start = start.run(ctx)
+        if end:
+            end = end.run(ctx)
         return target, (start, end)
 
     def run(self, ctx):
         target, (start, end) = self.eval(ctx)
-        assert not (start is None or end is None)
+        assert not (start is None and end is None)
 
         target = target._val
         start = normalize_index(start)
