@@ -4,7 +4,7 @@ from setuptools import find_packages, setup
 
 setup(
     name='quasicode',
-    version='0.4.0',
+    version='0.5.0',
     author='witling',
     description='the best programming language around.',
     url='https://github.com/witling/quasicode',

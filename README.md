@@ -31,6 +31,7 @@ What Is Implemented? | What Doesn't 'Work'?
 endless loops, breaking | `qc` does not prioritize mathematical operators. This is not a bug but rather a feature.
 variable assignment, computing with the standard math operators `+`, `-`, `*`, `/`, `modulo`™ | There are no comments. If your code doesn't comment itself, you're doing it wrong.
 function declaration | 
+support for libraries written in Python | 
 
 Use this to format code before committing:
 
