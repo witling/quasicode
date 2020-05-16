@@ -133,6 +133,8 @@ class Compiler:
             return const()
         elif ty == 'access':
             return self._to_access(item)
+        elif ty == 'call':
+            return self._translate_call(item)
         elif ty == 'construct':
             return self._to_construct(item)
         elif ty == 'expression':
