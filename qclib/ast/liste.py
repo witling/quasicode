@@ -22,7 +22,7 @@ class Liste(Value):
         return len(self._val)
 
     def __str__(self):
-        return str(self._val)
+        return '[{}]'.format(', '.join(map(str, self._val)))
 
     def run(self, ctx):
         return self
