@@ -28,9 +28,9 @@ class Compiler:
     def parser(self):
         return self._parser
 
-    def compile(self, src):
+    def compile(self, src, auto_main=False):
         ast = self._parser.parse(src)
-        return self._translate(ast)
+        return self._translate(ast, auto_main)
 
     def _map_builtin_type(self, name):
         tymap = {
@@ -398,8 +398,14 @@ class Compiler:
 
         unreachable()
 
-    def _translate(self, ast) -> Program:
+    def _set_entry_point(self, program, name):
+        if not program.entry_point() is None:
+            raise CompilerError('main entry point declared twice.')
+        program.set_entry_point(name)
+
+    def _translate(self, ast, auto_main) -> Program:
         program = Program()
+        default_main, default_main_name = Function([], Block()), '__main__'
 
         toplevel = ast.children
         for statement in toplevel:
@@ -407,9 +413,7 @@ class Compiler:
 
             if isof(item, Declaration):
                 if item.is_main():
-                    if not program.entry_point() is None:
-                        raise CompilerError('main entry point declared twice.')
-                    program.set_entry_point(item.name())
+                    self._set_entry_point(program, item.name())
 
                 program.ident(item.name(), Function(item.args(), item.block()))
 
@@ -418,7 +422,13 @@ class Compiler:
                 program.use(item.args()[0])
 
             else:
-                # TODO: allow other statements in certain modes
-                raise CompilerError('statement `{}` is not allowed at top-level. only import and declare.'.format(item))
+                if auto_main:
+                    # if there is no default auto_main in the program, add it
+                    if not default_main_name in program.idents():
+                        program.ident(default_main_name, default_main)
+                        self._set_entry_point(program, default_main_name)
+                    default_main.block().append(item)
+                else:
+                    raise CompilerError('statement `{}` is not allowed at top-level. only import and declare.'.format(item))
 
         return program

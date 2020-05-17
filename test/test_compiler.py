@@ -20,3 +20,20 @@ und zwar main1 action please
 """
         with pytest.raises(CompilerError):
             program = internals.compiler.compile(src)
+
+    def test_auto_main(self, internals):
+        src = """
+quasi "toplevel"
+"""
+        compiler = Compiler()
+        program = compiler.compile(src, auto_main=True)
+        self.assertTrue('__main__' in program.idents())
+
+        import io
+        stdout = io.StringIO()
+        internals.interpreter._ctx.set_stdout(stdout)
+
+        internals.interpreter.load(program)
+        internals.interpreter.run()
+
+        self.assertEqual('toplevel\n', stdout.getvalue())
