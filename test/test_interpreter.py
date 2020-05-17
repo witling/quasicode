@@ -15,7 +15,7 @@ und zwar rechne mit x
         internals.interpreter.load(program)
 
         self.assertEqual(42, float(internals.interpreter.call('const')))
-        self.assertEqual(2, float(internals.interpreter.call('rechne', [1])))
+        self.assertEqual(2, float(internals.interpreter.call('rechne', 1)))
 
     def test_logical(self, internals):
         src = """
@@ -50,9 +50,9 @@ und zwar kleiner mit a b
         program = internals.compiler.compile(src)
         internals.interpreter.load(program)
 
-        self.assertTrue(internals.interpreter.call('kleiner', [1, 2]))
-        self.assertFalse(internals.interpreter.call('kleiner', [2, 1]))
-        self.assertFalse(internals.interpreter.call('kleiner', [2, 2]))
+        self.assertTrue(internals.interpreter.call('kleiner', 1, 2))
+        self.assertFalse(internals.interpreter.call('kleiner', 2, 1))
+        self.assertFalse(internals.interpreter.call('kleiner', 2, 2))
 
     def test_unknown_use(self, internals):
         src = """use non_existent"""

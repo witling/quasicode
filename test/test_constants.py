@@ -15,6 +15,6 @@ und zwar teste
         program = internals.compiler.compile(src)
         internals.interpreter.load(program)
 
-        ret = internals.interpreter.call('teste', [])
+        ret = internals.interpreter.call('teste')
         self.assertIsInstance(ret, Number)
         self.assertEqual(float(0), float(ret))

@@ -30,7 +30,7 @@ class Interpreter:
             last = step.run(ctx)
         return last
 
-    def call(self, name: str, args: list=[]):
+    def call(self, name: str, *args):
         def to_quasi_value(val):
             if val.__class__ is Ident:
                 return val
