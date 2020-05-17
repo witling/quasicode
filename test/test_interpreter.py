@@ -60,3 +60,17 @@ und zwar kleiner mit a b
         program = internals.compiler.compile(src)
         with pytest.raises(LookupException):
             internals.interpreter.load(program)
+
+    def test_exit_code_success(self, internals):
+        src = """quasi 1"""
+        program = internals.compiler.compile(src, auto_main=True)
+        internals.interpreter.load(program)
+        ec = internals.interpreter.run()
+        self.assertEqual(0, ec)
+
+    def test_exit_code_fail(self, internals):
+        src = """"""
+        program = internals.compiler.compile(src)
+        internals.interpreter.load(program)
+        ec = internals.interpreter.run()
+        self.assertEqual(1, ec)

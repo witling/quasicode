@@ -25,8 +25,7 @@ und zwar main1 action please
         src = """
 quasi "toplevel"
 """
-        compiler = Compiler()
-        program = compiler.compile(src, auto_main=True)
+        program = internals.compiler.compile(src, auto_main=True)
         self.assertTrue('__main__' in program.idents())
 
         import io

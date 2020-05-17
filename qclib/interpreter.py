@@ -52,3 +52,5 @@ class Interpreter:
             self._ctx.set_exit_code(1)
             print(traceback.format_exc())
             print(e)
+
+        return self._ctx.exit_code()
