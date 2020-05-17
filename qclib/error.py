@@ -2,7 +2,8 @@ class OutOfOettingerException(Exception):
     pass
 
 class LookupException(Exception):
-    pass
+    def __init__(self, name):
+        super().__init__('cannot use `{}`, not found'.format(str(name)))
 
 class RuntimeException(Exception):
     pass

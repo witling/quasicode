@@ -55,22 +55,33 @@ und zwar kleiner mit a b
         self.assertFalse(internals.interpreter.call('kleiner', [2, 2]))
 
     def test_unknown_use(self, internals):
-        src = """use non_existent
-"""
+        src = """use non_existent"""
         program = internals.compiler.compile(src)
         with pytest.raises(LookupException):
             internals.interpreter.load(program)
+
+    def test_unknown_global(self, internals):
+        src = """quasi x"""
+        program = internals.compiler.compile(src, auto_main=True)
+        internals.interpreter.load(program)
+        ec = internals.interpreter.run()
+
+        self.assertEqual(1, ec)
+        self.assertEqual(LookupException, internals.interpreter._ctx.last_error.__class__)
 
     def test_exit_code_success(self, internals):
         src = """quasi 1"""
         program = internals.compiler.compile(src, auto_main=True)
         internals.interpreter.load(program)
         ec = internals.interpreter.run()
+
         self.assertEqual(0, ec)
+        self.assertEqual(None, internals.interpreter._ctx.last_error)
 
     def test_exit_code_fail(self, internals):
         src = """"""
         program = internals.compiler.compile(src)
         internals.interpreter.load(program)
         ec = internals.interpreter.run()
+
         self.assertEqual(1, ec)

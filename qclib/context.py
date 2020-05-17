@@ -18,6 +18,8 @@ class Context:
 
         self._funny_mode = True
 
+        self.last_error = None
+
     def __getitem__(self, key):
         self.defun()
         key = str(key)
@@ -30,6 +32,9 @@ class Context:
 
         except LookupException:
             pass
+
+        if not key in self._globals:
+            raise LookupException(key)
 
         return self._globals[key]
 
@@ -88,7 +93,7 @@ class Context:
     def load_by_name(self, name):
         path = self._search_file(name)
         if not path:
-            raise LookupException('cannot use `{}`, not found'.format(str(name)))
+            raise LookupException(name)
 
         library = Library.load(path)
 
@@ -115,7 +120,7 @@ class Context:
         for _, loaded in self.loaded().items():
             if name in loaded:
                 return loaded[name]
-        raise LookupException('cannot use `{}`, not found.'.format(name))
+        raise LookupException(name)
 
     def fun(self):
         if not self.is_funny_mode():

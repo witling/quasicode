@@ -53,4 +53,6 @@ class Interpreter:
             print(traceback.format_exc())
             print(e)
 
+            self._ctx.last_error = e
+
         return self._ctx.exit_code()
