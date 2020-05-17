@@ -175,7 +175,7 @@ class RestrictedContext(Context):
     def _load_postprocess(self, library):
         modname = library.modname()
         if not modname is None:
-            if self._blocked_modules and not modname in self._blocked_modules:
+            if self._blocked_modules and modname in self._blocked_modules:
                 raise Exception('usage of module `{}` is not permitted in this context.'.format(modname))
 
             if self._allowed_modules and not modname in self._allowed_modules:
