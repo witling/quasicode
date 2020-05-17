@@ -47,11 +47,11 @@ def _load_binary(fname):
 
     return sys.modules.get(modname)
 
-def _load_source(fname):
+def _load_source(fname, auto_main=False):
     from .generate import Compiler
     compiler = Compiler()
     with open(fname, 'r') as src:
-        return compiler.compile(src.read())
+        return compiler.compile(src.read(), auto_main)
 
 def init_vlib(modname=None, mod=None):
     """
@@ -99,13 +99,13 @@ class Library(object):
         self._file = fname
 
     # load a program from filepointer
-    def load(fname):
+    def load(fname, auto_main=False):
         from os.path import splitext
 
         _, fext = splitext(fname)
 
         if fext == Library.FEXT:
-            lib = _load_source(fname)
+            lib = _load_source(fname, auto_main)
 
         elif fext == Library.FEXTC:
             lib = _load_binary(fname)

@@ -23,14 +23,14 @@ class ListeLibrary(PyLibrary):
         del ls._val[idx]
 
     def _push(self, ls, item):
-        ls.append(item)
+        ls._val.append(item)
 
     def _pop(self, ls):
-        return ls.pop()
+        return ls._val.pop()
 
     def _pop_front(self, ls):
         if 0 < len(ls):
-            first = ls[0]
-            del ls[0]
+            first = ls._val[0]
+            del ls._val[0]
             return first
         return None

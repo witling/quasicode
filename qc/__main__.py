@@ -16,8 +16,9 @@ def argument_parser():
 
     parser_run = subparser.add_parser('run', help='run a quasicode program')
     parser_run.add_argument('program', metavar='PROGRAM', type=str, help='the quasicode program to run.')
-    parser_run.add_argument('--listing', action='store_true', default=False, help='printout the program before running.')
+    parser_run.add_argument('--automain', action='store_true', default=False, help='move statements other than declare and import to a default main method.')
     parser_run.add_argument('--debug', action='store_true', default=False, help='enable interpreter debugging.')
+    parser_run.add_argument('--listing', action='store_true', default=False, help='printout the program before running.')
     parser_run.add_argument('--nichluschdich', action='store_true', default=False, help='disable the funny mode.')
 
     parser_install = subparser.add_parser('install', help='install a library.')
@@ -27,7 +28,7 @@ def argument_parser():
     return parser
 
 def run(args):
-    program = Program.load(args.program)
+    program = Program.load(args.program, auto_main=args.automain)
     interpreter = Interpreter()
     
     if args.listing:
