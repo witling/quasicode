@@ -3,12 +3,24 @@ import pytest
 from .deps import *
 
 class TestContext(Test):
-    def test_restricted(self, internals):
+    def test_restricted_allowed(self, internals):
         src = """use std
 use net
 """
         interpreter = Interpreter(restricted=True)
         interpreter._ctx.set_allowed_modules(['std'])
+
+        program = internals.compiler.compile(src)
+
+        with pytest.raises(Exception):
+            interpreter.load(program)
+
+    def test_restricted_blocked(self, internals):
+        src = """use std
+use net
+"""
+        interpreter = Interpreter(restricted=True)
+        interpreter._ctx.set_blocked_modules(['net'])
 
         program = internals.compiler.compile(src)
 

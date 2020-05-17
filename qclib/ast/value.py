@@ -98,7 +98,6 @@ class Ident(Value):
 
     def run(self, ctx):
         val = ctx[self._val]
-        # TODO: execute FunctionCall
         if isof(val, Function):
             return FunctionCall(self, []).run(ctx)
         return val

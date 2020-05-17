@@ -164,12 +164,19 @@ class RestrictedContext(Context):
     def __init__(self):
         super().__init__()
         self._allowed_modules = None
+        self._blocked_modules = None
 
     def set_allowed_modules(self, ls):
         self._allowed_modules = ls
 
+    def set_blocked_modules(self, ls):
+        self._blocked_modules = ls
+
     def _load_postprocess(self, library):
         modname = library.modname()
         if not modname is None:
+            if self._blocked_modules and not modname in self._blocked_modules:
+                raise Exception('usage of module `{}` is not permitted in this context.'.format(modname))
+
             if self._allowed_modules and not modname in self._allowed_modules:
                 raise Exception('usage of module `{}` is not permitted in this context.'.format(modname))
