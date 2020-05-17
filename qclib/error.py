@@ -1,5 +1,5 @@
 class OutOfOettingerException(Exception):
-    def __init__(self, name):
+    def __init__(self):
         super().__init__('the program ran out of oettinger')
 
 class LookupException(Exception):
