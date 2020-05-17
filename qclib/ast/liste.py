@@ -1,14 +1,14 @@
+from ..index import normalize_index
+
 from .generic import Runnable
 from .value import Value
-
-def normalize_index(key):
-    if key is None:
-        return key
-    return int(key) - 1
 
 class Liste(Value):
     def __init__(self, init=None):
         super().__init__(init if not init is None else [])
+
+    def __delitem__(self, key):
+        del self._val[key]
 
     def __getitem__(self, key):
         # slicing should be done through `Slice`

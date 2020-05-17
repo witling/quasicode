@@ -1,5 +1,6 @@
-from qclib.library import *
 from qclib.ast import *
+from qclib.index import normalize_index
+from qclib.library import *
 
 class ListeLibrary(PyLibrary):
     __module__ = '__main__'
@@ -8,6 +9,28 @@ class ListeLibrary(PyLibrary):
         PyLibrary.__init__(self)
 
         self.ident('länge', create_fn(self._len))
+        self.ident('lösche', create_fn(self._delete))
+
+        self.ident('push', create_fn(self._push))
+        self.ident('pop', create_fn(self._pop))
+        self.ident('pop_front', create_fn(self._pop_front))
 
     def _len(self, ls):
         return Number(len(ls._val))
+
+    def _delete(self, ls, idx):
+        idx = normalize_index(idx)
+        del ls._val[idx]
+
+    def _push(self, ls, item):
+        ls.append(item)
+
+    def _pop(self, ls):
+        return ls.pop()
+
+    def _pop_front(self, ls):
+        if 0 < len(ls):
+            first = ls[0]
+            del ls[0]
+            return first
+        return None

@@ -128,3 +128,28 @@ und zwar create
 
         for expected, got in zip([2, 3, 4], map(int, ret._val)):
             self.assertEqual(expected, got)
+
+    def test_liste_lib(self, internals):
+        src = """use liste
+ls ist liste mit 1 2 3 4
+        """
+        program = internals.compiler.compile(src, auto_main=True)
+        internals.interpreter.load(program)
+        internals.interpreter.run()
+
+        ret = internals.interpreter.call('länge', [Ident('ls')])
+        self.assertEqual(4, int(ret))
+
+        internals.interpreter.call('lösche', [Ident('ls'), 1])
+
+        ret = internals.interpreter.call('länge', [Ident('ls')])
+        self.assertEqual(3, int(ret))
+
+        pop_front = internals.interpreter.call('pop_front', [Ident('ls')])
+        self.assertEqual(2, pop_front)
+        pop_back = internals.interpreter.call('pop', [Ident('ls')])
+        self.assertEqual(4, pop_back)
+
+        internals.interpreter.call('push', [Ident('ls'), 3])
+        ls = internals.interpreter._ctx['ls']
+        self.assertEqual([3, 3], list(map(int, ls._val)))

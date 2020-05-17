@@ -26,6 +26,8 @@ class Test:
 class Internals:
     def __init__(self):
         self.interpreter = Interpreter()
+        self.interpreter.disable_funny_mode()
+
         self.compiler = Compiler()
         self.parser = self.compiler.parser()
 

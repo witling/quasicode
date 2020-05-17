@@ -31,7 +31,11 @@ class Interpreter:
         return last
 
     def call(self, name: str, args: list=[]):
-        args = [Value.create(arg) for arg in args]
+        def to_quasi_value(val):
+            if val.__class__ is Ident:
+                return val
+            return Value.create(val)
+        args = [to_quasi_value(arg) for arg in args]
         call = FunctionCall(Ident(name), args)
         return call.run(self._ctx)
 
