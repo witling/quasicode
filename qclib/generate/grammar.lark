@@ -10,8 +10,10 @@ _NEWLINE: ( /\r?\n[\t ]*/ )+
 ?sign_comp: atom
 
 pow: pow_comp "hoch" sign_comp
+square: sign_comp "im" "quadrat"
 ?pow_comp: sign_comp
          | pow
+         | square
 
 add: calc_comp "+" pow_comp
 sub: calc_comp "-" pow_comp

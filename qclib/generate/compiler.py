@@ -56,6 +56,7 @@ class Compiler:
             'or': LogicalOr,
             'not': LogicalNot,
             'pow': Power,
+            'square': Square,
         }
         if not name in tymap:
             return None
@@ -155,7 +156,7 @@ class Compiler:
         opcls = self._map_operator(item.data)
         comp = opcls()
         
-        if opcls is LogicalNot:
+        if opcls is LogicalNot or opcls is Square:
             assert len(ls) == 1
             arg = self._to_value(ls[0])
             comp.add_arg(arg)

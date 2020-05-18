@@ -65,6 +65,17 @@ und zwar pow
         ret = internals.interpreter.call('pow')
         self.assertEqual(256, int(ret))
 
+    def test_power_squared(self, internals):
+        src = """
+und zwar pow
+    (2 im quadrat) und fertig
+"""
+        program = internals.compiler.compile(src)
+        internals.interpreter.load(program)
+
+        ret = internals.interpreter.call('pow')
+        self.assertEqual(4, int(ret))
+
     def test_unknown_use(self, internals):
         src = """use non_existent"""
         program = internals.compiler.compile(src)

@@ -130,3 +130,9 @@ class Power(Operator):
 
     def run(self, ctx):
         return foldtwo(lambda a, b: a ** b, self._args, ctx)
+
+class Square(Power):
+    def add_arg(self, arg):
+        super().add_arg(arg)
+        if len(self._args) == 1:
+            self._args.append(Number(2))
