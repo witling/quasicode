@@ -54,6 +54,17 @@ und zwar kleiner mit a b
         self.assertFalse(internals.interpreter.call('kleiner', 2, 1))
         self.assertFalse(internals.interpreter.call('kleiner', 2, 2))
 
+    def test_power(self, internals):
+        src = """
+und zwar pow
+    (4 hoch 4) und fertig
+"""
+        program = internals.compiler.compile(src)
+        internals.interpreter.load(program)
+
+        ret = internals.interpreter.call('pow')
+        self.assertEqual(256, int(ret))
+
     def test_unknown_use(self, internals):
         src = """use non_existent"""
         program = internals.compiler.compile(src)

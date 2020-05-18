@@ -9,12 +9,16 @@ _NEWLINE: ( /\r?\n[\t ]*/ )+
 
 ?sign_comp: atom
 
-add: calc_comp "+" sign_comp
-sub: calc_comp "-" sign_comp
-mul: calc_comp "*" sign_comp
-div: calc_comp "/" sign_comp
-mod: calc_comp "modulo" sign_comp
-?calc_comp: sign_comp
+pow: pow_comp "hoch" sign_comp
+?pow_comp: sign_comp
+         | pow
+
+add: calc_comp "+" pow_comp
+sub: calc_comp "-" pow_comp
+mul: calc_comp "*" pow_comp
+div: calc_comp "/" pow_comp
+mod: calc_comp "modulo" pow_comp
+?calc_comp: pow_comp
          | add
          | sub
          | mul

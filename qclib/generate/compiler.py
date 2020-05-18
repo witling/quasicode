@@ -55,6 +55,7 @@ class Compiler:
             'and': LogicalAnd,
             'or': LogicalOr,
             'not': LogicalNot,
+            'pow': Power,
         }
         if not name in tymap:
             return None

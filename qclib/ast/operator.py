@@ -120,3 +120,13 @@ class Mod(Operator):
 
     def run(self, ctx):
         return foldtwo(lambda a, b: a % b, self._args, ctx)
+
+class Power(Operator):
+    def __init__(self):
+        super().__init__()
+
+    def _repr(self):
+        return '**'
+
+    def run(self, ctx):
+        return foldtwo(lambda a, b: a ** b, self._args, ctx)
