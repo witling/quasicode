@@ -7,6 +7,9 @@ class Liste(Value):
     def __init__(self, init=None):
         super().__init__(init if not init is None else [])
 
+    def __iter__(self):
+        return iter(self._val)
+
     def __delitem__(self, key):
         del self._val[key]
 
