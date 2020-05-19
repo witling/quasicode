@@ -47,3 +47,14 @@ und zwar main action please
         first_stmt = program['main'].block()[0]
 
         self.assertEqual(Return, first_stmt.__class__)
+
+    def test_constant_declaration(self, internals):
+        src = '''
+pi ist 3
+2 also e
+        '''
+
+        program = internals.compiler.compile(src)
+
+        self.assertEqual(3, int(program['pi']))
+        self.assertEqual(2, int(program['e']))

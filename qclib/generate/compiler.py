@@ -422,7 +422,11 @@ class Compiler:
         for statement in toplevel:
             item = self._translate_statement(statement)
 
-            if isof(item, Declaration):
+            if isof(item, Assign):
+                ident, value = item.ident(), item.value()
+                program.ident(ident, value)
+
+            elif isof(item, Declaration):
                 if item.is_main():
                     self._set_entry_point(program, item.name())
 
