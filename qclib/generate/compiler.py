@@ -440,6 +440,6 @@ class Compiler:
                         self._set_entry_point(program, default_main_name)
                     default_main.block().append(item)
                 else:
-                    raise CompilerError('statement `{}` is not allowed at top-level. only import and declare.'.format(item))
+                    raise CompilerError('statement `{}` is not allowed at top-level - only import and declare. use option --automain to avoid this.'.format(item))
 
         return program
