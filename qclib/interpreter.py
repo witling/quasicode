@@ -18,17 +18,17 @@ class Interpreter:
 
         self._ctx.load(StdLibrary())
 
-    def disable_funny_mode(self):
-        self._ctx.disable_funny_mode()
-
-    def load(self, program: Program):
-        self._ctx.load(program)
-
     def _run_func(self, func: Function, ctx: Context):
         last = None
         for step in func.block():
             last = step.run(ctx)
         return last
+
+    def disable_funny_mode(self):
+        self._ctx.disable_funny_mode()
+
+    def load(self, program: Program):
+        self._ctx.load(program)
 
     def call(self, name: str, *args):
         def to_quasi_value(val):

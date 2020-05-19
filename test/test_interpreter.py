@@ -107,3 +107,42 @@ und zwar pow
         ec = internals.interpreter.run()
 
         self.assertEqual(1, ec)
+
+    def test_name_shadowing(self, internals):
+        src = """
+und zwar put mit x
+    quasi x
+
+und zwar main action please
+    x ist 42
+    y ist 1
+    put y
+    quasi x
+        """
+        import io
+        stdout = io.StringIO()
+
+        program = internals.compiler.compile(src)
+        internals.interpreter._ctx.set_stdout(stdout)
+        internals.interpreter.load(program)
+        internals.interpreter.run()
+
+        self.assertEqual('1.0\n42.0\n', stdout.getvalue())
+
+    def test_breaking_from_nested_loop(self, internals):
+        src = """
+und zwar factorial mit x
+    i ist 1
+    prod ist 1
+    das holen wir nach
+        prod ist prod * i
+        kris? i das ist x
+            prod und fertig
+        i ist i + 1
+        """
+        program = internals.compiler.compile(src)
+        internals.interpreter.load(program)
+        ret = internals.interpreter.call('factorial', 3)
+
+        self.assertEqual(6, int(ret))
+        self.assertEqual([], internals.interpreter._ctx._loops)
