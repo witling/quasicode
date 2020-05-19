@@ -30,3 +30,13 @@ class TestProgram(Test):
         self.assertIsInstance(loaded_prog, Program)
         self.assertTrue(loaded_prog._file.endswith('test.qcc'))
         self.assertEqual('test', loaded_prog.modname())
+
+    def test_global_variables(self, internals):
+        src = """
+pi ist 3
+ls ist liste mit 1 2 3
+        """
+        program = internals.compiler.compile(src)
+
+        self.assertEqual(3, int(program['pi']))
+        self.assertEqual([1, 2, 3], list(map(int, program['ls'])))

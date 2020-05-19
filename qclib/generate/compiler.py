@@ -1,4 +1,5 @@
 from ..ast import *
+from ..interpreter import Interpreter
 from ..program import *
 
 from .error import CompilerError
@@ -24,6 +25,7 @@ assure_ident = lambda token: assure_type(token, 'IDENT')
 class Compiler:
     def __init__(self):
         self._parser = Parser()
+        self._interpreter = None
 
     def parser(self):
         return self._parser
@@ -414,6 +416,11 @@ class Compiler:
             raise CompilerError('main entry point declared twice.')
         program.set_entry_point(name)
 
+    def _comptime_eval(self, value):
+        if self._interpreter is None:
+            self._interpreter = Interpreter()
+        return value.run(self._interpreter._ctx)
+
     def _translate(self, ast, auto_main) -> Program:
         program = Program()
         default_main, default_main_name = Function([], Block()), '__main__'
@@ -422,7 +429,11 @@ class Compiler:
         for statement in toplevel:
             item = self._translate_statement(statement)
 
-            if isof(item, Declaration):
+            if isof(item, Assign):
+                ident, value = item.ident(), item.value()
+                program.ident(ident.name(), self._comptime_eval(value))
+
+            elif isof(item, Declaration):
                 if item.is_main():
                     self._set_entry_point(program, item.name())
 
