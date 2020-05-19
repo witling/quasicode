@@ -123,6 +123,7 @@ class Compiler:
 
     def _to_value(self, item):
         ty = typeof(item)
+
         if ty == 'IDENT':
             return Ident(item.value)
         elif ty == 'NUMBER':
@@ -149,6 +150,7 @@ class Compiler:
             return self._to_value(item.children[0])
         elif not self._map_operator(ty) is None:
             return self._translate_operation(item)
+
         unreachable()
 
     def _translate_operation(self, item):
@@ -194,10 +196,6 @@ class Compiler:
             return self._to_index(first)
         elif ty == 'slice':
             return self._to_slice(first)
-        #elif ty == 'slice_start':
-        #    return self._to_slice_start(first)
-        #elif ty == 'slice_end':
-        #    return self._to_slice_end(first)
 
         unreachable()
 
@@ -216,6 +214,7 @@ class Compiler:
     def _translate_block(self, item):
         assure_type(item, 'block')
         block = Block()
+
         for statement in item.children:
             # drop indents
             if hasattr(statement, 'type'):
@@ -225,6 +224,7 @@ class Compiler:
 
             result = self._translate_statement(statement)
             block.append(result)
+
         return block
 
     def _translate_declare(self, item):
