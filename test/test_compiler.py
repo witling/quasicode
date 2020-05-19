@@ -36,3 +36,14 @@ quasi "toplevel"
         internals.interpreter.run()
 
         self.assertEqual('toplevel\n', stdout.getvalue())
+
+    def test_misinterpreted_return(self, internals):
+        src = '''
+und zwar main action please
+    4 im quadrat und fertig
+        '''
+
+        program = internals.compiler.compile(src)
+        first_stmt = program['main'].block()[0]
+
+        self.assertEqual(Return, first_stmt.__class__)

@@ -37,10 +37,11 @@ class Value:
         return False
     
     def __eq__(self, other):
-        if other is None:
-            return False
         if isinstance(other, float) or isinstance(other, int):
             return self._val == other
+
+        if self.__class__ != other.__class__:
+            return False
         return self._val == other._val
 
     def run(self, ctx):

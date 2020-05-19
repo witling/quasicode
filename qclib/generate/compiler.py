@@ -155,7 +155,7 @@ class Compiler:
         ls = item.children
         opcls = self._map_operator(item.data)
         comp = opcls()
-        
+
         if opcls is LogicalNot or opcls is Square:
             assert len(ls) == 1
             arg = self._to_value(ls[0])
@@ -163,8 +163,17 @@ class Compiler:
 
         else:
             assert len(ls) == 2
+
             left, right = ls[0], ls[1]
             left, right = self._to_value(left), self._to_value(right)
+
+            # fix ambiguity between Return and LogicalAnd
+            # FIXME: can this be done by the parser?
+            if opcls is LogicalAnd and right == Ident('fertig'):
+                ret = Return()
+                ret.add_arg(left)
+                return ret
+        
             comp.add_arg(left)
             comp.add_arg(right)
 
