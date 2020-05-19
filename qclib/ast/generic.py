@@ -103,7 +103,6 @@ class FunctionCall(Runnable, Parameterized):
 
     def _call_builtin(self, decl, ctx):
         keys = (i for i in range(len(self.args())))
-        #frame = {str(i): arg.run(ctx) for i, arg in enumerate(self.args())}
         frame = Frame.build(decl.block(), ctx, keys, self.args())
 
         ctx.push_frame(frame)
@@ -115,33 +114,21 @@ class FunctionCall(Runnable, Parameterized):
         return ret
 
     def _call(self, decl, ctx):
-        #rvars = [arg.run(ctx) for arg in self.args()]
         exparg, gotarg = len(decl.args()), len(self.args())
 
         if exparg != gotarg:
             raise Exception('call to `{}` expected {} arguments, got {}'.format(self.name(), exparg, gotarg))
 
-        #frame = {decl_key(k): v for k, v in zip(decl.args(), rvars)}
-
-        #self._ret = None
-
-        #def receive_return(v):
-        #    self._ret = v
-        #    decl.block().end()
         keys = map(decl_key, decl.args())
         frame = Frame.build(decl.block(), ctx, keys, self.args())
 
         ctx.push_frame(frame)
         last = decl.block().run(ctx)
-        #decl.block().run(ctx)
         ctx.pop_frame()
 
         if None != frame._return:
             return frame._return
         return last
-        
-        # FIXME: do we want this? last expression = return value
-        #return last
 
     def run(self, ctx):
         decl = ctx[self.name()]

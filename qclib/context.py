@@ -28,8 +28,6 @@ class Context:
 
         if frame and key in frame:
             return frame[key]
-        #if self._stack and key in self._stack[-1][0]:
-        #    return self._stack[-1][0][key]
 
         try:
             return self.lookup(key)
@@ -51,8 +49,6 @@ class Context:
             frame[key] = value
         else:
             self._global[key] = value
-        #scope = self._stack[-1][0] if self._stack else self._global
-        #scope[str(key)] = value
 
     def _search_file(self, name):
         import os
@@ -151,14 +147,11 @@ class Context:
 
     def push_loop(self, loop):
         self.frame().push_loop(loop)
-        #self._loops.append(loop)
 
     def pop_loop(self):
         self.frame().pop_loop()
-        #self._loops.pop()
 
     def last_loop(self):
-        #return self._loops[-1]
         return self.frame()._loops[-1]
 
     def set_return(self, value):

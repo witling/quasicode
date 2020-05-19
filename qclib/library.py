@@ -20,9 +20,6 @@ def create_fn(fn):
 
     return PyFunction(param_protocols, fn)
 
-#def create_fn_with_context(name, fn):
-#    return PyFunction(name, fn)
-
 def create_const(name, value):
     return Value.create(value)
 
