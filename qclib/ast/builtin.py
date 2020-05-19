@@ -74,7 +74,8 @@ class Return(Statement, Parameterized):
         Parameterized.__init__(self)
 
     def run(self, ctx):
-        ctx.set_return(self.args()[0].run(ctx))
+        ret = self.args()[0].run(ctx)
+        ctx.set_return(ret)
 
     def __str__(self):
         return 'return {}'.format(' '.join(map(str, self._args)))

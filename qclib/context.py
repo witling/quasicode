@@ -1,4 +1,5 @@
 from .error import LookupException, OutOfOettingerException
+from .frame import Frame
 from .program import Library, Program
 
 import sys
@@ -9,11 +10,11 @@ FUN = DEFUN * 10
 class Context:
     def __init__(self):
         self._stdin, self._stdout = sys.stdin, sys.stdout
-        self._globals = {}
+        self._global = Frame(None)
         self._includes = []
 
         self._fun = 100
-        self._loaded, self._locals, self._loops = {}, [], []
+        self._loaded, self._stack = {}, [self._global]
         self._exit_code = 0
 
         self._funny_mode = True
@@ -22,10 +23,13 @@ class Context:
 
     def __getitem__(self, key):
         self.defun()
+        frame = self.frame()
         key = str(key)
 
-        if self._locals and key in self._locals[-1][0]:
-            return self._locals[-1][0][key]
+        if frame and key in frame:
+            return frame[key]
+        #if self._stack and key in self._stack[-1][0]:
+        #    return self._stack[-1][0][key]
 
         try:
             return self.lookup(key)
@@ -33,16 +37,22 @@ class Context:
         except LookupException:
             pass
 
-        if not key in self._globals:
+        if not key in self._global:
             raise LookupException(key)
 
-        return self._globals[key]
+        return self._global[key]
 
     def __setitem__(self, key, value):
         self.defun()
         # if there is a last stack frame, assign to it
-        scope = self._locals[-1][0] if self._locals else self._globals
-        scope[str(key)] = value
+        frame = self.frame()
+        key = str(key)
+        if frame:
+            frame[key] = value
+        else:
+            self._global[key] = value
+        #scope = self._stack[-1][0] if self._stack else self._global
+        #scope[str(key)] = value
 
     def _search_file(self, name):
         import os
@@ -113,8 +123,8 @@ class Context:
     def loaded(self):
         return self._loaded
 
-    def locals(self):
-        return self._locals[-1][0] if self._locals else None
+    def frame(self):
+        return self._stack[-1] if self._stack else None
 
     def lookup(self, name):
         for _, loaded in self.loaded().items():
@@ -140,25 +150,28 @@ class Context:
             raise OutOfOettingerException
 
     def push_loop(self, loop):
-        self._loops.append(loop)
+        self.frame().push_loop(loop)
+        #self._loops.append(loop)
 
     def pop_loop(self):
-        self._loops.pop()
+        self.frame().pop_loop()
+        #self._loops.pop()
 
     def last_loop(self):
-        return self._loops[-1]
+        #return self._loops[-1]
+        return self.frame()._loops[-1]
 
     def set_return(self, value):
-        if not self._locals:
+        if not self._stack:
             # TODO: implement handling of main function return
             pass
-        self._locals[-1][1](value)
+        self._stack[-1].set_return(value)
 
-    def push_locals(self, frame, rec_return):
-        self._locals.append((frame, rec_return))
+    def push_frame(self, frame):
+        self._stack.append(frame)
 
-    def pop_locals(self):
-        self._locals.pop()
+    def pop_frame(self):
+        self._stack.pop()
 
 class RestrictedContext(Context):
     def __init__(self):

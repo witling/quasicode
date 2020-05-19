@@ -31,7 +31,7 @@ class ReadFn(Function):
         return self
 
     def run(self, ctx):
-        it = (value for _, value in ctx.locals().items())
+        it = (value for _, value in ctx.frame().items())
         question = ' '.join(map(str, it))
 
         ctx.stdout().write(question)
@@ -62,7 +62,7 @@ class WriteFn(Function):
         return self
 
     def run(self, ctx):
-        it = (value for _, value in ctx.locals().items())
+        it = (value for _, value in ctx.frame().items())
         msg = ' '.join(map(lambda x: str(x), it)) + '\n'
         ctx.stdout().write(msg)
         ctx.stdout().flush()
