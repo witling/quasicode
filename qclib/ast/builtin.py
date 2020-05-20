@@ -86,7 +86,6 @@ class Return(Statement, Parameterized):
 class Repeat(NestedStatement):
     def __init__(self):
         super().__init__()
-        self._broken = False
         self._predicate = lambda _: True
 
     def __str__(self):
@@ -95,15 +94,12 @@ class Repeat(NestedStatement):
     def set_predicate(self, pred):
         self._predicate = pred
 
-    def end(self):
-        self._broken = True
-
     def run(self, ctx):
-        ctx.push_loop(self)
-        while not self._broken and self._predicate(ctx):
+        state = ctx.push_loop()
+        while not state.broken() and self._predicate(ctx):
             for step in self.block():
                 step.run(ctx)
-                if self._broken:
+                if state.broken():
                     break
         ctx.pop_loop()
 

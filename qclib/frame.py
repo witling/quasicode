@@ -1,3 +1,13 @@
+class LoopState:
+    def __init__(self):
+        self._broken = False
+
+    def broken(self):
+        return self._broken
+
+    def end(self):
+        self._broken = True
+
 class Frame(dict):
     def __init__(self, block, init_locals=None):
         super().__init__({} if init_locals is None else init_locals)
@@ -11,8 +21,10 @@ class Frame(dict):
 
         return Frame(block, var)
 
-    def push_loop(self, ref):
-        self._loops.append(ref)
+    def push_loop(self):
+        state = LoopState()
+        self._loops.append(state)
+        return state
 
     def pop_loop(self):
         self._loops.pop()

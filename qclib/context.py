@@ -145,8 +145,8 @@ class Context:
         if self._fun <= 0:
             raise OutOfOettingerException
 
-    def push_loop(self, loop):
-        self.frame().push_loop(loop)
+    def push_loop(self):
+        return self.frame().push_loop()
 
     def pop_loop(self):
         self.frame().pop_loop()
