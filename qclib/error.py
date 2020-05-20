@@ -8,7 +8,7 @@ class LookupException(Exception):
 
 class AssertException(Exception):
     def __init__(self, condition):
-        super().__init__('the assertion for `{}` failed', condition)
+        super().__init__('the assertion for `{}` failed'.format(condition))
 
 class RuntimeException(Exception):
     pass
