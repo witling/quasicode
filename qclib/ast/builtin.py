@@ -7,6 +7,9 @@ class Construct:
         self._ty = ty
         self._init = init
 
+    def __str__(self):
+        return '{}[{}]'.format(self._ty.__name__, ', '.join(repr(x) for x in self._init))
+
     def run(self, ctx):
         if self._ty is Liste:
             liste = self._ty()
@@ -25,24 +28,24 @@ class Debug(Statement):
     def __init__(self):
         super().__init__()
 
+    def __str__(self):
+        return 'debug'
+
     def run(self, ctx):
         from pudb import set_trace
         set_trace()
-
-    def __str__(self):
-        return 'debug'
 
 class Use(Statement, Parameterized):
     def __init__(self):
         Statement.__init__(self)
         Parameterized.__init__(self)
 
+    def __str__(self):
+        return 'use'
+
     def run(self, ctx):
         modname = self.args()[0]
         raise Exception('local use is not implemented :(')
-
-    def __str__(self):
-        return 'use'
 
 class Exit(Statement):
     def __init__(self):
@@ -55,11 +58,11 @@ class Nop(NestedStatement):
     def __init__(self):
         super().__init__()
 
-    def run(self, ctx):
-        ctx.fun()
-
     def __str__(self):
         return 'nop'
+
+    def run(self, ctx):
+        ctx.fun()
 
 class Raise(NestedStatement):
     def __init__(self):
@@ -73,18 +76,21 @@ class Return(Statement, Parameterized):
         Statement.__init__(self)
         Parameterized.__init__(self)
 
+    def __str__(self):
+        return 'return {}'.format(' '.join(map(str, self._args)))
+
     def run(self, ctx):
         ret = self.args()[0].run(ctx)
         ctx.set_return(ret)
-
-    def __str__(self):
-        return 'return {}'.format(' '.join(map(str, self._args)))
 
 class Repeat(NestedStatement):
     def __init__(self):
         super().__init__()
         self._broken = False
         self._predicate = lambda _: True
+
+    def __str__(self):
+        return super().__str__()
 
     def set_predicate(self, pred):
         self._predicate = pred
@@ -101,15 +107,12 @@ class Repeat(NestedStatement):
                     break
         ctx.pop_loop()
 
-    def __str__(self):
-        return super().__str__()
-
 class Break(NestedStatement):
     def __init__(self):
         super().__init__()
 
-    def run(self, ctx):
-        ctx.last_loop().end()
-
     def __str__(self):
         return 'break'
+
+    def run(self, ctx):
+        ctx.last_loop().end()

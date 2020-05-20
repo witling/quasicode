@@ -52,6 +52,9 @@ class Statement(Keyword):
     def __init__(self):
         super().__init__()
 
+    def __repr__(self):
+        return str(self)
+
 class NestedStatement(Statement, Runnable):
     def __init__(self):
         self._block = Block()
@@ -94,6 +97,9 @@ class FunctionCall(Runnable, Parameterized):
         self._name = name
         for arg in args:
             self.add_arg(arg)
+
+    def __repr__(self):
+        return str(self)
 
     def __str__(self):
         return '{} {}'.format(self.name(), ' '.join(map(str, self._args)))

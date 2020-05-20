@@ -7,6 +7,9 @@ class Assign(Statement, Runnable):
         self._ident = None
         self._value = None
 
+    def __str__(self):
+        return '{} = {}'.format(self._ident, self._value)
+
     def ident(self):
         return self._ident
 
@@ -33,9 +36,6 @@ class Assign(Statement, Runnable):
             target[index] = self._value.run(ctx)
         else:
             ctx[self._ident] = self._value.run(ctx)
-
-    def __str__(self):
-        return '{} = {}'.format(self._ident, self._value)
 
 class LHAssign(Assign):
     def __init__(self):

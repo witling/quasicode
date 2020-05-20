@@ -56,6 +56,11 @@ class Slice(Runnable):
         self._start = start
         self._end = end
 
+    def __str__(self):
+        start = '' if self._start is None else self._start
+        end = '' if self._end is None else self._end
+        return '{}[{}:{}]'.format(self._target, start, end)
+
     def eval(self, ctx):
         target = self.target().run(ctx)
         start, end = self.range()

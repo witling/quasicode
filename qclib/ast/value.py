@@ -33,6 +33,9 @@ class Value:
     def __bool__(self):
         return bool(self._val)
 
+    def __repr__(self):
+        return str(self._val)
+
     # TODO: is this needed?
     def is_assignable(self):
         return False
