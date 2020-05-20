@@ -19,10 +19,11 @@ class TestExamples(Test):
         ignore = ['bot.qc']
 
         for example in examples:
-            if example in ignore:
+            src_path = patch_path('examples', example)
+
+            if example in ignore or os.path.isdir(src_path):
                 continue
 
-            src_path = patch_path('examples', example)
             print('$', example)
 
             src = load_source(src_path)

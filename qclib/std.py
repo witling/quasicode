@@ -1,4 +1,5 @@
 from .ast import *
+from .error import AssertException
 from .function import *
 from .library import *
 
@@ -11,6 +12,11 @@ class StdLibrary(PyLibrary):
 
         self.ident('quasi', WriteFn())
         self.ident('bitte?', ReadFn())
+        self.ident('assert', create_fn(self._assert))
+
+    def _assert(self, cond):
+        if not bool(cond):
+            raise AssertException(cond)
 
     def modname(self):
         return 'std'

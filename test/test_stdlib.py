@@ -13,3 +13,9 @@ class TestStdlib(Test):
 
     def test_sqrt(self, internals):
         internals.interpreter.call('quasi', 'hi')
+
+    def test_assert(self, internals):
+        internals.interpreter.call('assert', True)
+
+        with pytest.raises(AssertException):
+            internals.interpreter.call('assert', False)
