@@ -35,9 +35,10 @@ und zwar merge_sort mit ls
 und zwar merge mit left right
     sorted ist liste
 
-    das holen wir nach solange (länge left) und (länge right)
+    das holen wir nach solange länge left und länge right
         left bei 1 also lf
         right bei 1 also rf
+
         kris? lf < rf
             push sorted lf
             lösche left 1
@@ -45,11 +46,11 @@ und zwar merge mit left right
             push sorted rf
             lösche right 1
 
-    das holen wir nach solange (länge left)
+    das holen wir nach solange länge left
         push sorted (left bei 1)
         lösche left 1
 
-    das holen wir nach solange (länge right)
+    das holen wir nach solange länge right
         push sorted (right bei 1)
         lösche right 1
 
