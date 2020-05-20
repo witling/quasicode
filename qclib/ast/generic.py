@@ -73,22 +73,15 @@ class NestedStatement(Statement, Runnable):
         return '\n'.join(map(str, self._block))
 
 class Block(list, Runnable):
-    def __init__(self):
-        self._broken = False
-
     def __str__(self):
         return ' '.join(map(str, self))
 
-    def end(self):
-        self._broken = True
-
     def run(self, ctx):
-        self._broken = False
         last = None
         for step in self:
-            if self._broken:
-                break
             last = step.run(ctx)
+            if ctx.frame().has_returned():
+                break
         return last
 
 class FunctionCall(Runnable, Parameterized):
