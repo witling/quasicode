@@ -93,7 +93,9 @@ block: _NEWLINE _INDENT statement+ _DEDENT
 marker_main: "action" "please"
 declare_args: IDENT+
 declare: "und" "zwar" IDENT ("mit" declare_args)? marker_main? block
-loop: "das" "holen" "wir" "nach" block
+loop_while: "solange" expression
+loop_until: "bis" expression
+loop: "das" "holen" "wir" "nach" (loop_while | loop_until)? block
 else_branch: "ach" "kris." block
 elif_branch: "kris??" expression block
 if_branch: "kris?" expression block elif_branch* else_branch?

@@ -303,10 +303,31 @@ class Compiler:
 
     def _translate_loop(self, item):
         assure_type(item, 'loop')
-        assert len(item.children) == 1
         loop = Repeat()
-        block = self._translate_block(item.children[0])
+
+        if len(item.children) == 2:
+            condition, block = item.children[0], item.children[1]
+            ty = typeof(condition) 
+            condition = self._to_value(condition.children[0])
+
+            if ty == 'loop_until':
+                predicate = lambda ctx: not condition.run(ctx)
+            elif ty == 'loop_while':
+                predicate = lambda ctx: condition.run(ctx)
+            else:
+                unreachable()
+
+            loop.set_predicate(predicate)
+
+        elif len(item.children) == 1:
+            block = item.children[0]
+
+        else:
+            unreachable()
+
+        block = self._translate_block(block)
         loop.set_block(block)
+
         return loop
 
     def _translate_break(self, item):

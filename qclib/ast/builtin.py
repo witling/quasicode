@@ -84,13 +84,17 @@ class Repeat(NestedStatement):
     def __init__(self):
         super().__init__()
         self._broken = False
+        self._predicate = lambda _: True
+
+    def set_predicate(self, pred):
+        self._predicate = pred
 
     def end(self):
         self._broken = True
 
     def run(self, ctx):
         ctx.push_loop(self)
-        while not self._broken:
+        while not self._broken and self._predicate(ctx):
             for step in self.block():
                 step.run(ctx)
                 if self._broken:
