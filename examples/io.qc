@@ -6,6 +6,6 @@ und zwar erzeuge mit pfad
     pfad und fertig
 
 und zwar machen_wir_dateien action please
-    pfad ist (erzeuge "/tmp/qcio")
-    inhalt ist (inhaliere pfad)
+    pfad ist erzeuge "/tmp/qcio"
+    inhalt ist inhaliere pfad
     quasi inhalt

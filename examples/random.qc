@@ -2,7 +2,7 @@ use math
 
 und zwar sub mit i
     das holen wir nach
-        (i - 1) also i
+        i - 1 also i
         quasi random
         oettinger
         kris? i das ist 0
