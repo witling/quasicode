@@ -18,6 +18,7 @@ setup(
     install_requires=[
         'dill',
         'lark-parser',
+        'pylovm2',
     ],
     python_requires='>=3.5',
     entry_points={'console_scripts': ['qc=qc.__main__:main']}

@@ -30,7 +30,7 @@ class Compiler:
     def parser(self):
         return self._parser
 
-    def compile(self, src, auto_main=False):
+    def compile(self, src, auto_main=False) -> Program:
         ast = self._parser.parse(src)
         return self._translate(ast, auto_main)
 
