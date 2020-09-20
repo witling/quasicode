@@ -1,8 +1,12 @@
+import os
 from os.path import abspath, dirname, join
 import pytest
 import sys
 
 sys.path.insert(0, abspath(join(dirname(__file__), '..')))
+
+if 'PYLOVM2_DEV_LOCATION' in os.environ:
+    sys.path.insert(1, os.environ['PYLOVM2_DEV_LOCATION'])
 
 from qclib import *
 

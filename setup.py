@@ -16,7 +16,6 @@ setup(
         'Operating System :: OS Independent',
     ],
     install_requires=[
-        'dill',
         'lark-parser',
         'pylovm2',
     ],

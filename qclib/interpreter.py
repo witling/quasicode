@@ -16,7 +16,7 @@ class Interpreter:
         self._ctx.add_include_path(os.path.expanduser(Interpreter.USERLIB_PATH))
         self._ctx.add_include_path(Interpreter.LIB_PATH)
 
-        self._ctx.load(StdLibrary())
+        #self._ctx.load(StdLibrary())
 
     def _run_func(self, func: Function, ctx: Context):
         last = None

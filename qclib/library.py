@@ -1,8 +1,9 @@
 from .ast import *
 from .ast.generic import *
 
-import dill
+#import dill
 import inspect
+import pylovm2
 import re
 import sys
 
@@ -87,8 +88,8 @@ class Library(object):
     FEXTC = '.qcc'
     VIRTUAL_MODULE = '__main__'
 
-    def __init__(self):
-        self._module = None
+    def __init__(self, module=None):
+        self._module = module
         #self._idents = {}
         #self._uses = []
         self._file = None
@@ -146,8 +147,7 @@ class Library(object):
         #self._uses.append(name)
 
     def uses(self) -> list:
-        todo()
-        #return self._uses
+        return self._module.uses()
 
     def modname(self):
         if self._file is None:

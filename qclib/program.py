@@ -1,8 +1,8 @@
 from .library import *
 
 class Program(Library):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, module=None):
+        super().__init__(module)
         self._entry_point = None
 
     def entry_point(self):
