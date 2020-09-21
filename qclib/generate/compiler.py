@@ -38,14 +38,14 @@ class Compiler:
         ast = self._parser.parse(src)
         return self._translate(ast, auto_main)
 
-    #def _map_builtin_type(self, name):
-    #    tymap = {
-    #        'liste': Liste,
-    #        'menge': Menge
-    #    }
-    #    if not name in tymap:
-    #        return None
-    #    return tymap[name]
+    def _map_builtin_type(self, name):
+        tymap = {
+            'liste': list,
+            'menge': dict,
+        }
+        if not name in tymap:
+            return None
+        return tymap[name]
 
     def _map_operator(self, name):
         from pylovm2 import Expr
@@ -77,25 +77,33 @@ class Compiler:
             return None
         return tymap[name]
 
-    #def _to_access(self, item):
-    #    assure_type(item, 'access')
-    #    path = list(item.children)
-    #    return Access(path)
+    def _to_access(self, item):
+        from pylovm2 import Expr
 
-    #def _to_construct(self, item):
-    #    assure_type(item, 'construct')
-    #    assert 1 <= len(item.children)
+        def to_key(item):
+            if typeof(item) == 'IDENT':
+                return item.value
+            return self._to_value(item)
 
-    #    objty = item.children[0]
-    #    assure_type(objty, 'objty')
+        assure_type(item, 'access')
+        args = item.children
+        first, rest = self._to_value(args[0]), map(to_key, args[1:])
+        return Expr.access(first, *rest)
 
-    #    objty = self._map_builtin_type(objty.children[0].value)
-    #    init = []
+    def _to_construct(self, item):
+        assure_type(item, 'construct')
+        assert 1 <= len(item.children)
 
-    #    if 2 == len(item.children):
-    #        init = self._translate_construct_args(item.children[1])
+        objty = item.children[0]
+        assure_type(objty, 'objty')
 
-    #    return Construct(objty, init)
+        objty = self._map_builtin_type(objty.children[0].value)
+        init = []
+
+        if 2 == len(item.children):
+            init = self._translate_construct_args(item.children[1])
+
+        return objty(init)
 
     #def _to_index(self, item):
     #    assure_type(item, 'index')
@@ -136,10 +144,9 @@ class Compiler:
             return Expr.var(item.value)
         elif ty == 'NUMBER':
             try:
-                return Expr.val(int(item.value))
-            except ValueError:
-                # TODO: check if int parsing is okay, else try float
                 return Expr.val(float(item.value))
+            except ValueError:
+                return Expr.val(int(item.value))
         elif ty == 'STRING':
             val = item.value[1:-1]
             return Expr.val(val)
@@ -147,13 +154,11 @@ class Compiler:
             const = self._map_constant(item)
             return Expr.val(const)
         elif ty == 'access':
-            todo()
-            #return self._to_access(item)
+            return self._to_access(item)
         elif ty == 'call':
             return self._translate_call(item)
         elif ty == 'construct':
-            todo()
-            #returwork self._to_coworkstruct(item)
+            return self._to_construct(item)
         elif ty == 'expression':
             return self._translate_rexpression(item)
         elif ty == 'index':
@@ -201,16 +206,18 @@ class Compiler:
 
         return opfunc(*args)
 
-    #def _translate_construct_args(self, item):
-    #    assure_type(item, 'construct_args')
-    #    return [self._to_value(arg) for arg in item.children]
+    def _translate_construct_args(self, item):
+        assure_type(item, 'construct_args')
+        return [self._translate_rexpression(arg) for arg in item.children]
 
     def _translate_wexpression(self, item):
         assure_type(item, 'wexpression')
         first = item.children[0]
         ty = typeof(first)
-        if ty == 'IDENT':
+        if ty == 'IDENT' or ty == 'access':
             return self._to_value(first)
+        else:
+            todo()
 
     #    assure_type(item, 'wexpression')
     #    first = item.children[0]
@@ -416,15 +423,16 @@ class Compiler:
             assure_type(args, 'call_args')
             call_args = []
             for arg in args.children:
-                if istype(arg, 'value'):
-                    call_args.append(self._to_value(arg))
-                elif istype(arg, 'access'):
-                    todo()
-                    #call_args.append(self._to_access(arg))
-                elif istype(arg, 'expression'):
-                    call_args.append(self._translate_rexpression(arg))
-                else:
-                    unreachable()
+                call_args.append(self._to_value(arg))
+                #if istype(arg, 'value'):
+                #    call_args.append(self._to_value(arg))
+                #elif istype(arg, 'access'):
+                #    todo()
+                #    #call_args.append(self._to_access(arg))
+                #elif istype(arg, 'expression'):
+                #    call_args.append(self._translate_rexpression(arg))
+                #else:
+                #    unreachable()
             return Expr.call(name, *call_args)
         #    return FunctionCall(Ident(name.value), call_args)
 
