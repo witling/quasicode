@@ -27,7 +27,9 @@ assure_ident = lambda token: assure_type(token, 'IDENT')
 class Compiler:
     def __init__(self):
         self._parser = Parser()
-        self._interpreter = None
+        self._module = pylovm2.ModuleBuilder()
+        self._main_function = None
+        #self._interpreter = None
 
     def parser(self):
         return self._parser
@@ -246,17 +248,17 @@ class Compiler:
                     continue
                 unreachable()
 
-            self._translate_statement(statement, block=block)
+            self._translate_statement(statement, block)
             #block.append(result)
 
         #return block
 
-    def _translate_declare(self, item, module):
+    def _translate_declare(self, item):
         assure_type(item, 'declare')
         name = item.children[0]
         assure_ident(name)
 
-        block = module.add(name)
+        block = self._module.add(name)
         #declaration = Declaration()
         #declaration.set_name(Ident(name.value))
 
@@ -265,8 +267,10 @@ class Compiler:
         for item in it:
             ty = typeof(item)
             if ty == 'marker_main':
-                pass
-                #declaration.add_marker(MainMarker())
+                if not self._main_function is None:
+                    raise CompilerError('main entry point declared twice.')
+                self._main_function = name
+
             elif ty == 'declare_args':
                 args = []
                 for arg in item.children:
@@ -275,9 +279,10 @@ class Compiler:
                 block.args(args)
                 #assert False
                 #declaration.set_args(args)
+
             elif ty == 'block':
                 # parse block
-                self._translate_block(item, block=block.code())
+                self._translate_block(item, block.code())
                 #declaration.set_block(block)
             else:
                 unreachable()
@@ -313,7 +318,7 @@ class Compiler:
 
         expr = self._translate_rexpression(next(it))
         block = branch.add_condition(expr) 
-        self._translate_block(next(it), block=block)
+        self._translate_block(next(it), block)
 
         for item in it:
             ty = typeof(item)
@@ -447,7 +452,7 @@ class Compiler:
     #        self._interpreter = Interpreter()
     #    return value.run(self._interpreter._ctx)
 
-    def _translate_statement(self, statement, module=None, block=None):
+    def _translate_statement(self, statement, block, toplevel=False):
         if istype(statement, 'statement'):
             assert len(statement.children) == 1
             statement = statement.children[0]
@@ -458,40 +463,38 @@ class Compiler:
             pass
             #return self._translate_import(statement, module=module)
         elif ty == 'declare':
-            return self._translate_declare(statement, module=module)
+            return self._translate_declare(statement)
         elif ty == 'if_branch':
-            return self._translate_branch(statement, block=block)
+            return self._translate_branch(statement, block)
         elif ty == 'loop':
-            return self._translate_loop(statement, block=block)
+            return self._translate_loop(statement, block)
         elif ty == 'break':
-            return self._translate_break(statement, block=block)
+            return self._translate_break(statement, block)
         elif ty == 'return':
-            return self._translate_return(statement, block=block)
+            return self._translate_return(statement, block)
         elif ty == 'assign':
             # if there is a module, we are at top-level -> global assign
-            if not module is None:
+            if toplevel:
                 pass
             else:
-                self._translate_assign(statement, block=block)
+                self._translate_assign(statement, block)
         elif ty == 'expression':
-            self._translate_rexpression(statement)
+            block.expr(self._translate_rexpression(statement))
 
         elif ty == 'nop':
-            return self._translate_nop(statement, block=block)
+            return self._translate_nop(statement, block)
         elif ty == 'debug':
-            return self._translate_debug(statement, block=block)
+            return self._translate_debug(statement, block)
 
     def _translate(self, ast, auto_main) -> Program:
-        module = pylovm2.ModuleBuilder()
-        main_hir = module.add('__main__').code()
+        entry_hir = self._module.entry().code()
 
         #program = Program()
         #default_main, default_main_name = Function([], Block()), '__main__'
 
         toplevel = ast.children
         for statement in toplevel:
-            self._translate_statement(statement, module=module, block=main_hir)
-
+            self._translate_statement(statement, entry_hir, toplevel=True)
             #if isof(item, Assign):
             #    ident, value = item.ident(), item.value()
             #    program.ident(ident.name(), self._comptime_eval(value))
@@ -516,6 +519,9 @@ class Compiler:
             #    else:
             #        raise CompilerError('statement `{}` is not allowed at top-level - only import and declare. use option --automain to avoid this.'.format(item))
 
-        module = module.build()
-        print(module)
-        return Program(module)
+        # call into main function
+        if not self._main_function is None:
+            self._module.entry().code().call(self._main_function)
+
+        module = self._module.build()
+        return Library(module) if self._main_function is None else Program(module)
