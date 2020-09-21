@@ -133,7 +133,11 @@ class Compiler:
         if ty == 'IDENT':
             return Expr.var(item.value)
         elif ty == 'NUMBER':
-            return Expr.val(item.value)
+            try:
+                return Expr.val(int(item.value))
+            except ValueError:
+                # TODO: check if int parsing is okay, else try float
+                return Expr.val(float(item.value))
         elif ty == 'STRING':
             val = item.value[1:-1]
             return Expr.val(val)
