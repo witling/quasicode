@@ -147,11 +147,9 @@ class Compiler:
             return self._translate_call(item)
         elif ty == 'construct':
             todo()
-            #return self._to_construct(item)
+            #returwork self._to_coworkstruct(item)
         elif ty == 'expression':
-            print(item)
-            todo()
-            #return self._translate_rexpression(item)
+            return self._translate_rexpression(item)
         elif ty == 'index':
             todo()
             #return self._to_index(item)
@@ -161,38 +159,41 @@ class Compiler:
         elif ty == 'value':
             return self._to_value(item.children[0])
         elif not self._map_operator(ty) is None:
-            todo()
-            #return self._translate_operation(item)
+            return self._translate_operation(item)
 
         unreachable()
 
-    #def _translate_operation(self, item):
-    #    ls = item.children
-    #    opcls = self._map_operator(item.data)
-    #    comp = opcls()
+    def _translate_operation(self, item):
+        name, ls = item.data, item.children
+        opfunc = self._map_operator(name)
+        args = []
+        #comp = opcls()
 
-    #    if opcls is LogicalNot or opcls is Square:
-    #        assert len(ls) == 1
-    #        arg = self._to_value(ls[0])
-    #        comp.add_arg(arg)
+        if name == 'not' or name == 'square':
+            assert len(ls) == 1
+            args = [self._to_value(ls[0])]
 
-    #    else:
-    #        assert len(ls) == 2
+            #comp.add_arg(arg)
 
-    #        left, right = ls[0], ls[1]
-    #        left, right = self._to_value(left), self._to_value(right)
+        else:
+            assert len(ls) == 2
+
+            left, right = ls[0], ls[1]
+            left, right = self._to_value(left), self._to_value(right)
 
     #        # fix ambiguity between Return and LogicalAnd
     #        # FIXME: can this be done by the parser?
-    #        if opcls is LogicalAnd and right == Ident('fertig'):
-    #            ret = Return()
-    #            ret.add_arg(left)
-    #            return ret
-    #    
-    #        comp.add_arg(left)
-    #        comp.add_arg(right)
+            if name == 'and' and right == Ident('fertig'):
+                ret = Return()
+                ret.add_arg(left)
+                return ret
 
-    #    return comp
+            args = [left, right]
+        
+            #comp.add_arg(left)
+            #comp.add_arg(right)
+
+        return opfunc(*args)
 
     #def _translate_construct_args(self, item):
     #    assure_type(item, 'construct_args')
@@ -287,39 +288,37 @@ class Compiler:
     #    use.add_arg(modname.value)
     #    return use
 
-    #def _translate_branch_elif(self, item):
-    #    assure_type(item, 'elif_branch')
-    #    assert len(item.children) == 2
-    #    expr = self._translate_rexpression(item.children[0])
-    #    block = self._translate_block(item.children[1])
-    #    return expr, block
+    def _translate_branch_elif(self, item, branch):
+        assure_type(item, 'elif_branch')
+        assert len(item.children) == 2
+        expr = self._translate_rexpression(item.children[0])
+        block = branch.add_condition(expr)
+        self._translate_block(item.children[1], block)
 
-    #def _translate_branch_else(self, item):
-    #    assure_type(item, 'else_branch')
-    #    assert len(item.children) == 1
-    #    return self._translate_block(item.children[0])
+    def _translate_branch_else(self, item, branch):
+        assure_type(item, 'else_branch')
+        assert len(item.children) == 1
+        block = branch.add_default_condition()
+        self._translate_block(item.children[0], block)
 
     def _translate_branch(self, item, block):
         assure_type(item, 'if_branch')
         assert 2 <= len(item.children)
         branch = block.branch()
-    #    branch = Branch()
-    #    it = iter(item.children)
+        it = iter(item.children)
 
-    #    expr = self._translate_rexpression(next(it))
-    #    block = self._translate_block(next(it))
-    #    branch.add_branch(expr, block)
+        expr = self._translate_rexpression(next(it))
+        block = branch.add_condition(expr) 
+        self._translate_block(next(it), block=block)
 
-    #    for item in it:
-    #        ty = typeof(item)
-    #        if ty == 'elif_branch':
-    #            expr, block = self._translate_branch_elif(item)
-    #            branch.add_branch(expr, block)
-    #        elif ty == 'else_branch':
-    #            block = self._translate_branch_else(item)
-    #            branch.set_default_branch(block)
-    #        else:
-    #            unreachable()
+        for item in it:
+            ty = typeof(item)
+            if ty == 'elif_branch':
+                self._translate_branch_elif(item, branch)
+            elif ty == 'else_branch':
+                self._translate_branch_else(item, branch)
+            else:
+                unreachable()
 
         return branch
 
@@ -360,7 +359,8 @@ class Compiler:
     def _translate_return(self, item, block):
         assure_type(item, 'return')
         assert len(item.children) == 1
-        block.ret(None)
+        value = self._to_value(item.children[0])
+        block.ret(value)
     #    ret = Return()
     #    value = self._to_value(item.children[0])
     #    ret.add_arg(value)
@@ -512,4 +512,6 @@ class Compiler:
             #    else:
             #        raise CompilerError('statement `{}` is not allowed at top-level - only import and declare. use option --automain to avoid this.'.format(item))
 
-        return Program(module.build())
+        module = module.build()
+        print(module)
+        return Program(module)
