@@ -16,12 +16,12 @@ und zwar create
         internals.interpreter.load(program)
 
         ret = internals.interpreter.call('create')
-        self.assertIsInstance(ret, Liste)
-        self.assertEqual(0, len(ret._val))
+        self.assertIsInstance(ret, list)
+        self.assertEqual(0, len(ret))
 
         ret = internals.interpreter.call('create_indirect')
-        self.assertIsInstance(ret, Liste)
-        self.assertEqual(0, len(ret._val))
+        self.assertIsInstance(ret, list)
+        self.assertEqual(0, len(ret))
 
     def test_creation_parameterized(self, internals):
         src = """
@@ -35,11 +35,11 @@ und zwar create_indirect
         internals.interpreter.load(program)
 
         ret = internals.interpreter.call('create_indirect')
-        self.assertIsInstance(ret, Liste)
-        self.assertTrue(ret._val)
+        self.assertIsInstance(ret, list)
+        self.assertTrue(ret)
 
         for i in range(4):
-            self.assertEqual(i+1, float(ret._val[i]))
+            self.assertEqual(i+1, float(ret[i]))
 
     def test_creation_inline(self, internals):
         src = """
@@ -50,10 +50,10 @@ und zwar create_indirect
         internals.interpreter.load(program)
 
         ret = internals.interpreter.call('create_indirect')
-        self.assertIsInstance(ret, Liste)
+        self.assertIsInstance(ret, list)
 
         for i in range(3):
-            self.assertEqual(i+1, float(ret._val[i]))
+            self.assertEqual(i+1, float(ret[i]))
 
     def test_set_index(self, internals):
         src = """
@@ -67,10 +67,10 @@ und zwar create_indirect
         internals.interpreter.load(program)
 
         ret = internals.interpreter.call('create_indirect')
-        self.assertIsInstance(ret, Liste)
-        self.assertEqual(4, len(ret._val))
+        self.assertIsInstance(ret, list)
+        self.assertEqual(4, len(ret))
 
-        for expect, got in zip([2, 4, 5, 3], map(int, ret._val)):
+        for expect, got in zip([2, 4, 5, 3], map(int, ret)):
             self.assertEqual(expect, got)
 
     def test_get_index(self, internals):
@@ -96,9 +96,9 @@ und zwar create
         internals.interpreter.load(program)
 
         ret = internals.interpreter.call('create')
-        self.assertEqual(3, len(ret._val))
+        self.assertEqual(3, len(ret))
 
-        for expected, got in zip([1, 2, 3], map(int, ret._val)):
+        for expected, got in zip([1, 2, 3], map(int, ret)):
             self.assertEqual(expected, got)
 
     def test_slice_till(self, internals):
@@ -111,8 +111,8 @@ und zwar create
         internals.interpreter.load(program)
 
         ret = internals.interpreter.call('create')
-        self.assertEqual(1, len(ret._val))
-        self.assertEqual(1, int(ret._val[0]))
+        self.assertEqual(1, len(ret))
+        self.assertEqual(1, int(ret[0]))
 
     def test_slice_from(self, internals):
         src = """
@@ -124,9 +124,9 @@ und zwar create
         internals.interpreter.load(program)
 
         ret = internals.interpreter.call('create')
-        self.assertEqual(3, len(ret._val))
+        self.assertEqual(3, len(ret))
 
-        for expected, got in zip([2, 3, 4], map(int, ret._val)):
+        for expected, got in zip([2, 3, 4], map(int, ret)):
             self.assertEqual(expected, got)
 
     def test_liste_lib(self, internals):
@@ -152,4 +152,4 @@ ls ist liste mit 1 2 3 4
 
         internals.interpreter.call('push', Ident('ls'), 3)
         ls = internals.interpreter._ctx['ls']
-        self.assertEqual([3, 3], list(map(int, ls._val)))
+        self.assertEqual([3, 3], list(map(int, ls)))

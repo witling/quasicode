@@ -5,6 +5,7 @@ from ..program import *
 from .error import CompilerError
 from .parser import Parser
 
+from pylovm2 import Expr
 import pylovm2
 
 def unreachable():
@@ -48,7 +49,6 @@ class Compiler:
         return tymap[name]
 
     def _map_operator(self, name):
-        from pylovm2 import Expr
         # TODO: remove lower
         name = name.lower()
         tymap = {
@@ -78,8 +78,6 @@ class Compiler:
         return tymap[name]
 
     def _to_access(self, item):
-        from pylovm2 import Expr
-
         def to_key(item):
             if typeof(item) == 'IDENT':
                 return item.value
@@ -103,14 +101,14 @@ class Compiler:
         if 2 == len(item.children):
             init = self._translate_construct_args(item.children[1])
 
-        return objty(init)
+        return Expr.val(objty(init))
 
-    #def _to_index(self, item):
-    #    assure_type(item, 'index')
-    #    assert len(item.children) == 2
-    #    ident = self._to_value(item.children[0])
-    #    index = self._to_value(item.children[1])
-    #    return Index(ident, index)
+    def _to_index(self, item):
+        assure_type(item, 'index')
+        assert len(item.children) == 2
+        ident = self._to_value(item.children[0])
+        index = self._to_value(item.children[1], normalize=lambda x: x-1)
+        return Expr.access(ident, index)
 
     #def _to_slice(self, item):
     #    assure_type(item, 'slice')
@@ -136,17 +134,18 @@ class Compiler:
 
     #    return Slice(target, start=start, end=end)
 
-    def _to_value(self, item):
-        from pylovm2 import Expr
+    def _to_value(self, item, normalize=None):
+        # used for normalizing list index
+        normalize = (lambda x: x) if normalize is None else normalize
         ty = typeof(item)
 
         if ty == 'IDENT':
             return Expr.var(item.value)
         elif ty == 'NUMBER':
             try:
-                return Expr.val(float(item.value))
+                return Expr.val(normalize(float(item.value)))
             except ValueError:
-                return Expr.val(int(item.value))
+                return Expr.val(normalize(int(item.value)))
         elif ty == 'STRING':
             val = item.value[1:-1]
             return Expr.val(val)
@@ -162,13 +161,12 @@ class Compiler:
         elif ty == 'expression':
             return self._translate_rexpression(item)
         elif ty == 'index':
-            todo()
-            #return self._to_index(item)
+            return self._to_index(item)
         elif ty == 'slice':
             todo()
             #return self._to_slice(item)
         elif ty == 'value':
-            return self._to_value(item.children[0])
+            return self._to_value(item.children[0], normalize=normalize)
         elif not self._map_operator(ty) is None:
             return self._translate_operation(item)
 
@@ -208,7 +206,8 @@ class Compiler:
 
     def _translate_construct_args(self, item):
         assure_type(item, 'construct_args')
-        return [self._translate_rexpression(arg) for arg in item.children]
+        #return [self._translate_rexpression(arg) for arg in item.children]
+        return [self._to_value(arg) for arg in item.children]
 
     def _translate_wexpression(self, item):
         assure_type(item, 'wexpression')
@@ -216,6 +215,8 @@ class Compiler:
         ty = typeof(first)
         if ty == 'IDENT' or ty == 'access':
             return self._to_value(first)
+        elif ty == 'index':
+            return self._to_index(first)
         else:
             todo()
 
@@ -410,8 +411,6 @@ class Compiler:
         #return assign
 
     def _translate_call(self, item):
-        from pylovm2 import Expr
-
         assure_type(item, 'call')
         it = iter(item.children)
 
