@@ -72,4 +72,4 @@ und zwar give
         internals.interpreter.load(program)
 
         ret = internals.interpreter.call('give')
-        self.assertEqual('second', str(ret['2']))
+        self.assertEqual('second', str(ret[2]))
