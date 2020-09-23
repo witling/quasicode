@@ -143,9 +143,9 @@ class Compiler:
             return Expr.var(item.value)
         elif ty == 'NUMBER':
             try:
-                return Expr.val(normalize(float(item.value)))
-            except ValueError:
                 return Expr.val(normalize(int(item.value)))
+            except ValueError:
+                return Expr.val(normalize(float(item.value)))
         elif ty == 'STRING':
             val = item.value[1:-1]
             return Expr.val(val)
