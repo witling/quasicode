@@ -16,10 +16,10 @@ und zwar create
         internals.interpreter.load(program)
 
         ret = internals.interpreter.call('create')
-        self.assertIsInstance(ret, Menge)
+        self.assertIsInstance(ret, dict)
 
         ret = internals.interpreter.call('create_indirect')
-        self.assertIsInstance(ret, Menge)
+        self.assertIsInstance(ret, dict)
 
     def test_object_access(self, internals):
         src = """

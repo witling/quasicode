@@ -58,7 +58,7 @@ class Compiler:
             'div': Expr.div,
             'mod': Expr.rem,
             'lt' : Expr.lt,
-            #'cmp': Expr.cmp,
+            'cmp': Expr.eq,
             'and': Expr.land,
             'or': Expr.lor,
             'not': Expr.lnot,
@@ -340,29 +340,33 @@ class Compiler:
         return branch
 
     def _translate_loop(self, item, block):
-        todo()
-    #    assure_type(item, 'loop')
+        assure_type(item, 'loop')
     #    loop = Repeat()
 
-    #    if len(item.children) == 2:
-    #        condition, block = item.children[0], item.children[1]
-    #        ty = typeof(condition) 
-    #        condition = self._to_value(condition.children[0])
+        if len(item.children) == 2:
+            condition, stmts = item.children[0], item.children[1]
+            ty = typeof(condition) 
+            condition = self._to_value(condition.children[0])
 
-    #        if ty == 'loop_until':
+            if ty == 'loop_until':
+                block = block.repeat_until(condition)
     #            predicate = lambda ctx: not condition.run(ctx)
-    #        elif ty == 'loop_while':
+            elif ty == 'loop_while':
+                block = block.repeat_until(Expr.lnot(condition))
     #            predicate = lambda ctx: condition.run(ctx)
-    #        else:
-    #            unreachable()
+            else:
+                unreachable()
 
     #        loop.set_predicate(predicate)
 
-    #    elif len(item.children) == 1:
-    #        block = item.children[0]
+        elif len(item.children) == 1:
+            stmts = item.children[0]
+            block = block.repeat()
 
-    #    else:
-    #        unreachable()
+        else:
+            unreachable()
+
+        self._translate_block(stmts, block)
 
     #    block = self._translate_block(block)
     #    loop.set_block(block)
