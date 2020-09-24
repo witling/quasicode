@@ -42,11 +42,10 @@ quasi "toplevel"
 und zwar main action please
     4 im quadrat und fertig
         '''
-
+        
         program = internals.compiler.compile(src)
-        first_stmt = program['main'].block()[0]
-
-        self.assertEqual(Return, first_stmt.__class__)
+        internals.interpreter.load(program)
+        self.assertEqual(16, internals.interpreter.call('main'))
 
     def test_constant_declaration(self, internals):
         src = '''

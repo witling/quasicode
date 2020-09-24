@@ -474,15 +474,15 @@ class Compiler:
             pass
             #return self._translate_import(statement, module=module)
         elif ty == 'declare':
-            return self._translate_declare(statement)
+            self._translate_declare(statement)
         elif ty == 'if_branch':
-            return self._translate_branch(statement, block)
+            self._translate_branch(statement, block)
         elif ty == 'loop':
-            return self._translate_loop(statement, block)
+            self._translate_loop(statement, block)
         elif ty == 'break':
-            return self._translate_break(statement, block)
+            self._translate_break(statement, block)
         elif ty == 'return':
-            return self._translate_return(statement, block)
+            self._translate_return(statement, block)
         elif ty == 'assign':
             # if there is a module, we are at top-level -> global assign
             if toplevel:
@@ -490,12 +490,20 @@ class Compiler:
             else:
                 self._translate_assign(statement, block)
         elif ty == 'expression':
-            block.expr(self._translate_rexpression(statement))
+            inner = statement.children[0]
+            name, ls = inner.data, inner.children
+            if name == 'and' and istype(ls[1].children[0], 'IDENT'):
+                arg = self._to_value(ls[0])
+                block.ret(arg)
+            else:
+                block.expr(self._translate_rexpression(statement))
 
         elif ty == 'nop':
-            return self._translate_nop(statement, block)
+            self._translate_nop(statement, block)
         elif ty == 'debug':
-            return self._translate_debug(statement, block)
+            self._translate_debug(statement, block)
+        else:
+            unreachable()
 
     def _translate(self, ast, auto_main) -> Program:
         entry_hir = self._module.entry().code()
