@@ -62,8 +62,8 @@ class Compiler:
             'and': Expr.land,
             'or': Expr.lor,
             'not': Expr.lnot,
-            #'pow': Expr.pow,
-            #'square': Expr.sqr,
+            'pow': Expr.pow,
+            'square': lambda x: Expr.pow(x, 2),
         }
         if not name in tymap:
             return None
@@ -505,7 +505,7 @@ class Compiler:
 
         toplevel = ast.children
         for statement in toplevel:
-            if typeof(statement) in ['declare', 'import']:
+            if typeof(statement) in ['assign', 'declare', 'import']:
                 pass
             elif not auto_main:
                 raise CompilerError('main entry point declared twice.')
