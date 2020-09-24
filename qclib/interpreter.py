@@ -1,25 +1,35 @@
 from .ast import *
 from .ast.generic import isof
+from .const import *
 from .context import *
 from .program import *
-from .std import StdLibrary
+from .std import *
 
 import pylovm2
 
 class Interpreter:
-    LIB_PATH = '/usr/local/lib/quasicode'
-    USERLIB_PATH = '~/.local/lib/quasicode'
-
     def __init__(self, restricted=False):
         import os
 
-        self._ctx = Context() if not restricted else RestrictedContext()
-        #self._ctx.add_include_path(os.getcwd())
-        #self._ctx.add_include_path(os.path.expanduser(Interpreter.USERLIB_PATH))
-        #self._ctx.add_include_path(Interpreter.LIB_PATH)
-
         self._vm = pylovm2.Vm()
-        self._vm.load(StdLibrary(self._ctx)._module)
+
+        self._ctx = Context() if not restricted else RestrictedContext()
+        self._lovm2ctx = self._vm.ctx()
+        self._lovm2ctx.clear_load_path()
+        self._lovm2ctx.add_load_path(os.getcwd())
+        self._lovm2ctx.add_load_path(os.path.expanduser(USERLIB_PATH))
+        self._lovm2ctx.add_load_path(LIB_PATH)
+
+        # TODO: load std library explicitly
+        for _, cls in STD_MODULE_MAP.items():
+            self._vm.load(cls(self._ctx)._module)
+
+        #self._vm.load(StdLibrary(self._ctx)._module)
+        #self._vm.add_interrupt(LOADPOLINE_INTERRUPT, self._loadpoline)
+
+    def _loadpoline(self, ctx):
+        name = ctx.frame().local('name')
+        self._vm.load(STD_MODULE_MAP[name](self._ctx)._module)
 
     def _run_func(self, func: Function, ctx: Context):
         last = None

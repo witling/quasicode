@@ -1,5 +1,5 @@
 use net
 
 und zwar machen_wir_internet action please
-    body ist ziehe "http://worldclockapi.com/api/json/utc/now"
+    body ist ziehe "http://duckduckgo.com"
     quasi body

@@ -1,6 +1,8 @@
 from ..ast import *
+from ..const import *
 from ..interpreter import Interpreter
 from ..program import *
+from ..std import *
 
 from .error import CompilerError
 from .parser import Parser
@@ -25,19 +27,36 @@ def assure_type(token, name):
 
 assure_ident = lambda token: assure_type(token, 'IDENT')
 
+class CompileContext:
+    def __init__(self):
+        self.module = pylovm2.ModuleBuilder()
+        self.main_function = None
+
 class Compiler:
     def __init__(self):
         self._parser = Parser()
-        self._module = pylovm2.ModuleBuilder()
-        self._main_function = None
+        self._compctx = None
         #self._interpreter = None
 
     def parser(self):
         return self._parser
 
     def compile(self, src, auto_main=False) -> Program:
+        self._compctx = CompileContext()
         ast = self._parser.parse(src)
-        return self._translate(ast, auto_main)
+        module = self._translate(ast, auto_main)
+        self._compctx = None
+        return module
+
+    def _add_loadpoline(self):
+        block = self._compctx.module.add(LOADPOLINE_NAME)
+        block.args(['name'])
+        block = block.code()
+        is_std_module = Expr.lor(*[Expr.eq(Expr.var('name'), cls) for cls in STD_MODULE_MAP.keys()])
+
+        branch = block.branch()
+        branch.add_condition(is_std_module).interrupt(LOADPOLINE_INTERRUPT)
+        branch.default_condition().load(Expr.var('name'))
 
     def _map_builtin_type(self, name):
         tymap = {
@@ -266,7 +285,7 @@ class Compiler:
         name = item.children[0]
         assure_ident(name)
 
-        block = self._module.add(name)
+        block = self._compctx.module.add(name)
         #declaration = Declaration()
         #declaration.set_name(Ident(name.value))
 
@@ -275,9 +294,9 @@ class Compiler:
         for item in it:
             ty = typeof(item)
             if ty == 'marker_main':
-                if not self._main_function is None:
+                if not self._compctx.main_function is None:
                     raise CompilerError('main entry point declared twice.')
-                self._main_function = name
+                self._compctx.main_function = name
 
             elif ty == 'declare_args':
                 args = []
@@ -297,13 +316,11 @@ class Compiler:
 
     #    return declaration
 
-    #def _translate_import(self, item):
-    #    assure_type(item, 'import')
-    #    modname = item.children[0]
-    #    assure_ident(modname)
-    #    use = Use()
-    #    use.add_arg(modname.value)
-    #    return use
+    def _translate_import(self, item, block):
+        assure_type(item, 'import')
+        modname = item.children[0]
+        assure_ident(modname)
+        block.call(LOADPOLINE_NAME, str(modname))
 
     def _translate_branch_elif(self, item, branch):
         assure_type(item, 'elif_branch')
@@ -315,7 +332,7 @@ class Compiler:
     def _translate_branch_else(self, item, branch):
         assure_type(item, 'else_branch')
         assert len(item.children) == 1
-        block = branch.add_default_condition()
+        block = branch.default_condition()
         self._translate_block(item.children[0], block)
 
     def _translate_branch(self, item, block):
@@ -471,8 +488,7 @@ class Compiler:
         ty = typeof(statement)
 
         if ty == 'import':
-            pass
-            #return self._translate_import(statement, module=module)
+            return self._translate_import(statement, block)
         elif ty == 'declare':
             self._translate_declare(statement)
         elif ty == 'if_branch':
@@ -506,7 +522,9 @@ class Compiler:
             unreachable()
 
     def _translate(self, ast, auto_main) -> Program:
-        entry_hir = self._module.entry().code()
+        entry_hir = self._compctx.module.entry().code()
+        
+        self._add_loadpoline()
 
         #program = Program()
         #default_main, default_main_name = Function([], Block()), '__main__'
@@ -516,7 +534,7 @@ class Compiler:
             if typeof(statement) in ['assign', 'declare', 'import']:
                 pass
             elif not auto_main:
-                raise CompilerError('main entry point declared twice.')
+                raise CompilerError('statement `{}` not expected at toplevel'.format(statement))
 
             self._translate_statement(statement, entry_hir, toplevel=True)
             #if isof(item, Assign):
@@ -544,8 +562,8 @@ class Compiler:
             #        raise CompilerError('statement `{}` is not allowed at top-level - only import and declare. use option --automain to avoid this.'.format(item))
 
         # call into main function
-        if self._main_function != pylovm2.ENTRY_POINT and not self._main_function is None:
-            self._module.entry().code().call(self._main_function)
+        if self._compctx.main_function != pylovm2.ENTRY_POINT and not self._compctx.main_function is None:
+            self._compctx.module.entry().code().call(self._compctx.main_function)
 
-        module = self._module.build()
-        return Library(module) if self._main_function is None else Program(module)
+        module = self._compctx.module.build()
+        return Library(module) if self._compctx.main_function is None else Program(module)

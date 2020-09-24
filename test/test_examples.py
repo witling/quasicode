@@ -27,11 +27,12 @@ class TestExamples(Test):
             print('$', example)
 
             src = load_source(src_path)
-            program = internals.compiler.compile(src)
+            compiler = Compiler()
+            program = compiler.compile(src)
 
-            internals.interpreter.disable_funny_mode()
+            interpreter = Interpreter()
+            interpreter.disable_funny_mode()
+            interpreter.load(program)
+            interpreter.run()
 
-            internals.interpreter.load(program)
-            internals.interpreter.run()
-
-            self.assertEqual(0, internals.interpreter._ctx.exit_code())
+            self.assertEqual(0, interpreter._ctx.exit_code())
