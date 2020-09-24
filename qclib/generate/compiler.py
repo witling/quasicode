@@ -531,7 +531,7 @@ class Compiler:
             #        raise CompilerError('statement `{}` is not allowed at top-level - only import and declare. use option --automain to avoid this.'.format(item))
 
         # call into main function
-        if not self._main_function is None:
+        if self._main_function != pylovm2.ENTRY_POINT and not self._main_function is None:
             self._module.entry().code().call(self._main_function)
 
         module = self._module.build()

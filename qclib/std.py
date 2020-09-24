@@ -6,69 +6,40 @@ from .library import *
 import math
 import random
 
-class StdLibrary(PyLibrary):
-    def __init__(self):
-        PyLibrary.__init__(self)
-
-        self.ident('quasi', WriteFn())
-        self.ident('bitte?', ReadFn())
-        self.ident('assert', create_fn(self._assert))
-
-    def _assert(self, cond):
-        if not bool(cond):
-            raise AssertException(cond)
-
-    def modname(self):
-        return 'std'
-
-class ReadFn(Function):
+class StdLibrary(Library):
     RESPONSES = ['verstehe.', 'gut.', 'okay.', 'perfekt.']
 
-    def __init__(self):
-        super().__init__([], Block())
+    def __init__(self, ctx):
+        self._ctx = ctx
 
-    def __str__(self):
-        return 'bitte?'
+        module = pylovm2.ModuleBuilder()
+        module.add('assert').pyfn(self._assert)
+        module.add('bitte?').pyfn(self._bitte)
+        module.add('quasi').pyfn(self._quasi)
 
-    def is_builtin(self):
-        return True
+        super().__init__(module.build())
 
-    def block(self):
-        return self
+    def _assert(self, *args):
+        assert args[0]
 
-    def run(self, ctx):
-        it = (value for _, value in ctx.frame().items())
-        question = ' '.join(map(str, it))
+    def _bitte(self, *args):
+        question = ' '.join(map(str, args))
 
-        ctx.stdout().write(question)
-        ctx.stdout().flush()
+        self._ctx.stdout().write(question)
+        self._ctx.stdout().flush()
 
-        ret = ctx.stdin().readline()
+        ret = self._ctx.stdin().readline()
         # drop newline char
         ret = ret[:-1]
 
-        if ctx.is_funny_mode():
+        if self._ctx.is_funny_mode():
             from random import choice
-            ctx.stdout().write('{}\n'.format(choice(ReadFn.RESPONSES)))
-            ctx.stdout().flush()
+            self._ctx.stdout().write('{}\n'.format(choice(Library.RESPONSES)))
+            self._ctx.stdout().flush()
 
         return ret
 
-class WriteFn(Function):
-    def __init__(self):
-        super().__init__([], Block())
-
-    def __str__(self):
-        return 'quasi'
-
-    def is_builtin(self):
-        return True
-
-    def block(self):
-        return self
-
-    def run(self, ctx):
-        it = (value for _, value in ctx.frame().items())
-        msg = ' '.join(map(lambda x: str(x), it)) + '\n'
-        ctx.stdout().write(msg)
-        ctx.stdout().flush()
+    def _quasi(self, *args):
+        msg = ' '.join(map(str, args)) + '\n'
+        self._ctx.stdout().write(msg)
+        self._ctx.stdout().flush()

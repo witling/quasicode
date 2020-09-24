@@ -158,7 +158,7 @@ class Library(object):
         return fname
 
     def __str__(self) -> str:
-        todo()
+        return str(self._module)
         #fixed = map(lambda x: '{}:\n{}'.format(x[0], x[1]), self._idents.items())
         #return '\n'.join(fixed)
 

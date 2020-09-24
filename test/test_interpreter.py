@@ -127,7 +127,7 @@ und zwar main action please
         internals.interpreter.load(program)
         internals.interpreter.run()
 
-        self.assertEqual('1.0\n42.0\n', stdout.getvalue())
+        self.assertEqual('1\n42\n', stdout.getvalue())
 
     def test_breaking_from_nested_loop(self, internals):
         src = """

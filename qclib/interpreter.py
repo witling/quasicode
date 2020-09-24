@@ -14,13 +14,12 @@ class Interpreter:
         import os
 
         self._ctx = Context() if not restricted else RestrictedContext()
-        self._ctx.add_include_path(os.getcwd())
-        self._ctx.add_include_path(os.path.expanduser(Interpreter.USERLIB_PATH))
-        self._ctx.add_include_path(Interpreter.LIB_PATH)
+        #self._ctx.add_include_path(os.getcwd())
+        #self._ctx.add_include_path(os.path.expanduser(Interpreter.USERLIB_PATH))
+        #self._ctx.add_include_path(Interpreter.LIB_PATH)
 
         self._vm = pylovm2.Vm()
-
-        #self._ctx.load(StdLibrary())
+        self._vm.load(StdLibrary(self._ctx)._module)
 
     def _run_func(self, func: Function, ctx: Context):
         last = None
