@@ -26,7 +26,7 @@ und zwar main1 action please
 quasi "toplevel"
 """
         program = internals.compiler.compile(src, auto_main=True)
-        self.assertTrue('__main__' in program.idents())
+        self.assertTrue(pylovm2.ENTRY_POINT in program)
 
         import io
         stdout = io.StringIO()

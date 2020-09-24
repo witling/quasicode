@@ -505,6 +505,11 @@ class Compiler:
 
         toplevel = ast.children
         for statement in toplevel:
+            if typeof(statement) in ['declare', 'import']:
+                pass
+            elif not auto_main:
+                raise CompilerError('main entry point declared twice.')
+
             self._translate_statement(statement, entry_hir, toplevel=True)
             #if isof(item, Assign):
             #    ident, value = item.ident(), item.value()

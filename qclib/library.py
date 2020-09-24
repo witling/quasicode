@@ -95,8 +95,7 @@ class Library(object):
         self._file = None
 
     def __contains__(self, key):
-        todo()
-        #return key in self._idents
+        return key in self._module
 
     def __getitem__(self, key):
         todo()
