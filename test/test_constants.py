@@ -16,5 +16,5 @@ und zwar teste
         internals.interpreter.load(program)
 
         ret = internals.interpreter.call('teste')
-        self.assertIsInstance(ret, Number)
-        self.assertEqual(float(0), float(ret))
+        self.assertIsInstance(ret, int)
+        self.assertEqual(0, ret)
