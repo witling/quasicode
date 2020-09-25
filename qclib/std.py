@@ -1,6 +1,7 @@
 from .ast import *
 from .error import AssertException
 from .function import *
+from .index import normalize_index
 from .library import *
 
 from urllib import request
@@ -78,25 +79,20 @@ class ListLibrary(Library):
         module.add('pop_front').pyfn(self._pop_front)
         super().__init__(module.build())
 
-    def _len(self, ctx):
-        ls = ctx.frame.locals('ls')
-        return len(ls._val)
+    def _len(self, ls):
+        return len(ls)
 
-    def _delete(self, idx):
-        ls = ctx.frame.locals('ls')
+    def _delete(self, ls, idx):
         idx = normalize_index(idx)
         del ls[idx]
 
-    def _push(self, ctx):
-        ls, item = ctx.frame.locals('ls'), ctx.frame.locals('item')
+    def _push(self, ls, item):
         ls.append(item)
 
-    def _pop(self, ctx):
-        ls = ctx.frame.locals('ls')
+    def _pop(self, ls):
         return ls.pop()
 
-    def _pop_front(self, ctx):
-        ls = ctx.frame.locals('ls')
+    def _pop_front(self, ls):
         if 0 < len(ls):
             first = ls[0]
             del ls[0]
@@ -146,11 +142,9 @@ class StringLibrary(Library):
         super().__init__(module.build())
 
     def _concat(self, first, second):
-        first, second = ctx.frame.locals('first'), ctx.frame.locals('second')
         return first + second
 
     def _format(self, ctx):
-        template, arg = ctx.frame.locals('template'), ctx.frame.locals('arg')
         return str(template).format(arg)
 
 STD_MODULE_MAP = {

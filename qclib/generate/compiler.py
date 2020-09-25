@@ -404,7 +404,7 @@ class Compiler:
     #    ret.add_arg(value)
     #    return ret
 
-    def _translate_assign(self, item, block):
+    def _translate_assign(self, item, block, gscope=False):
         # first is lhassign/rhassign, second is newline
         assure_type(item, 'assign')
         assert len(item.children) == 1
@@ -424,7 +424,10 @@ class Compiler:
         else:
             unreachable()
 
-        block.assign(wexpr, rexpr)
+        if gscope:
+            block.assign_global(wexpr, rexpr)
+        else:
+            block.assign(wexpr, rexpr)
 
         #assign.set_ident(wexpr)
         #assign.set_value(rexpr)
@@ -501,10 +504,7 @@ class Compiler:
             self._translate_return(statement, block)
         elif ty == 'assign':
             # if there is a module, we are at top-level -> global assign
-            if toplevel:
-                pass
-            else:
-                self._translate_assign(statement, block)
+            self._translate_assign(statement, block, gscope=toplevel)
         elif ty == 'expression':
             inner = statement.children[0]
             name, ls = inner.data, inner.children

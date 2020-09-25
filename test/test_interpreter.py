@@ -86,10 +86,9 @@ und zwar pow
         src = """quasi x"""
         program = internals.compiler.compile(src, auto_main=True)
         internals.interpreter.load(program)
-        ec = internals.interpreter.run()
 
-        self.assertEqual(1, ec)
-        self.assertEqual(LookupException, internals.interpreter._ctx.last_error.__class__)
+        with pytest.raises(RuntimeError):
+            internals.interpreter.run()
 
     def test_exit_code_success(self, internals):
         src = """quasi 1"""

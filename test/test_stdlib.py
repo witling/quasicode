@@ -17,5 +17,5 @@ class TestStdlib(Test):
     def test_assert(self, internals):
         internals.interpreter.call('assert', True)
 
-        with pytest.raises(AssertException):
+        with pytest.raises(AssertionError):
             internals.interpreter.call('assert', False)

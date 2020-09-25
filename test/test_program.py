@@ -38,8 +38,12 @@ class TestProgram(Test):
         src = """
 pi ist 3
 ls ist liste mit 1 2 3
+2 also e
         """
         program = internals.compiler.compile(src)
+        internals.interpreter.load(program)
+        internals.interpreter.run()
+        ctx = internals.interpreter._vm.ctx()
 
-        self.assertEqual(3, int(program['pi']))
-        self.assertEqual([1, 2, 3], list(map(int, program['ls'])))
+        self.assertEqual(3, ctx.globals('pi'))
+        self.assertEqual([1, 2, 3], ctx.globals('ls'))

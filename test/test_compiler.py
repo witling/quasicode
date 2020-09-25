@@ -46,14 +46,3 @@ und zwar main action please
         program = internals.compiler.compile(src)
         internals.interpreter.load(program)
         self.assertEqual(16, internals.interpreter.call('main'))
-
-    def test_constant_declaration(self, internals):
-        src = '''
-pi ist 3
-2 also e
-        '''
-
-        program = internals.compiler.compile(src)
-
-        self.assertEqual(3, int(program['pi']))
-        self.assertEqual(2, int(program['e']))
