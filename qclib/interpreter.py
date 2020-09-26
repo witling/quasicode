@@ -20,16 +20,16 @@ class Interpreter:
         self._lovm2ctx.add_load_path(os.path.expanduser(USERLIB_PATH))
         self._lovm2ctx.add_load_path(LIB_PATH)
 
-        # TODO: load std library explicitly
-        for _, cls in STD_MODULE_MAP.items():
-            self._vm.load(cls(self._ctx)._module)
+        def load_hook(name):
+            if not self._ctx.is_load_allowed(name):
+                raise ImportError('usage of module `{}` is not permitted in this context.'.format(name))
 
-        #self._vm.load(StdLibrary(self._ctx)._module)
-        #self._vm.add_interrupt(LOADPOLINE_INTERRUPT, self._loadpoline)
+            if name in STD_MODULE_MAP:
+                return STD_MODULE_MAP[name](self._ctx)._module
 
-    def _loadpoline(self, ctx):
-        name = ctx.frame().local('name')
-        self._vm.load(STD_MODULE_MAP[name](self._ctx)._module)
+        self._vm.set_load_hook(load_hook)
+        # load std library
+        self._vm.load(StdLibrary(self._ctx)._module)
 
     def _run_func(self, func: Function, ctx: Context):
         last = None
@@ -55,7 +55,13 @@ class Interpreter:
         #return call.run(self._ctx)
 
     def run(self):
-        self._vm.run()
+        try:
+            self._vm.run()
+            self._ctx.set_exit_code(0)
+            return self._ctx.exit_code()
+        except Exception as e:
+            self._ctx.set_exit_code(1)
+            raise e
         #try:
         #    for _, loaded in self._ctx.loaded().items():
         #        if not isof(loaded, Program):

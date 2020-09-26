@@ -166,6 +166,9 @@ class Context:
     def pop_frame(self):
         self._stack.pop()
 
+    def is_load_allowed(self, name):
+        return True
+
 class RestrictedContext(Context):
     def __init__(self):
         super().__init__()
@@ -178,6 +181,16 @@ class RestrictedContext(Context):
     def set_blocked_modules(self, ls):
         self._blocked_modules = ls
 
+    def is_load_allowed(self, name):
+        if self._blocked_modules and name in self._blocked_modules:
+            return False
+
+        if self._allowed_modules and not name in self._allowed_modules:
+            return False
+
+        return True
+
+"""
     def _load_postprocess(self, library):
         modname = library.modname()
         if not modname is None:
@@ -186,3 +199,4 @@ class RestrictedContext(Context):
 
             if self._allowed_modules and not modname in self._allowed_modules:
                 raise Exception('usage of module `{}` is not permitted in this context.'.format(modname))
+"""

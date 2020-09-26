@@ -14,7 +14,7 @@ class StdLibrary(Library):
     def __init__(self, ctx):
         self._ctx = ctx
 
-        module = pylovm2.ModuleBuilder()
+        module = pylovm2.ModuleBuilder.named('std')
         module.add('assert').pyfn(self._assert)
         module.add('bitte?').pyfn(self._bitte)
         module.add('quasi').pyfn(self._quasi)
@@ -49,13 +49,13 @@ class StdLibrary(Library):
 class BotLibrary(Library):
     def __init__(self, ctx):
         self._ctx = ctx
-        module = pylovm2.ModuleBuilder()
+        module = pylovm2.ModuleBuilder.named('bot')
         super().__init__(module.build())
 
 class IoLibrary(Library):
     def __init__(self, ctx):
         self._ctx = ctx
-        module = pylovm2.ModuleBuilder()
+        module = pylovm2.ModuleBuilder.named('io')
         module.add('schreibe').pyfn(self._write)
         module.add('inhaliere').pyfn(self._write)
         super().__init__(module.build())
@@ -71,7 +71,7 @@ class IoLibrary(Library):
 class ListLibrary(Library):
     def __init__(self, ctx):
         self._ctx = ctx
-        module = pylovm2.ModuleBuilder()
+        module = pylovm2.ModuleBuilder.named('liste')
         module.add('länge').pyfn(self._len)
         module.add('lösche').pyfn(self._delete)
         module.add('push').pyfn(self._push)
@@ -101,7 +101,7 @@ class ListLibrary(Library):
 class MathLibrary(Library):
     def __init__(self, ctx):
         self._ctx = ctx
-        module = pylovm2.ModuleBuilder()
+        module = pylovm2.ModuleBuilder.named('math')
         module.add('ceil').pyfn(self._ceil)
         module.add('floor').pyfn(self._floor)
         module.add('random').pyfn(self._rnd)
@@ -123,7 +123,7 @@ class MathLibrary(Library):
 class NetLibrary(Library):
     def __init__(self, ctx):
         self._ctx = ctx
-        module = pylovm2.ModuleBuilder()
+        module = pylovm2.ModuleBuilder.named('net')
         module.add('ziehe').pyfn(self._download)
         super().__init__(module.build())
 
@@ -136,7 +136,7 @@ class NetLibrary(Library):
 class StringLibrary(Library):
     def __init__(self, ctx):
         self._ctx = ctx
-        module = pylovm2.ModuleBuilder()
+        module = pylovm2.ModuleBuilder.named('string')
         module.add('concat').pyfn(self._concat)
         module.add('format').pyfn(self._format)
         super().__init__(module.build())
@@ -153,6 +153,5 @@ STD_MODULE_MAP = {
     'liste': ListLibrary,
     'math': MathLibrary,
     'net': NetLibrary,
-    'std': StdLibrary,
     'string': StringLibrary,
 }

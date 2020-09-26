@@ -100,12 +100,17 @@ und zwar pow
         self.assertEqual(None, internals.interpreter._ctx.last_error)
 
     def test_exit_code_fail(self, internals):
-        src = """"""
+        src = """
+und zwar main action please
+    quasi x
+        """
         program = internals.compiler.compile(src)
         internals.interpreter.load(program)
-        ec = internals.interpreter.run()
 
-        self.assertEqual(1, ec)
+        with pytest.raises(Exception):
+            internals.interpreter.run()
+
+        self.assertEqual(1, internals.interpreter._ctx.exit_code())
 
     def test_name_shadowing(self, internals):
         src = """

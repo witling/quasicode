@@ -320,7 +320,8 @@ class Compiler:
         assure_type(item, 'import')
         modname = item.children[0]
         assure_ident(modname)
-        block.call(LOADPOLINE_NAME, str(modname))
+        block.load(Expr.val(str(modname)))
+        #block.call(LOADPOLINE_NAME, str(modname))
 
     def _translate_branch_elif(self, item, branch):
         assure_type(item, 'elif_branch')
@@ -524,7 +525,7 @@ class Compiler:
     def _translate(self, ast, auto_main) -> Program:
         entry_hir = self._compctx.module.entry().code()
         
-        self._add_loadpoline()
+        #self._add_loadpoline()
 
         #program = Program()
         #default_main, default_main_name = Function([], Block()), '__main__'
