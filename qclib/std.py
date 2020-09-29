@@ -87,10 +87,14 @@ class ListLibrary(Library):
         del ls[idx]
 
     def _push(self, ls, item):
-        ls.append(item)
+        idx = len(ls)
+        ls[idx] = item
 
     def _pop(self, ls):
-        return ls.pop()
+        idx = normalize_index(len(ls))
+        item = ls[idx]
+        del ls[idx]
+        return item
 
     def _pop_front(self, ls):
         if 0 < len(ls):
@@ -128,7 +132,7 @@ class NetLibrary(Library):
         super().__init__(module.build())
 
     def _download(self, url):
-        req = request.urlopen(url)
+        req = request.urlopen(str(url))
         if req.msg == 'OK':
             return req.read().decode('utf8')
         return False
@@ -142,10 +146,10 @@ class StringLibrary(Library):
         super().__init__(module.build())
 
     def _concat(self, first, second):
-        return first + second
+        return str(first) + str(second)
 
-    def _format(self, ctx):
-        return str(template).format(arg)
+    def _format(self, template, arg):
+        return str(template).format(str(arg))
 
 STD_MODULE_MAP = {
     'bot': BotLibrary,

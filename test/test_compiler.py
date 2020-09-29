@@ -45,4 +45,4 @@ und zwar main action please
         
         program = internals.compiler.compile(src)
         internals.interpreter.load(program)
-        self.assertEqual(16, internals.interpreter.call('main'))
+        self.assertEqual(16, int(internals.interpreter.call('main')))

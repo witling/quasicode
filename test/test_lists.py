@@ -15,11 +15,11 @@ und zwar create
         program = internals.compiler.compile(src)
         internals.interpreter.load(program)
 
-        ret = internals.interpreter.call('create')
+        ret = internals.interpreter.call('create').to_py()
         self.assertIsInstance(ret, list)
         self.assertEqual(0, len(ret))
 
-        ret = internals.interpreter.call('create_indirect')
+        ret = internals.interpreter.call('create_indirect').to_py()
         self.assertIsInstance(ret, list)
         self.assertEqual(0, len(ret))
 
@@ -34,7 +34,7 @@ und zwar create_indirect
         program = internals.compiler.compile(src)
         internals.interpreter.load(program)
 
-        ret = internals.interpreter.call('create_indirect')
+        ret = internals.interpreter.call('create_indirect').to_py()
         self.assertIsInstance(ret, list)
         self.assertTrue(ret)
 
@@ -49,7 +49,7 @@ und zwar create_indirect
         program = internals.compiler.compile(src)
         internals.interpreter.load(program)
 
-        ret = internals.interpreter.call('create_indirect')
+        ret = internals.interpreter.call('create_indirect').to_py()
         self.assertIsInstance(ret, list)
 
         for i in range(3):
@@ -64,9 +64,10 @@ und zwar create_indirect
     eingabe und fertig
 """
         program = internals.compiler.compile(src)
+        print(program)
         internals.interpreter.load(program)
 
-        ret = internals.interpreter.call('create_indirect')
+        ret = internals.interpreter.call('create_indirect').to_py()
         self.assertIsInstance(ret, list)
         self.assertEqual(4, len(ret))
 
@@ -137,17 +138,17 @@ ls ist liste mit 1 2 3 4
         internals.interpreter.load(program)
         internals.interpreter.run()
 
-        ret = internals.interpreter.call('länge', Expr.var('ls'))
+        ret = internals.interpreter.call('länge', Expr.var('ls')).to_py()
         self.assertEqual(4, ret)
 
         internals.interpreter.call('lösche', Expr.var('ls'), 1)
 
-        ret = internals.interpreter.call('länge', Expr.var('ls'))
+        ret = internals.interpreter.call('länge', Expr.var('ls')).to_py()
         self.assertEqual(3, ret)
 
-        pop_front = internals.interpreter.call('pop_front', Expr.var('ls'))
+        pop_front = internals.interpreter.call('pop_front', Expr.var('ls')).to_py()
         self.assertEqual(2, pop_front)
-        pop_back = internals.interpreter.call('pop', Expr.var('ls'))
+        pop_back = internals.interpreter.call('pop', Expr.var('ls')).to_py()
         self.assertEqual(4, pop_back)
 
         internals.interpreter.call('push', Expr.var('ls'), 3)

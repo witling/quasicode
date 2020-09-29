@@ -9,7 +9,7 @@ class TestStdlib(Test):
         internals.interpreter._ctx.set_stdin(stdin)
         ret = internals.interpreter.call('bitte?', 'was war die frage?')
 
-        self.assertEqual('hej', ret)
+        self.assertEqual('hej', str(ret))
 
     def test_sqrt(self, internals):
         internals.interpreter.call('quasi', 'hi')

@@ -15,10 +15,10 @@ und zwar create
         program = internals.compiler.compile(src)
         internals.interpreter.load(program)
 
-        ret = internals.interpreter.call('create')
+        ret = internals.interpreter.call('create').to_py()
         self.assertIsInstance(ret, dict)
 
-        ret = internals.interpreter.call('create_indirect')
+        ret = internals.interpreter.call('create_indirect').to_py()
         self.assertIsInstance(ret, dict)
 
     def test_object_access(self, internals):

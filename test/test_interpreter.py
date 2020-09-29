@@ -79,15 +79,17 @@ und zwar pow
     def test_unknown_use(self, internals):
         src = """use non_existent"""
         program = internals.compiler.compile(src)
-        with pytest.raises(LookupException):
-            internals.interpreter.load(program)
+        internals.interpreter.load(program)
+
+        with pytest.raises(Exception):
+            internals.interpreter.run()
 
     def test_unknown_global(self, internals):
         src = """quasi x"""
         program = internals.compiler.compile(src, auto_main=True)
         internals.interpreter.load(program)
 
-        with pytest.raises(RuntimeError):
+        with pytest.raises(Exception):
             internals.interpreter.run()
 
     def test_exit_code_success(self, internals):
