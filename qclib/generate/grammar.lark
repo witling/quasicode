@@ -48,7 +48,7 @@ or: or_comp "oder" and_comp
 // values
 
 STRING: /".*?(?<!\\)"/
-IDENT: /[a-zA-Z_][\w\?!]*/
+IDENT: /@?[a-zA-Z_][\w\?!]*/
 NUMBER: /\d+/
 CONSTANT: "uzbl"
 

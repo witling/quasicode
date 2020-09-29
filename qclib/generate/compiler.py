@@ -159,6 +159,8 @@ class Compiler:
         ty = typeof(item)
 
         if ty == 'IDENT':
+            if item.value[0] == '@':
+                return Expr.call(item.value[1:])
             return Expr.var(item.value)
         elif ty == 'NUMBER':
             try:

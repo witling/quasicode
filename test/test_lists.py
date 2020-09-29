@@ -64,7 +64,6 @@ und zwar create_indirect
     eingabe und fertig
 """
         program = internals.compiler.compile(src)
-        print(program)
         internals.interpreter.load(program)
 
         ret = internals.interpreter.call('create_indirect').to_py()

@@ -40,9 +40,9 @@ def get_vlib_modname(sub=None):
     return '{}.{}'.format(Library.VIRTUAL_MODULE, sub)
 
 def _load_binary(fname):
-    lib = Library()
-    lib._module = pylovm2.Module.load(fname)
-    return lib
+    from .program import Program
+    module = pylovm2.Module.load(fname)
+    return Program(module) if pylovm2.ENTRY_POINT in module else Library(module)
     #modname = get_vlib_modname_by_path(fname)
     #init_vlib()
     #init_vlib(modname)
@@ -56,9 +56,7 @@ def _load_source(fname, auto_main=False):
     from .generate import Compiler
     compiler = Compiler()
     with open(fname, 'r') as src:
-        lib = Library()
-        lib._module = compiler.compile(src.read(), auto_main)
-        return lib
+        return compiler.compile(src.read(), auto_main)
 
 def init_vlib(modname=None, mod=None):
     """
