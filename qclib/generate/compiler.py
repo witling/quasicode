@@ -29,8 +29,8 @@ assure_ident = lambda token: assure_type(token, 'IDENT')
 
 class CompileContext:
     def __init__(self):
-        self.module = pylovm2.ModuleBuilder()
         self.main_function = None
+        self.module = pylovm2.ModuleBuilder()
 
 class Compiler:
     def __init__(self):
@@ -283,16 +283,68 @@ class Compiler:
         #return block
 
     def _translate_declare(self, item):
+        # which function do we use as our starting point? we have 
+        # two different conditions to check for:
+        #   m = functions name is pylovm2.ENTRY_POINT (or 'main')
+        #   e = function is declared as entry point (has 'main_marker')
+        #
+        # this gives us four different permutations:
+        #   m e   => _mf = block
+        #   m !e  => forbidden state. assert !m or e
+        #   !m e  => _mf = name, add block to module
+        #   !m !e => add block to module
+        #
+        # at the end of compilation, we have to merge the entry()-block
+        # together with a jump into the main code. according to above layout,
+        # we have two distinct cases:
+        #   type(_mf) == 'block' => merge _mf at end of entry()
+        #   type(_mf) == 'str' => add call(name) to end of entry()
+
         assure_type(item, 'declare')
         name = item.children[0]
         assure_ident(name)
 
-        block = self._compctx.module.add(name)
         #declaration = Declaration()
         #declaration.set_name(Ident(name.value))
 
         it = iter(item.children[1:])
+
+        block = pylovm2.ModuleBuilderSlot()
+        #block = self._compctx.module.add(name)
+
+        main_marker = list(item.find_data('marker_main'))
+        declare_args = list(item.find_data('declare_args'))
+        statements = next(filter(lambda node: typeof(node) == 'block', item.children))
+
+        assert name != pylovm2.ENTRY_POINT or main_marker 
+
+        if declare_args:
+            # main function does not have arguments
+            assert not main_marker
+            args = []
+            for arg in declare_args[0].children:
+                args.append(str(arg.value))
+            block.args(args)
+
+        if main_marker:
+            if not self._compctx.main_function is None:
+                raise CompilerError('main entry point declared twice.')
+
+            # m e   => _mf = block
+            if name == pylovm2.ENTRY_POINT:
+                self._compctx.main_function = statements 
+                return
+
+            # !m e  => _mf = name, add block to module
+            else:
+                self._compctx.main_function = str(name)
+
+        # !m !e => add block to module
+        self._translate_block(statements, block.code())
+        self._compctx.module.add_slot(name, block)
+
         # parse rest of declaration
+        """
         for item in it:
             ty = typeof(item)
             if ty == 'marker_main':
@@ -315,6 +367,7 @@ class Compiler:
                 #declaration.set_block(block)
             else:
                 unreachable()
+        """
 
     #    return declaration
 
@@ -565,8 +618,12 @@ class Compiler:
             #        raise CompilerError('statement `{}` is not allowed at top-level - only import and declare. use option --automain to avoid this.'.format(item))
 
         # call into main function
-        if self._compctx.main_function != pylovm2.ENTRY_POINT and not self._compctx.main_function is None:
+        if self._compctx.main_function is None:
+            pass
+        elif type(self._compctx.main_function).__name__ == 'str':
             self._compctx.module.entry().code().call(self._compctx.main_function)
+        else:
+            self._translate_block(self._compctx.main_function, self._compctx.module.entry().code())
 
         module = self._compctx.module.build()
         return Library(module) if self._compctx.main_function is None else Program(module)
