@@ -48,16 +48,6 @@ class Compiler:
         self._compctx = None
         return module
 
-    def _add_loadpoline(self):
-        block = self._compctx.module.add(LOADPOLINE_NAME)
-        block.args(['name'])
-        block = block.code()
-        is_std_module = Expr.lor(*[Expr.eq(Expr.var('name'), cls) for cls in STD_MODULE_MAP.keys()])
-
-        branch = block.branch()
-        branch.add_condition(is_std_module).interrupt(LOADPOLINE_INTERRUPT)
-        branch.default_condition().load(Expr.var('name'))
-
     def _map_builtin_type(self, name):
         tymap = {
             'liste': list,
@@ -376,7 +366,6 @@ class Compiler:
         modname = item.children[0]
         assure_ident(modname)
         block.load(Expr.val(str(modname)))
-        #block.call(LOADPOLINE_NAME, str(modname))
 
     def _translate_branch_elif(self, item, branch):
         assure_type(item, 'elif_branch')
@@ -580,8 +569,6 @@ class Compiler:
     def _translate(self, ast, auto_main) -> Program:
         entry_hir = self._compctx.module.entry().code()
         
-        #self._add_loadpoline()
-
         #program = Program()
         #default_main, default_main_name = Function([], Block()), '__main__'
 
