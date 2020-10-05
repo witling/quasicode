@@ -1,5 +1,4 @@
 und zwar ack mit n m
-    quasi n m
     kris? n das ist 0
         m + 1 und fertig
     kris?? m das ist 0
@@ -7,4 +6,4 @@ und zwar ack mit n m
     ack (n - 1) (ack n (m - 1)) und fertig
 
 und zwar main action please
-    quasi (ack 3 5)
+    quasi (ack 3 8)
