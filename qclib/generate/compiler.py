@@ -131,8 +131,7 @@ class Compiler:
         if start_ast:
             start_ast = start_ast[0]
             target = self._to_value(start_ast.children[0])
-            start = self._to_value(start_ast.children[1])
-            start = Expr.sub(start, 1)
+            start = self._to_value(start_ast.children[1], normalize=lambda x: x-1)
 
         if end_ast:
             end_ast = end_ast[0]
@@ -140,8 +139,7 @@ class Compiler:
             if target is None:
                 target = self._to_value(end_ast.children[0])
 
-            end = self._to_value(end_ast.children[1])
-            end = Expr.sub(end, 1)
+            end = self._to_value(end_ast.children[1], normalize=lambda x: x-1)
 
         return Expr.slice(target, start, end)
 
