@@ -36,7 +36,7 @@ class StdLibrary(Library):
 
         if self._ctx.is_funny_mode():
             from random import choice
-            self._ctx.stdout().write('{}\n'.format(choice(Library.RESPONSES)))
+            self._ctx.stdout().write('{}\n'.format(choice(StdLibrary.RESPONSES)))
             self._ctx.stdout().flush()
 
         return ret
