@@ -56,17 +56,17 @@ class IoLibrary(Library):
     def __init__(self, ctx):
         self._ctx = ctx
         module = pylovm2.ModuleBuilder.named('io')
+        module.add('inhaliere').pyfn(self._read)
         module.add('schreibe').pyfn(self._write)
-        module.add('inhaliere').pyfn(self._write)
         super().__init__(module.build())
 
     def _read(self, path):
-        with open(path, 'r') as fp:
+        with open(path.to_py(), 'r') as fp:
             return fp.read()
 
     def _write(self, path, content):
-        with open(path, 'w') as fp:
-            fp.write(content)
+        with open(path.to_py(), 'w') as fp:
+            fp.write(content.to_py())
 
 class ListLibrary(Library):
     def __init__(self, ctx):

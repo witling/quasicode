@@ -20,17 +20,17 @@ class TestStdlib(Test):
         with pytest.raises(AssertionError):
             internals.interpreter.call('assert', False)
 
-    def test_json_dumps(self, internals):
-        src = """
-use json
-
-d ist menge
-d.x ist 1
-d.y ist 2
-"""
-        program = internals.compiler.compile(src)
-        internals.interpreter.load(program)
-        internals.interpreter.run()
-
-        ret = internals.interpreter.call('dumps', Expr.var('d')).to_py()
-        self.assertEqual(0, len(ret))
+#    def test_json_dumps(self, internals):
+#        src = """
+#use json
+#
+#d ist menge
+#d.x ist 1
+#d.y ist 2
+#"""
+#        program = internals.compiler.compile(src)
+#        internals.interpreter.load(program)
+#        internals.interpreter.run()
+#
+#        ret = internals.interpreter.call('dumps', Expr.var('d')).to_py()
+#        self.assertEqual(0, len(ret))

@@ -42,7 +42,8 @@ class Interpreter:
             if name in STD_MODULE_MAP:
                 return STD_MODULE_MAP[name](self._ctx)._module
             
-            return try_py_module_load(name)
+            # TODO: can we implement this feature?
+            #return try_py_module_load(name)
 
         self._vm.set_load_hook(load_hook)
         # load std library
