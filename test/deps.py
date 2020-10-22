@@ -19,7 +19,10 @@ class Test:
         self.assertTrue(isinstance(obj, cls))
 
     def assertEqual(self, expected, got):
-        self.assertTrue(expected == got)
+        if expected == got:
+            return
+        print('expected', expected, ', got', got)
+        self.assertTrue(False)
 
     def assertFalse(self, expr):
         self.assertTrue(not expr)

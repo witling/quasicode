@@ -95,7 +95,7 @@ und zwar create
         program = internals.compiler.compile(src)
         internals.interpreter.load(program)
 
-        ret = internals.interpreter.call('create')
+        ret = internals.interpreter.call('create').to_py()
         self.assertEqual(3, len(ret))
 
         for expected, got in zip([1, 2, 3], map(int, ret)):
@@ -110,7 +110,7 @@ und zwar create
         program = internals.compiler.compile(src)
         internals.interpreter.load(program)
 
-        ret = internals.interpreter.call('create')
+        ret = internals.interpreter.call('create').to_py()
         self.assertEqual(1, len(ret))
         self.assertEqual(1, int(ret[0]))
 
@@ -123,7 +123,7 @@ und zwar create
         program = internals.compiler.compile(src)
         internals.interpreter.load(program)
 
-        ret = internals.interpreter.call('create')
+        ret = internals.interpreter.call('create').to_py()
         self.assertEqual(3, len(ret))
 
         for expected, got in zip([2, 3, 4], map(int, ret)):

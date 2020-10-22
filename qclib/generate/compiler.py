@@ -119,29 +119,31 @@ class Compiler:
         index = self._to_value(item.children[1], normalize=lambda x: x-1)
         return Expr.access(ident, index)
 
-    #def _to_slice(self, item):
-    #    assure_type(item, 'slice')
-    #    assert len(item.children) == 1
+    def _to_slice(self, item):
+        assure_type(item, 'slice')
+        assert len(item.children) == 1
 
-    #    target, start, end = None, None, None 
+        target, start, end = None, None, None 
 
-    #    start_ast = list(item.find_data('slice_start'))
-    #    end_ast = list(item.find_data('slice_end'))
+        start_ast = list(item.find_data('slice_start'))
+        end_ast = list(item.find_data('slice_end'))
 
-    #    if start_ast:
-    #        start_ast = start_ast[0]
-    #        target = self._to_value(start_ast.children[0])
-    #        start = self._to_value(start_ast.children[1])
+        if start_ast:
+            start_ast = start_ast[0]
+            target = self._to_value(start_ast.children[0])
+            start = self._to_value(start_ast.children[1])
+            start = Expr.sub(start, 1)
 
-    #    if end_ast:
-    #        end_ast = end_ast[0]
+        if end_ast:
+            end_ast = end_ast[0]
 
-    #        if target is None:
-    #            target = self._to_value(end_ast.children[0])
+            if target is None:
+                target = self._to_value(end_ast.children[0])
 
-    #        end = self._to_value(end_ast.children[1])
+            end = self._to_value(end_ast.children[1])
+            end = Expr.sub(end, 1)
 
-    #    return Slice(target, start=start, end=end)
+        return Expr.slice(target, start, end)
 
     def _to_value(self, item, normalize=None):
         # used for normalizing list index
@@ -174,8 +176,7 @@ class Compiler:
         elif ty == 'index':
             return self._to_index(item)
         elif ty == 'slice':
-            todo()
-            #return self._to_slice(item)
+            return self._to_slice(item)
         elif ty == 'value':
             return self._to_value(item.children[0], normalize=normalize)
         elif not self._map_operator(ty) is None:
@@ -469,7 +470,9 @@ class Compiler:
         else:
             unreachable()
 
-        if gscope:
+        if wexpr.ty() == 'access':
+            block.set(wexpr, rexpr)
+        elif gscope:
             block.assign_global(wexpr, rexpr)
         else:
             block.assign(wexpr, rexpr)
