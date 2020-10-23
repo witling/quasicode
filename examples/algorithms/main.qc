@@ -13,5 +13,5 @@ und zwar teste_merge_sort
     quasi "merge sort works"
 
 und zwar main action please
-    teste_bubble_sort
-    teste_merge_sort
+    @teste_bubble_sort
+    @teste_merge_sort

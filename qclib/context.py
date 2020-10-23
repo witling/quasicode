@@ -62,7 +62,7 @@ class Context:
                     if not (fext == Program.FEXT or fext == Program.FEXTC):
                         continue
                     if front == name:
-                        return os.path.join(path, fname)
+                        return os.path.abspath(os.path.join(path, fname))
 
         return None
     

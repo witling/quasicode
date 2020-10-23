@@ -25,13 +25,14 @@ def try_py_module_load(name):
 class Interpreter:
     def __init__(self, restricted=False):
         import os
+        import os.path
 
         self._vm = pylovm2.Vm()
 
         self._ctx = Context() if not restricted else RestrictedContext()
         self._lovm2ctx = self._vm.ctx()
         self._lovm2ctx.clear_load_path()
-        self._lovm2ctx.add_load_path(os.getcwd())
+        #self._lovm2ctx.add_load_path(os.getcwd())
         self._lovm2ctx.add_load_path(os.path.expanduser(USERLIB_PATH))
         self._lovm2ctx.add_load_path(LIB_PATH)
 
@@ -41,11 +42,28 @@ class Interpreter:
 
             if name in STD_MODULE_MAP:
                 return STD_MODULE_MAP[name](self._ctx)._module
+
+            # load other quasicode files relative to main quasicode module here
+            for fpath in self._lovm2ctx.load_path():
+                if not os.path.exists(fpath):
+                    continue
+
+                for fname in os.listdir(fpath):
+                    modname, ext = os.path.splitext(fname)
+                    if modname != name:
+                        continue
+
+                    modpath = os.path.abspath(os.path.join(fpath, fname))
+                    try:
+                        return Library.load(modpath)._module
+                    except Exception as e:
+                        print(e + '\n')
             
             # TODO: can we implement this feature?
             #return try_py_module_load(name)
 
         self._vm.set_load_hook(load_hook)
+
         # load std library
         self._vm.load(StdLibrary(self._ctx)._module)
 
@@ -59,6 +77,9 @@ class Interpreter:
         self._ctx.disable_funny_mode()
 
     def load(self, program: Program):
+        import os.path
+        moddir = os.path.dirname(program._file)
+        self._lovm2ctx.add_load_path(moddir)
         self._vm.load(program._module)
         #self._ctx.load(program)
 

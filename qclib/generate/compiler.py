@@ -558,7 +558,10 @@ class Compiler:
                 arg = self._to_value(ls[0])
                 block.ret(arg)
             else:
-                block.expr(self._translate_rexpression(statement))
+                try:
+                    block.expr(self._translate_rexpression(statement))
+                except RuntimeError:
+                    raise CompilerError('cannot put expression on block level. remember the difference between `fun` (variable) and `@fun` (function call)')
 
         elif ty == 'nop':
             self._translate_nop(statement, block)

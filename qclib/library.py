@@ -30,32 +30,32 @@ def create_const(name, value):
 
 def get_vlib_modname_by_path(path):
     from os.path import abspath, basename, splitext
-    fname = basename(abspath(path))
-    fname, _ = splitext(fname)
-    return get_vlib_modname(fname)
+    fpath = basename(abspath(path))
+    fpath, _ = splitext(fpath)
+    return get_vlib_modname(fpath)
 
 def get_vlib_modname(sub=None):
     if sub is None:
         return Library.VIRTUAL_MODULE
     return '{}.{}'.format(Library.VIRTUAL_MODULE, sub)
 
-def _load_binary(fname):
+def _load_binary(fpath):
     from .program import Program
-    module = pylovm2.Module.load(fname)
+    module = pylovm2.Module.load(fpath)
     return Program(module) if pylovm2.ENTRY_POINT in module else Library(module)
-    #modname = get_vlib_modname_by_path(fname)
+    #modname = get_vlib_modname_by_path(fpath)
     #init_vlib()
     #init_vlib(modname)
 
-    #with open(fname, 'rb') as fp:
+    #with open(fpath, 'rb') as fp:
     #    sys.modules[modname] = dill.load(fp)
 
     #return sys.modules.get(modname)
 
-def _load_source(fname, auto_main=False):
+def _load_source(fpath, auto_main=False):
     from .generate import Compiler
     compiler = Compiler()
-    with open(fname, 'r') as src:
+    with open(fpath, 'r') as src:
         return compiler.compile(src.read(), auto_main)
 
 def init_vlib(modname=None, mod=None):
@@ -101,33 +101,34 @@ class Library(object):
         #    return None
         #return self._idents[key]
 
-    def set_file_path(self, fname):
+    def set_file_path(self, fpath):
         from os.path import abspath
-        self._file = fname
+        self._file = fpath
 
-    # load a program from filepointer
-    def load(fname, auto_main=False):
-        from os.path import splitext
+    # load a program from a filepath
+    def load(fpath, auto_main=False):
+        import os.path
+        fpath = os.path.abspath(fpath)
 
-        _, fext = splitext(fname)
+        _, fext = os.path.splitext(fpath)
 
         if fext == Library.FEXT:
-            lib = _load_source(fname, auto_main)
+            lib = _load_source(fpath, auto_main)
 
         elif fext == Library.FEXTC:
-            lib = _load_binary(fname)
+            lib = _load_binary(fpath)
 
         else:
             raise Exception('unsupported file extension')
 
-        lib.set_file_path(fname)
+        lib.set_file_path(fpath)
 
         return lib
 
-    # write a program into filepointer
-    def save(self, fname):
-        self._module.save(fname)
-        #with open(fname, 'wb') as fp:
+    # write a program to a filepath
+    def save(self, fpath):
+        self._module.save(fpath)
+        #with open(fpath, 'wb') as fp:
         #    dill.dump(self, fp, recurse=True)
         return True
 
@@ -151,8 +152,8 @@ class Library(object):
             return None
 
         from os.path import basename, splitext
-        fname, _ = splitext(basename(self._file))
-        return fname
+        fpath, _ = splitext(basename(self._file))
+        return fpath
 
     def __str__(self) -> str:
         return str(self._module)
