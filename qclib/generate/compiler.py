@@ -28,9 +28,12 @@ def assure_type(token, name):
 assure_ident = lambda token: assure_type(token, 'IDENT')
 
 class CompileContext:
-    def __init__(self):
+    def __init__(self, module_name):
         self.main_function = None
-        self.module = pylovm2.ModuleBuilder()
+        if module_name:
+            self.module = pylovm2.ModuleBuilder.named(module_name)
+        else:
+            self.module = pylovm2.ModuleBuilder()
 
 class Compiler:
     def __init__(self):
@@ -41,10 +44,10 @@ class Compiler:
     def parser(self):
         return self._parser
 
-    def compile(self, src, auto_main=False) -> Program:
-        self._compctx = CompileContext()
+    def compile(self, src, auto_main=False, module_name=None, module_location=None) -> Program:
+        self._compctx = CompileContext(module_name)
         ast = self._parser.parse(src)
-        module = self._translate(ast, auto_main)
+        module = self._translate(ast, auto_main, module_location)
         self._compctx = None
         return module
 
@@ -570,7 +573,7 @@ class Compiler:
         else:
             unreachable()
 
-    def _translate(self, ast, auto_main) -> Program:
+    def _translate(self, ast, auto_main, module_location=None) -> Program:
         entry_hir = self._compctx.module.entry().code()
         
         #program = Program()
@@ -616,5 +619,5 @@ class Compiler:
         else:
             self._translate_block(self._compctx.main_function, self._compctx.module.entry().code())
 
-        module = self._compctx.module.build()
+        module = self._compctx.module.build(module_location)
         return Library(module) if self._compctx.main_function is None else Program(module)

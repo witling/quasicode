@@ -36,14 +36,13 @@ class Interpreter:
         self._lovm2ctx.add_load_path(os.path.expanduser(USERLIB_PATH))
         self._lovm2ctx.add_load_path(LIB_PATH)
 
-        def load_hook(name):
+        def load_hook(name, relative_to):
             if not self._ctx.is_load_allowed(name):
                 raise ImportError('usage of module `{}` is not permitted in this context.'.format(name))
 
             if name in STD_MODULE_MAP:
                 return STD_MODULE_MAP[name](self._ctx)._module
 
-            # load other quasicode files relative to main quasicode module here
             for fpath in self._lovm2ctx.load_path():
                 if not os.path.exists(fpath):
                     continue
@@ -78,8 +77,11 @@ class Interpreter:
 
     def load(self, program: Program):
         import os.path
-        moddir = os.path.dirname(program._file)
-        self._lovm2ctx.add_load_path(moddir)
+
+        if not program._file is None:
+            moddir = os.path.dirname(program._file)
+            self._lovm2ctx.add_load_path(moddir)
+
         self._vm.load(program._module)
         #self._ctx.load(program)
 

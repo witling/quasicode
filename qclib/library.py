@@ -54,9 +54,11 @@ def _load_binary(fpath):
 
 def _load_source(fpath, auto_main=False):
     from .generate import Compiler
+    import os.path
+    name, _ = os.path.splitext(os.path.basename(fpath))
     compiler = Compiler()
     with open(fpath, 'r') as src:
-        return compiler.compile(src.read(), auto_main)
+        return compiler.compile(src.read(), auto_main, module_name=name, module_location=fpath)
 
 def init_vlib(modname=None, mod=None):
     """
