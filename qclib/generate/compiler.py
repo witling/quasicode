@@ -119,7 +119,7 @@ class Compiler:
         assure_type(item, 'index')
         assert len(item.children) == 2
         ident = self._to_value(item.children[0])
-        index = self._to_value(item.children[1], normalize=lambda x: x-1)
+        index = self._to_value(item.children[1])
         return Expr.access(ident, index)
 
     def _to_slice(self, item):
@@ -134,7 +134,7 @@ class Compiler:
         if start_ast:
             start_ast = start_ast[0]
             target = self._to_value(start_ast.children[0])
-            start = self._to_value(start_ast.children[1], normalize=lambda x: x-1)
+            start = self._to_value(start_ast.children[1])
 
         if end_ast:
             end_ast = end_ast[0]
@@ -142,13 +142,12 @@ class Compiler:
             if target is None:
                 target = self._to_value(end_ast.children[0])
 
-            end = self._to_value(end_ast.children[1], normalize=lambda x: x-1)
+            end = self._to_value(end_ast.children[1])
 
         return Expr.slice(target, start, end)
 
-    def _to_value(self, item, normalize=None):
+    def _to_value(self, item):
         # used for normalizing list index
-        normalize = (lambda x: x) if normalize is None else normalize
         ty = typeof(item)
 
         if ty == 'IDENT':
@@ -157,9 +156,9 @@ class Compiler:
             return Expr.var(item.value)
         elif ty == 'NUMBER':
             try:
-                return Expr.val(normalize(int(item.value)))
+                return Expr.val(int(item.value))
             except ValueError:
-                return Expr.val(normalize(float(item.value)))
+                return Expr.val(float(item.value))
         elif ty == 'STRING':
             val = item.value[1:-1]
             return Expr.val(val)
@@ -179,7 +178,7 @@ class Compiler:
         elif ty == 'slice':
             return self._to_slice(item)
         elif ty == 'value':
-            return self._to_value(item.children[0], normalize=normalize)
+            return self._to_value(item.children[0])
         elif not self._map_operator(ty) is None:
             return self._translate_operation(item)
 
@@ -205,10 +204,13 @@ class Compiler:
 
     #        # fix ambiguity between Return and LogicalAnd
     #        # FIXME: can this be done by the parser?
-            if name == 'and' and right == Ident('fertig'):
-                ret = Return()
-                ret.add_arg(left)
-                return ret
+            #if name == 'and' and right == Ident('fertig'):
+            #    ret = Return()
+            #    ret.add_arg(left)
+            #    return ret
+            
+            if name == 'div':
+                left = Expr.to_float(left)
 
             args = [left, right]
         
@@ -363,11 +365,15 @@ class Compiler:
 
     #    return declaration
 
-    def _translate_import(self, item, block):
+    def _translate_import(self, item, block, toplevel=False):
         assure_type(item, 'import')
         modname = item.children[0]
         assure_ident(modname)
-        block.load(Expr.val(str(modname)))
+
+        if toplevel:
+            self._compctx.module.add_dependency(str(modname))
+        else:
+            block.load(Expr.val(str(modname)))
 
     def _translate_branch_elif(self, item, branch):
         assure_type(item, 'elif_branch')
@@ -413,10 +419,10 @@ class Compiler:
             condition = self._to_value(condition.children[0])
 
             if ty == 'loop_until':
-                block = block.repeat_until(condition)
+                block = block.repeat_until(Expr.to_bool(condition))
     #            predicate = lambda ctx: not condition.run(ctx)
             elif ty == 'loop_while':
-                block = block.repeat_until(Expr.lnot(condition))
+                block = block.repeat_until(Expr.lnot(Expr.to_bool(condition)))
     #            predicate = lambda ctx: condition.run(ctx)
             else:
                 unreachable()
@@ -540,7 +546,7 @@ class Compiler:
         ty = typeof(statement)
 
         if ty == 'import':
-            return self._translate_import(statement, block)
+            return self._translate_import(statement, block, toplevel=toplevel)
         elif ty == 'declare':
             self._translate_declare(statement)
         elif ty == 'if_branch':

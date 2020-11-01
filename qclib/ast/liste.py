@@ -1,5 +1,3 @@
-from ..index import normalize_index
-
 from .generic import Runnable
 from .value import Value
 
@@ -16,10 +14,10 @@ class Liste(Value):
     def __getitem__(self, key):
         # slicing should be done through `Slice`
         assert not key.__class__ is slice
-        return self._val[normalize_index(key)]
+        return self._val[key]
 
     def __setitem__(self, key, value):
-        self._val[normalize_index(key)] = value
+        self._val[key] = value
 
     def __len__(self):
         return len(self._val)
@@ -75,8 +73,6 @@ class Slice(Runnable):
         assert not (start is None and end is None)
 
         target = target._val
-        start = normalize_index(start)
-        end = normalize_index(end)
 
         if not (start is None or end is None):
             ls = target[start:end]

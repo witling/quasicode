@@ -1,7 +1,6 @@
 from .ast import *
 from .error import AssertException
 from .function import *
-from .index import normalize_index
 from .library import *
 
 from urllib import request
@@ -83,7 +82,6 @@ class ListLibrary(Library):
         return len(ls)
 
     def _delete(self, ls, idx):
-        idx = normalize_index(idx)
         del ls[idx]
 
     def _push(self, ls, item):
@@ -91,7 +89,7 @@ class ListLibrary(Library):
         ls[idx] = item
 
     def _pop(self, ls):
-        idx = normalize_index(len(ls))
+        idx = len(ls) - 1
         item = ls[idx]
         del ls[idx]
         return item

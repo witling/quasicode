@@ -12,9 +12,9 @@ use net
         interpreter._ctx.set_allowed_modules(['std'])
 
         program = compiler.compile(src)
-        interpreter.load(program)
 
         with pytest.raises(ImportError):
+            interpreter.load(program)
             interpreter.run()
 
     def test_restricted_blocked(self):
@@ -26,9 +26,9 @@ use net
         interpreter._ctx.set_blocked_modules(['net'])
 
         program = compiler.compile(src)
-        interpreter.load(program)
 
         with pytest.raises(ImportError):
+            interpreter.load(program)
             interpreter.run()
 
     def test_restricted_allowed_all(self):

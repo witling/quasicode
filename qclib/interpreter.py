@@ -56,7 +56,7 @@ class Interpreter:
                     try:
                         return Library.load(modpath)._module
                     except Exception as e:
-                        print(e + '\n')
+                        print(e)
             
             # TODO: can we implement this feature?
             #return try_py_module_load(name)

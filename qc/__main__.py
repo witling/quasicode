@@ -44,7 +44,11 @@ def run(args):
         interpreter.disable_funny_mode()
 
     interpreter.load(program)
-    interpreter.run()
+
+    try:
+        interpreter.run()
+    except Exception as e:
+        print(e)
 
 def install(args):
     from .makelibs import process

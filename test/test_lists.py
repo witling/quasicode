@@ -59,8 +59,8 @@ und zwar create_indirect
         src = """
 und zwar create_indirect
     eingabe ist liste mit 3 4 5 1
-    eingabe bei 1 ist 2
-    eingabe bei 4 ist 3
+    eingabe bei 0 ist 2
+    eingabe bei 3 ist 3
     eingabe und fertig
 """
         program = internals.compiler.compile(src)
@@ -77,7 +77,7 @@ und zwar create_indirect
         src = """
 und zwar first
     eingabe ist liste mit 3 4 5 1
-    (eingabe bei 1) und fertig
+    (eingabe bei 0) und fertig
 """
         program = internals.compiler.compile(src)
         internals.interpreter.load(program)
@@ -90,7 +90,7 @@ und zwar first
         src = """
 und zwar create
     eingabe ist liste mit 1 2 3 4
-    (eingabe von 1 bis 4) und fertig
+    (eingabe von 0 bis 3) und fertig
 """
         program = internals.compiler.compile(src)
         internals.interpreter.load(program)
@@ -105,7 +105,7 @@ und zwar create
         src = """
 und zwar create
     eingabe ist liste mit 1 2 3 4
-    (eingabe bis 2) und fertig
+    (eingabe bis 1) und fertig
 """
         program = internals.compiler.compile(src)
         internals.interpreter.load(program)
@@ -118,7 +118,7 @@ und zwar create
         src = """
 und zwar create
     eingabe ist liste mit 1 2 3 4
-    (eingabe von 2) und fertig
+    (eingabe von 1) und fertig
 """
         program = internals.compiler.compile(src)
         internals.interpreter.load(program)
@@ -140,7 +140,7 @@ ls ist liste mit 1 2 3 4
         ret = internals.interpreter.call('länge', Expr.var('ls')).to_py()
         self.assertEqual(4, ret)
 
-        internals.interpreter.call('lösche', Expr.var('ls'), 1)
+        internals.interpreter.call('lösche', Expr.var('ls'), 0)
 
         ret = internals.interpreter.call('länge', Expr.var('ls')).to_py()
         self.assertEqual(3, ret)

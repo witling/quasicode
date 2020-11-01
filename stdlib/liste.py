@@ -1,5 +1,4 @@
 from qclib.ast import *
-from qclib.index import normalize_index
 from qclib.library import *
 
 class ListeLibrary(PyLibrary):
@@ -19,7 +18,6 @@ class ListeLibrary(PyLibrary):
         return Number(len(ls._val))
 
     def _delete(self, ls, idx):
-        idx = normalize_index(idx)
         del ls._val[idx]
 
     def _push(self, ls, item):
