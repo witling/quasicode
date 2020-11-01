@@ -44,6 +44,14 @@ class Compiler:
     def parser(self):
         return self._parser
 
+    def compile_file(self, fpath) -> Program:
+        from os.path import abspath, basename, splitext
+        fpath = abspath(fpath)
+        name, _ = splitext(basename(fpath))
+        with open(fpath, 'r') as fin:
+            src = fin.read()
+            return self.compile(src, auto_main=True, module_name=name, module_location=fpath)
+
     def compile(self, src, auto_main=False, module_name=None, module_location=None) -> Program:
         self._compctx = CompileContext(module_name)
         ast = self._parser.parse(src)
@@ -147,7 +155,6 @@ class Compiler:
         return Expr.slice(target, start, end)
 
     def _to_value(self, item):
-        # used for normalizing list index
         ty = typeof(item)
 
         if ty == 'IDENT':
@@ -211,6 +218,9 @@ class Compiler:
             
             if name == 'div':
                 left = Expr.to_float(left)
+
+            if name in ['and', 'or']:
+                left, right = Expr.to_bool(left), Expr.to_bool(right)
 
             args = [left, right]
         

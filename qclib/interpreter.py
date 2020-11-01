@@ -7,20 +7,20 @@ from .std import *
 
 import pylovm2
 
-def try_py_module_load(name):
-    import importlib
-    import inspect
-    try:
-        pymod = importlib.import_module(name)
-        members = inspect.getmembers(pymod, inspect.isfunction)
-        module = pylovm2.ModuleBuilder.named(name)
-
-        for key, value in members:
-            module.add(key).pyfn(value)
-
-        return module.build()
-    except ImportError:
-        return None
+#def try_py_module_load(name):
+#    import importlib
+#    import inspect
+#    try:
+#        pymod = importlib.import_module(name)
+#        members = inspect.getmembers(pymod, inspect.isfunction)
+#        module = pylovm2.ModuleBuilder.named(name)
+#
+#        for key, value in members:
+#            module.add(key).pyfn(value)
+#
+#        return module.build()
+#    except ImportError:
+#        return None
 
 class Interpreter:
     def __init__(self, restricted=False):
@@ -43,7 +43,13 @@ class Interpreter:
             if name in STD_MODULE_MAP:
                 return STD_MODULE_MAP[name](self._ctx)._module
 
-            for fpath in self._lovm2ctx.load_path():
+            dirs = self._lovm2ctx.load_path()
+
+            if not relative_to is None:
+                moddir = os.path.dirname(relative_to)
+                dirs.insert(0, moddir)
+
+            for fpath in dirs:
                 if not os.path.exists(fpath):
                     continue
 

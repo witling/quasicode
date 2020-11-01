@@ -2,3 +2,4 @@
 build/*
 dist/*
 quasicode.egg-info/*
+.env
