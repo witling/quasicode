@@ -9,7 +9,6 @@ from os.path import abspath, basename, dirname, expanduser, join, splitext
 from shutil import copyfile, rmtree
 
 from qclib import Interpreter, Program, Library
-from qclib.library import PyLibrary, init_vlib, get_vlib_modname
 
 def random_id(n=6):
     sample = random.sample('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', n)

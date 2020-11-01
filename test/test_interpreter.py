@@ -151,4 +151,3 @@ und zwar factorial mit x
         ret = internals.interpreter.call('factorial', 3)
 
         self.assertEqual(6, int(ret))
-        self.assertEqual(1, len(internals.interpreter._ctx._stack))

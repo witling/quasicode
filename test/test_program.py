@@ -31,7 +31,7 @@ class TestProgram(Test):
         fname = srcdir.join('test.qcc')
         loaded_prog = Program.load(str(fname))
         self.assertIsInstance(loaded_prog, Program)
-        self.assertTrue(loaded_prog._file.endswith('test.qcc'))
+        self.assertTrue(loaded_prog.location().endswith('test.qcc'))
         self.assertEqual('test', loaded_prog.modname())
 
     def test_global_variables(self, internals):

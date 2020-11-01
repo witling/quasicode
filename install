@@ -1,9 +1,10 @@
 #!/bin/bash
 
-echo "Installing quasicode..."
+echo ""
+cat ./docs/ascii-title.txt
+echo ""
+
+echo "- Installing quasicode..."
 pip3 install . > /dev/null
 
-echo "Building standard library..."
-qc install ./stdlib
-
-echo "Done. Have fun."
+echo "- Done. Have fun."

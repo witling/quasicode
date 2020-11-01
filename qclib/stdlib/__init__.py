@@ -1,7 +1,7 @@
-from .ast import *
-from .error import AssertException
-from .function import *
-from .library import *
+from ..error import AssertException
+from ..library import *
+
+from .bot import *
 
 from urllib import request
 import math
@@ -44,12 +44,6 @@ class StdLibrary(Library):
         msg = ' '.join(map(str, args)) + '\n'
         self._ctx.stdout().write(msg)
         self._ctx.stdout().flush()
-
-class BotLibrary(Library):
-    def __init__(self, ctx):
-        self._ctx = ctx
-        module = pylovm2.ModuleBuilder.named('bot')
-        super().__init__(module.build())
 
 class IoLibrary(Library):
     def __init__(self, ctx):
