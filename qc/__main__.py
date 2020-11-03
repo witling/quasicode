@@ -51,7 +51,7 @@ def run(args):
         print(e)
 
 def install(args):
-    from .makelibs import process
+    from .installer import process
     from os.path import abspath
 
     process(
