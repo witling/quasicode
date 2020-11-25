@@ -24,6 +24,9 @@ We have a [vim plugin](https://github.com/witling/quasi.vim) for syntax support.
 
 Have a look at the [Cheatsheet](./CHEATSHEET.md) on how to use and extend quasicode. 
 
+- [Fizz Buzz](/examples/fizzbuzz.qc)
+- [Simple Math](/examples/math.qc)
+
 ### Development
 
 What Is Implemented? | What Doesn't 'Work'?
